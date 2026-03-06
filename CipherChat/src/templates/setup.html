@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CipherChat Installation</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #121212;
+                color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }
+
+            header {
+                background-color: #1e1e1e;
+                display: flex;
+                padding: 10px;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            header img {
+                width: 200px;
+                height: auto;
+            }
+
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            nav a {
+                color: #ffffff;
+                text-decoration: none;
+                padding: 8px;
+                border: 1px solid #ffffff;
+                border-radius: 5px;
+            }
+            
+            main {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            c {
+                color:#FF9E33;
+            }
+            
+            .step {
+                font-size: 1.2em;
+                margin-top: 20px;
+                color: #FF9E33;
+            }
+
+            img {
+                width: 24px;
+            }
+            
+            .os-buttons, .download-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            #github-image {
+                content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAgIIGps6JMAAAIbSURBVEjHlZXPa1NBEMc/ebb2kNofaBVFpUREBAm0acSkQejBi/RQPIj4C8Haf6Fg8cfFSw89C0pRELQiKhXFiydBPFhBcvJgK0WtTZVYMabVNtNDknW2eS9v3bm8nZnPd/bN290XIWh47KaTVmCRj8xSwnlEOcskeURZnsecIRoONzLEnIVqW2CYpnp4L9OBcNU+kArCL7AcigvCMoN++BUnuGqX1uPHKf2XQIlTGk9SrATGyHCNeV/oE1dJcbMyK9IFEAEamCJu2vgKaOEi+5lihh9AOzESvGWUAtDPk0ruSw6XH86pKrHQD51Q2QNlV1a5DoYKHFHZ78CjhwMmKA57TW+kOF1wWSneCMUB7itiBJ6r6T4ngaQinsGMmXx2wiHCT8NMe3SYwIKjgJAzzx0eG81kk6MAtOiWfjXL+YXnhDexapg5Ty08So+TQEYVynlkVei0k4DOysKQddLjoXhavYAwCJ2W4wvddfFevqnsFXYBTCIIj5hgCeEP10n4tHMDaW5bxYSH5VAfgvCGnXSzWAl95xYRA3tMmIi2TDXhHoLwnmaOmZvppFX/vA9+5194G7nq0aCfF7xmnFZLYE8NPs9Wu7e/EfLsDWhe+zq8UHtzDFBEmOUEzUBbXYECR/2qpMy2XkJosGKbrcs1EfSVt3PXpNm/sC3mOh9X59d39PGUVVZotLxtlPjLAw7hNGKka3xJdvilrgG0vnctZhsIoQAAAABJRU5ErkJggg==');
+            }
+
+            #hidden-service-image {
+                content: url('data:image/webp;base64,UklGRvoBAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSKsBAAABL8OgbSRHn8z18vwBvx5DROTDJxApCA47dhQkXQVehEZ6KkIk0zRIsqDFCQSlMQuo/ECCbW2GJH1/Rts9tm3btq2M+L/v3/8iOjOiZgcR/Z8AVO4L/XPS/3nsxQSvhrPS43rLXHC43HgcUUjGbI2dKxrJZh22RE+VsxXXqHHeP4EELITEKyOHXPURrwF8DvnBoaz2fBR4LuWBULXvuPUtJL0CfkoBYK2wOndI+OLUEyBYVoFg44fLsHTeyU04Uhjo/raQ/UuzO05PcP6zY2rJJH/YVKZvx0PysFrL4r0incEq9aVbLmIbsM0VQJEATbAAJvUzpv/xVGUZGzpJbM2A/WI/byQBTjADqWeG5cntD/IR4PyepjJ1sUXhVKDL9NO46bqQitoDOEAJCJUEtUZsBuZCPIWtRQR2sa50AC5R+m2QuBNANEyv3KakPIUHVADAemb1v0KyvJnCYWde24C7XkWyjyXrzmT6HQzap6pfL04iAR+d/GhDwFsfy8kwhfsh+htU2vFew2X5wNM/Iak/ajUAggPj0aH9fcRQxDtMdgZ7nn39+nQ3ZlALAFZQOCAoAAAAEAMAnQEqIAAgAD5tNJZHpCMiISgIAIANiWkAAeKPA4kAAP77nMAAAA==');
+            }
+
+            .mirror-image {
+                content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkPJ7qLgcAAAAH8SURBVEjH7dQ7SNVhGMfxzzmVY4MNIUZUKAlZEuUQRYWFESZ2Jxcb2praCqG52sOkJWpwiZagaAnFSMxFFKuD2cVStARNcvKob4OXc/mfczzt/Z7hz3v5/t7L/3lecqvEZR0S5swa0qFRiX/QeSNCVnxxqjg47l4EXo07xRjczYsHwc318LMRZMlo2jG2F8Y3Gc7C511EdxreJF7o8rLxC6g0tYa3WFSf3+BxTnwsAw+e5DcYKgIPElHwuWlVmF7DFzSv4d/sxBULK2OzqDLtVcrgt+AAZovAg1+oFcykDBKCxpVvoc0vxwCaBB+W8w7GUYFeJDV7plKncl8d912LRxm/rm9l9niq67bgNeoyVp/KsXoQNKBL0Joy2C9I2irm5Boe9OBqBB+0QZmkoCZlEDMguE8aHgQ/LGXhi06gTdAfrYF5e3CjYDG1Yq+k4EymQUy3YFgpWiPbXl39lphSI4LOaDKVmxR0K8XhjJxcjn512OKNYEJZrkQ+ak7wSTXijmn31phxfdrUi6PGiOCPI/lqodZPQVK78sjYNg8lBZMOZp49Uzu0OY0lPV4YMYEylRocEsdL141aR+e8y3mJvZqik2N5TKpcsk+13Uh4b9DTXGW8vmbSay6X4sX5/DcopI2RngcZ7/5mfE5rd7m2nkGFXVk96e2P2dP/Ar/hUkqsJNB/AAAAAElFTkSuQmCC');
+            }
+            
+            .button {
+                background-color: #FF9E33;
+                color: #000;
+                border: none;
+                padding: 10px;
+                cursor: pointer;
+            }
+            
+            .button:hover {
+                background-color: #944c00;
+                color: #fff;
+            }
+
+            .button:hover #github-image,
+            .button:hover #hidden-service-image,
+            .button:hover .mirror-image {
+                content: none;
+            }
+
+            a img, a span {
+                vertical-align: middle;
+            }
+
+            a {
+                color: rgb(108, 108, 255);
+                text-decoration: none;
+            }
+
+            #all-steps {
+                display: none;
+            }
+
+            #progressBar {
+                display: none;
+                margin-top: 20px;
+                height: 10px;
+                min-width: 200px;
+                background-color: #dfdfdf;
+                position: relative;
+                border-radius: 10px;
+            }
+            
+            code {
+                background-color: rgb(34, 34, 34);
+                padding: 2px 4px;
+                border-radius: 4px;
+            }
+
+            footer {
+                background-color: #1e1e1e;
+                padding: 10px;
+                padding-bottom: 20px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                justify-content: space-around;
+                text-align: center;
+            }
+
+            .footer-links a {
+                text-decoration: none;
+                color: #fff;
+                margin: 0 10px;
+            }
+
+            .footer-links a:hover {
+                text-decoration: underline;
+            }
+
+            @media screen and (max-width: 620px) {
+                header {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                nav {
+                    margin-top: 10px;
+                }
+            }
+
+            @media screen and (max-width: 415px) {
+                nav {
+                    gap: 5px;
+                }
+
+                nav a {
+                    border: none;
+                    padding: 4px;
+                    text-align: center;
+                }
+            }
+        </style>
+        <script>
+            /*! Forge v0.9.2 | (c) Digital Bazaar, Inc. */
+            !function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.forge=e():t.forge=e()}("undefined"!=typeof self?self:this,function(){return function(t){function e(n){if(r[n])return r[n].exports;var a=r[n]={i:n,l:!1,exports:{}};return t[n].call(a.exports,a,a.exports,e),a.l=!0,a.exports}var r={};return e.m=t,e.c=r,e.d=function(t,r,n){e.o(t,r)||Object.defineProperty(t,r,{configurable:!1,enumerable:!0,get:n})},e.n=function(t){var r=t&&t.__esModule?function(){return t.default}:function(){return t};return e.d(r,"a",r),r},e.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},e.p="",e(e.s=1)}([function(t,e){t.exports={options:{usePureJavaScript:!1}}},function(t,e,r){r(2),t.exports=r(0)},function(t,e,r){function n(){s=String.fromCharCode(128),s+=i.util.fillString(String.fromCharCode(0),64),u=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],f=!0}function a(t,e,r){for(var n,a,i,o,s,f,h,d,c,p,l,g,y,v,m,B=r.length();B>=64;){for(h=0;h<16;++h)e[h]=r.getInt32();for(;h<64;++h)n=e[h-2],n=(n>>>17|n<<15)^(n>>>19|n<<13)^n>>>10,a=e[h-15],a=(a>>>7|a<<25)^(a>>>18|a<<14)^a>>>3,e[h]=n+e[h-7]+a+e[h-16]|0;for(d=t.h0,c=t.h1,p=t.h2,l=t.h3,g=t.h4,y=t.h5,v=t.h6,m=t.h7,h=0;h<64;++h)o=(g>>>6|g<<26)^(g>>>11|g<<21)^(g>>>25|g<<7),s=v^g&(y^v),i=(d>>>2|d<<30)^(d>>>13|d<<19)^(d>>>22|d<<10),f=d&c|p&(d^c),n=m+o+s+u[h]+e[h],a=i+f,m=v,v=y,y=g,g=l+n>>>0,l=p,p=c,c=d,d=n+a>>>0;t.h0=t.h0+d|0,t.h1=t.h1+c|0,t.h2=t.h2+p|0,t.h3=t.h3+l|0,t.h4=t.h4+g|0,t.h5=t.h5+y|0,t.h6=t.h6+v|0,t.h7=t.h7+m|0,B-=64}}var i=r(0);r(3),r(4);var o=t.exports=i.sha256=i.sha256||{};i.md.sha256=i.md.algorithms.sha256=o,o.create=function(){f||n();var t=null,e=i.util.createBuffer(),r=new Array(64),o={algorithm:"sha256",blockLength:64,digestLength:32,messageLength:0,fullMessageLength:null,messageLengthSize:8};return o.start=function(){o.messageLength=0,o.fullMessageLength=o.messageLength64=[];for(var r=o.messageLengthSize/4,n=0;n<r;++n)o.fullMessageLength.push(0);return e=i.util.createBuffer(),t={h0:1779033703,h1:3144134277,h2:1013904242,h3:2773480762,h4:1359893119,h5:2600822924,h6:528734635,h7:1541459225},o},o.start(),o.update=function(n,s){"utf8"===s&&(n=i.util.encodeUtf8(n));var f=n.length;o.messageLength+=f,f=[f/4294967296>>>0,f>>>0];for(var u=o.fullMessageLength.length-1;u>=0;--u)o.fullMessageLength[u]+=f[1],f[1]=f[0]+(o.fullMessageLength[u]/4294967296>>>0),o.fullMessageLength[u]=o.fullMessageLength[u]>>>0,f[0]=f[1]/4294967296>>>0;return e.putBytes(n),a(t,r,e),(e.read>2048||0===e.length())&&e.compact(),o},o.digest=function(){var n=i.util.createBuffer();n.putBytes(e.bytes());var f=o.fullMessageLength[o.fullMessageLength.length-1]+o.messageLengthSize,u=f&o.blockLength-1;n.putBytes(s.substr(0,o.blockLength-u));for(var h,d,c=8*o.fullMessageLength[0],p=0;p<o.fullMessageLength.length-1;++p)h=8*o.fullMessageLength[p+1],d=h/4294967296>>>0,c+=d,n.putInt32(c>>>0),c=h>>>0;n.putInt32(c);var l={h0:t.h0,h1:t.h1,h2:t.h2,h3:t.h3,h4:t.h4,h5:t.h5,h6:t.h6,h7:t.h7};a(l,r,n);var g=i.util.createBuffer();return g.putInt32(l.h0),g.putInt32(l.h1),g.putInt32(l.h2),g.putInt32(l.h3),g.putInt32(l.h4),g.putInt32(l.h5),g.putInt32(l.h6),g.putInt32(l.h7),g},o};var s=null,f=!1,u=null},function(t,e,r){var n=r(0);t.exports=n.md=n.md||{},n.md.algorithms=n.md.algorithms||{}},function(t,e,r){(function(e){function n(t){if(8!==t&&16!==t&&24!==t&&32!==t)throw new Error("Only 8, 16, 24, or 32 bits supported: "+t)}function a(t){if(this.data="",this.read=0,"string"==typeof t)this.data=t;else if(f.isArrayBuffer(t)||f.isArrayBufferView(t))if("undefined"!=typeof Buffer&&t instanceof Buffer)this.data=t.toString("binary");else{var e=new Uint8Array(t);try{this.data=String.fromCharCode.apply(null,e)}catch(t){for(var r=0;r<e.length;++r)this.putByte(e[r])}}else(t instanceof a||"object"==typeof t&&"string"==typeof t.data&&"number"==typeof t.read)&&(this.data=t.data,this.read=t.read);this._constructedStringLength=0}function i(t,e){e=e||{},this.read=e.readOffset||0,this.growSize=e.growSize||1024;var r=f.isArrayBuffer(t),n=f.isArrayBufferView(t);if(r||n)return this.data=r?new DataView(t):new DataView(t.buffer,t.byteOffset,t.byteLength),void(this.write="writeOffset"in e?e.writeOffset:this.data.byteLength);this.data=new DataView(new ArrayBuffer(0)),this.write=0,null!==t&&void 0!==t&&this.putBytes(t),"writeOffset"in e&&(this.write=e.writeOffset)}var o=r(0),s=r(6),f=t.exports=o.util=o.util||{};!function(){function t(t){if(t.source===window&&t.data===e){t.stopPropagation();var n=r.slice();r.length=0,n.forEach(function(t){t()})}}if("undefined"!=typeof process&&process.nextTick&&!process.browser)return f.nextTick=process.nextTick,void("function"==typeof setImmediate?f.setImmediate=setImmediate:f.setImmediate=f.nextTick);if("function"==typeof setImmediate)return f.setImmediate=function(){return setImmediate.apply(void 0,arguments)},void(f.nextTick=function(t){return setImmediate(t)});if(f.setImmediate=function(t){setTimeout(t,0)},"undefined"!=typeof window&&"function"==typeof window.postMessage){var e="forge.setImmediate",r=[];f.setImmediate=function(t){r.push(t),1===r.length&&window.postMessage(e,"*")},window.addEventListener("message",t,!0)}if("undefined"!=typeof MutationObserver){var n=Date.now(),a=!0,i=document.createElement("div"),r=[];new MutationObserver(function(){var t=r.slice();r.length=0,t.forEach(function(t){t()})}).observe(i,{attributes:!0});var o=f.setImmediate;f.setImmediate=function(t){Date.now()-n>15?(n=Date.now(),o(t)):(r.push(t),1===r.length&&i.setAttribute("a",a=!a))}}f.nextTick=f.setImmediate}(),f.isNodejs="undefined"!=typeof process&&process.versions&&process.versions.node,f.globalScope=function(){return f.isNodejs?e:"undefined"==typeof self?window:self}(),f.isArray=Array.isArray||function(t){return"[object Array]"===Object.prototype.toString.call(t)},f.isArrayBuffer=function(t){return"undefined"!=typeof ArrayBuffer&&t instanceof ArrayBuffer},f.isArrayBufferView=function(t){return t&&f.isArrayBuffer(t.buffer)&&void 0!==t.byteLength},f.ByteBuffer=a,f.ByteStringBuffer=a;f.ByteStringBuffer.prototype._optimizeConstructedString=function(t){this._constructedStringLength+=t,this._constructedStringLength>4096&&(this.data.substr(0,1),this._constructedStringLength=0)},f.ByteStringBuffer.prototype.length=function(){return this.data.length-this.read},f.ByteStringBuffer.prototype.isEmpty=function(){return this.length()<=0},f.ByteStringBuffer.prototype.putByte=function(t){return this.putBytes(String.fromCharCode(t))},f.ByteStringBuffer.prototype.fillWithByte=function(t,e){t=String.fromCharCode(t);for(var r=this.data;e>0;)1&e&&(r+=t),(e>>>=1)>0&&(t+=t);return this.data=r,this._optimizeConstructedString(e),this},f.ByteStringBuffer.prototype.putBytes=function(t){return this.data+=t,this._optimizeConstructedString(t.length),this},f.ByteStringBuffer.prototype.putString=function(t){return this.putBytes(f.encodeUtf8(t))},f.ByteStringBuffer.prototype.putInt16=function(t){return this.putBytes(String.fromCharCode(t>>8&255)+String.fromCharCode(255&t))},f.ByteStringBuffer.prototype.putInt24=function(t){return this.putBytes(String.fromCharCode(t>>16&255)+String.fromCharCode(t>>8&255)+String.fromCharCode(255&t))},f.ByteStringBuffer.prototype.putInt32=function(t){return this.putBytes(String.fromCharCode(t>>24&255)+String.fromCharCode(t>>16&255)+String.fromCharCode(t>>8&255)+String.fromCharCode(255&t))},f.ByteStringBuffer.prototype.putInt16Le=function(t){return this.putBytes(String.fromCharCode(255&t)+String.fromCharCode(t>>8&255))},f.ByteStringBuffer.prototype.putInt24Le=function(t){return this.putBytes(String.fromCharCode(255&t)+String.fromCharCode(t>>8&255)+String.fromCharCode(t>>16&255))},f.ByteStringBuffer.prototype.putInt32Le=function(t){return this.putBytes(String.fromCharCode(255&t)+String.fromCharCode(t>>8&255)+String.fromCharCode(t>>16&255)+String.fromCharCode(t>>24&255))},f.ByteStringBuffer.prototype.putInt=function(t,e){n(e);var r="";do{e-=8,r+=String.fromCharCode(t>>e&255)}while(e>0);return this.putBytes(r)},f.ByteStringBuffer.prototype.putSignedInt=function(t,e){return t<0&&(t+=2<<e-1),this.putInt(t,e)},f.ByteStringBuffer.prototype.putBuffer=function(t){return this.putBytes(t.getBytes())},f.ByteStringBuffer.prototype.getByte=function(){return this.data.charCodeAt(this.read++)},f.ByteStringBuffer.prototype.getInt16=function(){var t=this.data.charCodeAt(this.read)<<8^this.data.charCodeAt(this.read+1);return this.read+=2,t},f.ByteStringBuffer.prototype.getInt24=function(){var t=this.data.charCodeAt(this.read)<<16^this.data.charCodeAt(this.read+1)<<8^this.data.charCodeAt(this.read+2);return this.read+=3,t},f.ByteStringBuffer.prototype.getInt32=function(){var t=this.data.charCodeAt(this.read)<<24^this.data.charCodeAt(this.read+1)<<16^this.data.charCodeAt(this.read+2)<<8^this.data.charCodeAt(this.read+3);return this.read+=4,t},f.ByteStringBuffer.prototype.getInt16Le=function(){var t=this.data.charCodeAt(this.read)^this.data.charCodeAt(this.read+1)<<8;return this.read+=2,t},f.ByteStringBuffer.prototype.getInt24Le=function(){var t=this.data.charCodeAt(this.read)^this.data.charCodeAt(this.read+1)<<8^this.data.charCodeAt(this.read+2)<<16;return this.read+=3,t},f.ByteStringBuffer.prototype.getInt32Le=function(){var t=this.data.charCodeAt(this.read)^this.data.charCodeAt(this.read+1)<<8^this.data.charCodeAt(this.read+2)<<16^this.data.charCodeAt(this.read+3)<<24;return this.read+=4,t},f.ByteStringBuffer.prototype.getInt=function(t){n(t);var e=0;do{e=(e<<8)+this.data.charCodeAt(this.read++),t-=8}while(t>0);return e},f.ByteStringBuffer.prototype.getSignedInt=function(t){var e=this.getInt(t),r=2<<t-2;return e>=r&&(e-=r<<1),e},f.ByteStringBuffer.prototype.getBytes=function(t){var e;return t?(t=Math.min(this.length(),t),e=this.data.slice(this.read,this.read+t),this.read+=t):0===t?e="":(e=0===this.read?this.data:this.data.slice(this.read),this.clear()),e},f.ByteStringBuffer.prototype.bytes=function(t){return void 0===t?this.data.slice(this.read):this.data.slice(this.read,this.read+t)},f.ByteStringBuffer.prototype.at=function(t){return this.data.charCodeAt(this.read+t)},f.ByteStringBuffer.prototype.setAt=function(t,e){return this.data=this.data.substr(0,this.read+t)+String.fromCharCode(e)+this.data.substr(this.read+t+1),this},f.ByteStringBuffer.prototype.last=function(){return this.data.charCodeAt(this.data.length-1)},f.ByteStringBuffer.prototype.copy=function(){var t=f.createBuffer(this.data);return t.read=this.read,t},f.ByteStringBuffer.prototype.compact=function(){return this.read>0&&(this.data=this.data.slice(this.read),this.read=0),this},f.ByteStringBuffer.prototype.clear=function(){return this.data="",this.read=0,this},f.ByteStringBuffer.prototype.truncate=function(t){var e=Math.max(0,this.length()-t);return this.data=this.data.substr(this.read,e),this.read=0,this},f.ByteStringBuffer.prototype.toHex=function(){for(var t="",e=this.read;e<this.data.length;++e){var r=this.data.charCodeAt(e);r<16&&(t+="0"),t+=r.toString(16)}return t},f.ByteStringBuffer.prototype.toString=function(){return f.decodeUtf8(this.bytes())},f.DataBuffer=i,f.DataBuffer.prototype.length=function(){return this.write-this.read},f.DataBuffer.prototype.isEmpty=function(){return this.length()<=0},f.DataBuffer.prototype.accommodate=function(t,e){if(this.length()>=t)return this;e=Math.max(e||this.growSize,t);var r=new Uint8Array(this.data.buffer,this.data.byteOffset,this.data.byteLength),n=new Uint8Array(this.length()+e);return n.set(r),this.data=new DataView(n.buffer),this},f.DataBuffer.prototype.putByte=function(t){return this.accommodate(1),this.data.setUint8(this.write++,t),this},f.DataBuffer.prototype.fillWithByte=function(t,e){this.accommodate(e);for(var r=0;r<e;++r)this.data.setUint8(t);return this},f.DataBuffer.prototype.putBytes=function(t,e){if(f.isArrayBufferView(t)){var r=new Uint8Array(t.buffer,t.byteOffset,t.byteLength),n=r.byteLength-r.byteOffset;this.accommodate(n);var a=new Uint8Array(this.data.buffer,this.write);return a.set(r),this.write+=n,this}if(f.isArrayBuffer(t)){var r=new Uint8Array(t);this.accommodate(r.byteLength);var a=new Uint8Array(this.data.buffer);return a.set(r,this.write),this.write+=r.byteLength,this}if(t instanceof f.DataBuffer||"object"==typeof t&&"number"==typeof t.read&&"number"==typeof t.write&&f.isArrayBufferView(t.data)){var r=new Uint8Array(t.data.byteLength,t.read,t.length());this.accommodate(r.byteLength);var a=new Uint8Array(t.data.byteLength,this.write);return a.set(r),this.write+=r.byteLength,this}if(t instanceof f.ByteStringBuffer&&(t=t.data,e="binary"),e=e||"binary","string"==typeof t){var i;if("hex"===e)return this.accommodate(Math.ceil(t.length/2)),i=new Uint8Array(this.data.buffer,this.write),this.write+=f.binary.hex.decode(t,i,this.write),this;if("base64"===e)return this.accommodate(3*Math.ceil(t.length/4)),i=new Uint8Array(this.data.buffer,this.write),this.write+=f.binary.base64.decode(t,i,this.write),this;if("utf8"===e&&(t=f.encodeUtf8(t),e="binary"),"binary"===e||"raw"===e)return this.accommodate(t.length),i=new Uint8Array(this.data.buffer,this.write),this.write+=f.binary.raw.decode(i),this;if("utf16"===e)return this.accommodate(2*t.length),i=new Uint16Array(this.data.buffer,this.write),this.write+=f.text.utf16.encode(i),this;throw new Error("Invalid encoding: "+e)}throw Error("Invalid parameter: "+t)},f.DataBuffer.prototype.putBuffer=function(t){return this.putBytes(t),t.clear(),this},f.DataBuffer.prototype.putString=function(t){return this.putBytes(t,"utf16")},f.DataBuffer.prototype.putInt16=function(t){return this.accommodate(2),this.data.setInt16(this.write,t),this.write+=2,this},f.DataBuffer.prototype.putInt24=function(t){return this.accommodate(3),this.data.setInt16(this.write,t>>8&65535),this.data.setInt8(this.write,t>>16&255),this.write+=3,this},f.DataBuffer.prototype.putInt32=function(t){return this.accommodate(4),this.data.setInt32(this.write,t),this.write+=4,this},f.DataBuffer.prototype.putInt16Le=function(t){return this.accommodate(2),this.data.setInt16(this.write,t,!0),this.write+=2,this},f.DataBuffer.prototype.putInt24Le=function(t){return this.accommodate(3),this.data.setInt8(this.write,t>>16&255),this.data.setInt16(this.write,t>>8&65535,!0),this.write+=3,this},f.DataBuffer.prototype.putInt32Le=function(t){return this.accommodate(4),this.data.setInt32(this.write,t,!0),this.write+=4,this},f.DataBuffer.prototype.putInt=function(t,e){n(e),this.accommodate(e/8);do{e-=8,this.data.setInt8(this.write++,t>>e&255)}while(e>0);return this},f.DataBuffer.prototype.putSignedInt=function(t,e){return n(e),this.accommodate(e/8),t<0&&(t+=2<<e-1),this.putInt(t,e)},f.DataBuffer.prototype.getByte=function(){return this.data.getInt8(this.read++)},f.DataBuffer.prototype.getInt16=function(){var t=this.data.getInt16(this.read);return this.read+=2,t},f.DataBuffer.prototype.getInt24=function(){var t=this.data.getInt16(this.read)<<8^this.data.getInt8(this.read+2);return this.read+=3,t},f.DataBuffer.prototype.getInt32=function(){var t=this.data.getInt32(this.read);return this.read+=4,t},f.DataBuffer.prototype.getInt16Le=function(){var t=this.data.getInt16(this.read,!0);return this.read+=2,t},f.DataBuffer.prototype.getInt24Le=function(){var t=this.data.getInt8(this.read)^this.data.getInt16(this.read+1,!0)<<8;return this.read+=3,t},f.DataBuffer.prototype.getInt32Le=function(){var t=this.data.getInt32(this.read,!0);return this.read+=4,t},f.DataBuffer.prototype.getInt=function(t){n(t);var e=0;do{e=(e<<8)+this.data.getInt8(this.read++),t-=8}while(t>0);return e},f.DataBuffer.prototype.getSignedInt=function(t){var e=this.getInt(t),r=2<<t-2;return e>=r&&(e-=r<<1),e},f.DataBuffer.prototype.getBytes=function(t){var e;return t?(t=Math.min(this.length(),t),e=this.data.slice(this.read,this.read+t),this.read+=t):0===t?e="":(e=0===this.read?this.data:this.data.slice(this.read),this.clear()),e},f.DataBuffer.prototype.bytes=function(t){return void 0===t?this.data.slice(this.read):this.data.slice(this.read,this.read+t)},f.DataBuffer.prototype.at=function(t){return this.data.getUint8(this.read+t)},f.DataBuffer.prototype.setAt=function(t,e){return this.data.setUint8(t,e),this},f.DataBuffer.prototype.last=function(){return this.data.getUint8(this.write-1)},f.DataBuffer.prototype.copy=function(){return new f.DataBuffer(this)},f.DataBuffer.prototype.compact=function(){if(this.read>0){var t=new Uint8Array(this.data.buffer,this.read),e=new Uint8Array(t.byteLength);e.set(t),this.data=new DataView(e),this.write-=this.read,this.read=0}return this},f.DataBuffer.prototype.clear=function(){return this.data=new DataView(new ArrayBuffer(0)),this.read=this.write=0,this},f.DataBuffer.prototype.truncate=function(t){return this.write=Math.max(0,this.length()-t),this.read=Math.min(this.read,this.write),this},f.DataBuffer.prototype.toHex=function(){for(var t="",e=this.read;e<this.data.byteLength;++e){var r=this.data.getUint8(e);r<16&&(t+="0"),t+=r.toString(16)}return t},f.DataBuffer.prototype.toString=function(t){var e=new Uint8Array(this.data,this.read,this.length());if("binary"===(t=t||"utf8")||"raw"===t)return f.binary.raw.encode(e);if("hex"===t)return f.binary.hex.encode(e);if("base64"===t)return f.binary.base64.encode(e);if("utf8"===t)return f.text.utf8.decode(e);if("utf16"===t)return f.text.utf16.decode(e);throw new Error("Invalid encoding: "+t)},f.createBuffer=function(t,e){return e=e||"raw",void 0!==t&&"utf8"===e&&(t=f.encodeUtf8(t)),new f.ByteBuffer(t)},f.fillString=function(t,e){for(var r="";e>0;)1&e&&(r+=t),(e>>>=1)>0&&(t+=t);return r},f.xorBytes=function(t,e,r){for(var n="",a="",i="",o=0,s=0;r>0;--r,++o)a=t.charCodeAt(o)^e.charCodeAt(o),s>=10&&(n+=i,i="",s=0),i+=String.fromCharCode(a),++s;return n+=i},f.hexToBytes=function(t){var e="",r=0;for(!0&t.length&&(r=1,e+=String.fromCharCode(parseInt(t[0],16)));r<t.length;r+=2)e+=String.fromCharCode(parseInt(t.substr(r,2),16));return e},f.bytesToHex=function(t){return f.createBuffer(t).toHex()},f.int32ToBytes=function(t){return String.fromCharCode(t>>24&255)+String.fromCharCode(t>>16&255)+String.fromCharCode(t>>8&255)+String.fromCharCode(255&t)};var u="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",h=[62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,64,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],d="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";f.encode64=function(t,e){for(var r,n,a,i="",o="",s=0;s<t.length;)r=t.charCodeAt(s++),n=t.charCodeAt(s++),a=t.charCodeAt(s++),i+=u.charAt(r>>2),i+=u.charAt((3&r)<<4|n>>4),isNaN(n)?i+="==":(i+=u.charAt((15&n)<<2|a>>6),i+=isNaN(a)?"=":u.charAt(63&a)),e&&i.length>e&&(o+=i.substr(0,e)+"\r\n",i=i.substr(e));return o+=i},f.decode64=function(t){t=t.replace(/[^A-Za-z0-9\+\/\=]/g,"");for(var e,r,n,a,i="",o=0;o<t.length;)e=h[t.charCodeAt(o++)-43],r=h[t.charCodeAt(o++)-43],n=h[t.charCodeAt(o++)-43],a=h[t.charCodeAt(o++)-43],i+=String.fromCharCode(e<<2|r>>4),64!==n&&(i+=String.fromCharCode((15&r)<<4|n>>2),64!==a&&(i+=String.fromCharCode((3&n)<<6|a)));return i},f.encodeUtf8=function(t){return unescape(encodeURIComponent(t))},f.decodeUtf8=function(t){return decodeURIComponent(escape(t))},f.binary={raw:{},hex:{},base64:{},base58:{},baseN:{encode:s.encode,decode:s.decode}},f.binary.raw.encode=function(t){return String.fromCharCode.apply(null,t)},f.binary.raw.decode=function(t,e,r){var n=e;n||(n=new Uint8Array(t.length)),r=r||0;for(var a=r,i=0;i<t.length;++i)n[a++]=t.charCodeAt(i);return e?a-r:n},f.binary.hex.encode=f.bytesToHex,f.binary.hex.decode=function(t,e,r){var n=e;n||(n=new Uint8Array(Math.ceil(t.length/2))),r=r||0;var a=0,i=r;for(1&t.length&&(a=1,n[i++]=parseInt(t[0],16));a<t.length;a+=2)n[i++]=parseInt(t.substr(a,2),16);return e?i-r:n},f.binary.base64.encode=function(t,e){for(var r,n,a,i="",o="",s=0;s<t.byteLength;)r=t[s++],n=t[s++],a=t[s++],i+=u.charAt(r>>2),i+=u.charAt((3&r)<<4|n>>4),isNaN(n)?i+="==":(i+=u.charAt((15&n)<<2|a>>6),i+=isNaN(a)?"=":u.charAt(63&a)),e&&i.length>e&&(o+=i.substr(0,e)+"\r\n",i=i.substr(e));return o+=i},f.binary.base64.decode=function(t,e,r){var n=e;n||(n=new Uint8Array(3*Math.ceil(t.length/4))),t=t.replace(/[^A-Za-z0-9\+\/\=]/g,""),r=r||0;for(var a,i,o,s,f=0,u=r;f<t.length;)a=h[t.charCodeAt(f++)-43],i=h[t.charCodeAt(f++)-43],o=h[t.charCodeAt(f++)-43],s=h[t.charCodeAt(f++)-43],n[u++]=a<<2|i>>4,64!==o&&(n[u++]=(15&i)<<4|o>>2,64!==s&&(n[u++]=(3&o)<<6|s));return e?u-r:n.subarray(0,u)},f.binary.base58.encode=function(t,e){return f.binary.baseN.encode(t,d,e)},f.binary.base58.decode=function(t,e){return f.binary.baseN.decode(t,d,e)},f.text={utf8:{},utf16:{}},f.text.utf8.encode=function(t,e,r){t=f.encodeUtf8(t);var n=e;n||(n=new Uint8Array(t.length)),r=r||0;for(var a=r,i=0;i<t.length;++i)n[a++]=t.charCodeAt(i);return e?a-r:n},f.text.utf8.decode=function(t){return f.decodeUtf8(String.fromCharCode.apply(null,t))},f.text.utf16.encode=function(t,e,r){var n=e;n||(n=new Uint8Array(2*t.length));var a=new Uint16Array(n.buffer);r=r||0;for(var i=r,o=r,s=0;s<t.length;++s)a[o++]=t.charCodeAt(s),i+=2;return e?i-r:n},f.text.utf16.decode=function(t){return String.fromCharCode.apply(null,new Uint16Array(t.buffer))},f.deflate=function(t,e,r){if(e=f.decode64(t.deflate(f.encode64(e)).rval),r){var n=2;32&e.charCodeAt(1)&&(n=6),e=e.substring(n,e.length-4)}return e},f.inflate=function(t,e,r){var n=t.inflate(f.encode64(e)).rval;return null===n?null:f.decode64(n)};var c=function(t,e,r){if(!t)throw new Error("WebStorage not available.");var n;if(null===r?n=t.removeItem(e):(r=f.encode64(JSON.stringify(r)),n=t.setItem(e,r)),void 0!==n&&!0!==n.rval){var a=new Error(n.error.message);throw a.id=n.error.id,a.name=n.error.name,a}},p=function(t,e){if(!t)throw new Error("WebStorage not available.");var r=t.getItem(e);if(t.init)if(null===r.rval){if(r.error){var n=new Error(r.error.message);throw n.id=r.error.id,n.name=r.error.name,n}r=null}else r=r.rval;return null!==r&&(r=JSON.parse(f.decode64(r))),r},l=function(t,e,r,n){var a=p(t,e);null===a&&(a={}),a[r]=n,c(t,e,a)},g=function(t,e,r){var n=p(t,e);return null!==n&&(n=r in n?n[r]:null),n},y=function(t,e,r){var n=p(t,e);if(null!==n&&r in n){delete n[r];var a=!0;for(var i in n){a=!1;break}a&&(n=null),c(t,e,n)}},v=function(t,e){c(t,e,null)},m=function(t,e,r){var n=null;void 0===r&&(r=["web","flash"]);var a,i=!1,o=null;for(var s in r){a=r[s];try{if("flash"===a||"both"===a){if(null===e[0])throw new Error("Flash local storage not available.");n=t.apply(this,e),i="flash"===a}"web"!==a&&"both"!==a||(e[0]=localStorage,n=t.apply(this,e),i=!0)}catch(t){o=t}if(i)break}if(!i)throw o;return n};f.setItem=function(t,e,r,n,a){m(l,arguments,a)},f.getItem=function(t,e,r,n){return m(g,arguments,n)},f.removeItem=function(t,e,r,n){m(y,arguments,n)},f.clearItems=function(t,e,r){m(v,arguments,r)},f.parseUrl=function(t){var e=/^(https?):\/\/([^:&^\/]*):?(\d*)(.*)$/g;e.lastIndex=0;var r=e.exec(t),n=null===r?null:{full:t,scheme:r[1],host:r[2],port:r[3],path:r[4]};return n&&(n.fullHost=n.host,n.port?80!==n.port&&"http"===n.scheme?n.fullHost+=":"+n.port:443!==n.port&&"https"===n.scheme&&(n.fullHost+=":"+n.port):"http"===n.scheme?n.port=80:"https"===n.scheme&&(n.port=443),n.full=n.scheme+"://"+n.fullHost),n};var B=null;f.getQueryVariables=function(t){var e,r=function(t){for(var e={},r=t.split("&"),n=0;n<r.length;n++){var a,i,o=r[n].indexOf("=");o>0?(a=r[n].substring(0,o),i=r[n].substring(o+1)):(a=r[n],i=null),a in e||(e[a]=[]),a in Object.prototype||null===i||e[a].push(unescape(i))}return e};return void 0===t?(null===B&&(B="undefined"!=typeof window&&window.location&&window.location.search?r(window.location.search.substring(1)):{}),e=B):e=r(t),e},f.parseFragment=function(t){var e=t,r="",n=t.indexOf("?");n>0&&(e=t.substring(0,n),r=t.substring(n+1));var a=e.split("/");return a.length>0&&""===a[0]&&a.shift(),{pathString:e,queryString:r,path:a,query:""===r?{}:f.getQueryVariables(r)}},f.makeRequest=function(t){var e=f.parseFragment(t),r={path:e.pathString,query:e.queryString,getPath:function(t){return void 0===t?e.path:e.path[t]},getQuery:function(t,r){var n;return void 0===t?n=e.query:(n=e.query[t])&&void 0!==r&&(n=n[r]),n},getQueryLast:function(t,e){var n=r.getQuery(t);return n?n[n.length-1]:e}};return r},f.makeLink=function(t,e,r){t=jQuery.isArray(t)?t.join("/"):t;var n=jQuery.param(e||{});return r=r||"",t+(n.length>0?"?"+n:"")+(r.length>0?"#"+r:"")},f.setPath=function(t,e,r){if("object"==typeof t&&null!==t)for(var n=0,a=e.length;n<a;){var i=e[n++];if(n==a)t[i]=r;else{var o=i in t;(!o||o&&"object"!=typeof t[i]||o&&null===t[i])&&(t[i]={}),t=t[i]}}},f.getPath=function(t,e,r){for(var n=0,a=e.length,i=!0;i&&n<a&&"object"==typeof t&&null!==t;){var o=e[n++];i=o in t,i&&(t=t[o])}return i?t:r},f.deletePath=function(t,e){if("object"==typeof t&&null!==t)for(var r=0,n=e.length;r<n;){var a=e[r++];if(r==n)delete t[a];else{if(!(a in t)||"object"!=typeof t[a]||null===t[a])break;t=t[a]}}},f.isEmpty=function(t){for(var e in t)if(t.hasOwnProperty(e))return!1;return!0},f.format=function(t){for(var e,r,n=/%./g,a=0,i=[],o=0;e=n.exec(t);){r=t.substring(o,n.lastIndex-2),r.length>0&&i.push(r),o=n.lastIndex;var s=e[0][1];switch(s){case"s":case"o":a<arguments.length?i.push(arguments[1+a++]):i.push("<?>");break;case"%":i.push("%");break;default:i.push("<%"+s+"?>")}}return i.push(t.substring(o)),i.join("")},f.formatNumber=function(t,e,r,n){var a=t,i=isNaN(e=Math.abs(e))?2:e,o=void 0===r?",":r,s=void 0===n?".":n,f=a<0?"-":"",u=parseInt(a=Math.abs(+a||0).toFixed(i),10)+"",h=u.length>3?u.length%3:0;return f+(h?u.substr(0,h)+s:"")+u.substr(h).replace(/(\d{3})(?=\d)/g,"$1"+s)+(i?o+Math.abs(a-u).toFixed(i).slice(2):"")},f.formatSize=function(t){return t=t>=1073741824?f.formatNumber(t/1073741824,2,".","")+" GiB":t>=1048576?f.formatNumber(t/1048576,2,".","")+" MiB":t>=1024?f.formatNumber(t/1024,0)+" KiB":f.formatNumber(t,0)+" bytes"},f.bytesFromIP=function(t){return-1!==t.indexOf(".")?f.bytesFromIPv4(t):-1!==t.indexOf(":")?f.bytesFromIPv6(t):null},f.bytesFromIPv4=function(t){if(t=t.split("."),4!==t.length)return null;for(var e=f.createBuffer(),r=0;r<t.length;++r){var n=parseInt(t[r],10);if(isNaN(n))return null;e.putByte(n)}return e.getBytes()},f.bytesFromIPv6=function(t){var e=0;t=t.split(":").filter(function(t){return 0===t.length&&++e,!0});for(var r=2*(8-t.length+e),n=f.createBuffer(),a=0;a<8;++a)if(t[a]&&0!==t[a].length){var i=f.hexToBytes(t[a]);i.length<2&&n.putByte(0),n.putBytes(i)}else n.fillWithByte(0,r),r=0;return n.getBytes()},f.bytesToIP=function(t){return 4===t.length?f.bytesToIPv4(t):16===t.length?f.bytesToIPv6(t):null},f.bytesToIPv4=function(t){if(4!==t.length)return null;for(var e=[],r=0;r<t.length;++r)e.push(t.charCodeAt(r));return e.join(".")},f.bytesToIPv6=function(t){if(16!==t.length)return null;for(var e=[],r=[],n=0,a=0;a<t.length;a+=2){for(var i=f.bytesToHex(t[a]+t[a+1]);"0"===i[0]&&"0"!==i;)i=i.substr(1);if("0"===i){var o=r[r.length-1],s=e.length;o&&s===o.end+1?(o.end=s,o.end-o.start>r[n].end-r[n].start&&(n=r.length-1)):r.push({start:s,end:s})}e.push(i)}if(r.length>0){var u=r[n];u.end-u.start>0&&(e.splice(u.start,u.end-u.start+1,""),0===u.start&&e.unshift(""),7===u.end&&e.push(""))}return e.join(":")},f.estimateCores=function(t,e){function r(t,o,s){if(0===o){var u=Math.floor(t.reduce(function(t,e){return t+e},0)/t.length);return f.cores=Math.max(1,u),URL.revokeObjectURL(i),e(null,f.cores)}n(s,function(e,n){t.push(a(s,n)),r(t,o-1,s)})}function n(t,e){for(var r=[],n=[],a=0;a<t;++a){var o=new Worker(i);o.addEventListener("message",function(a){if(n.push(a.data),n.length===t){for(var i=0;i<t;++i)r[i].terminate();e(null,n)}}),r.push(o)}for(var a=0;a<t;++a)r[a].postMessage(a)}function a(t,e){for(var r=[],n=0;n<t;++n)for(var a=e[n],i=r[n]=[],o=0;o<t;++o)if(n!==o){var s=e[o];(a.st>s.st&&a.st<s.et||s.st>a.st&&s.st<a.et)&&i.push(o)}return r.reduce(function(t,e){return Math.max(t,e.length)},0)}if("function"==typeof t&&(e=t,t={}),t=t||{},"cores"in f&&!t.update)return e(null,f.cores);if("undefined"!=typeof navigator&&"hardwareConcurrency"in navigator&&navigator.hardwareConcurrency>0)return f.cores=navigator.hardwareConcurrency,e(null,f.cores);if("undefined"==typeof Worker)return f.cores=1,e(null,f.cores);if("undefined"==typeof Blob)return f.cores=2,e(null,f.cores);var i=URL.createObjectURL(new Blob(["(",function(){self.addEventListener("message",function(t){for(var e=Date.now(),r=e+4;Date.now()<r;);self.postMessage({st:e,et:r})})}.toString(),")()"],{type:"application/javascript"}));r([],5,16)}}).call(e,r(5))},function(t,e){var r;r=function(){return this}();try{r=r||Function("return this")()||(0,eval)("this")}catch(t){"object"==typeof window&&(r=window)}t.exports=r},function(t,e){function r(t,e){var r=0,n=e.length,a=e.charAt(0),i=[0];for(r=0;r<t.length();++r){for(var o=0,s=t.at(r);o<i.length;++o)s+=i[o]<<8,i[o]=s%n,s=s/n|0;for(;s>0;)i.push(s%n),s=s/n|0}var f="";for(r=0;0===t.at(r)&&r<t.length()-1;++r)f+=a;for(r=i.length-1;r>=0;--r)f+=e[i[r]];return f}var n={};t.exports=n;var a={};n.encode=function(t,e,n){if("string"!=typeof e)throw new TypeError('"alphabet" must be a string.');if(void 0!==n&&"number"!=typeof n)throw new TypeError('"maxline" must be a number.');var a="";if(t instanceof Uint8Array){var i=0,o=e.length,s=e.charAt(0),f=[0];for(i=0;i<t.length;++i){for(var u=0,h=t[i];u<f.length;++u)h+=f[u]<<8,f[u]=h%o,h=h/o|0;for(;h>0;)f.push(h%o),h=h/o|0}for(i=0;0===t[i]&&i<t.length-1;++i)a+=s;for(i=f.length-1;i>=0;--i)a+=e[f[i]]}else a=r(t,e);if(n){var d=new RegExp(".{1,"+n+"}","g");a=a.match(d).join("\r\n")}return a},n.decode=function(t,e){if("string"!=typeof t)throw new TypeError('"input" must be a string.');if("string"!=typeof e)throw new TypeError('"alphabet" must be a string.');var r=a[e];if(!r){r=a[e]=[];for(var n=0;n<e.length;++n)r[e.charCodeAt(n)]=n}t=t.replace(/\s/g,"");for(var i=e.length,o=e.charAt(0),s=[0],n=0;n<t.length;n++){var f=r[t.charCodeAt(n)];if(void 0===f)return;for(var u=0,h=f;u<s.length;++u)h+=s[u]*i,s[u]=255&h,h>>=8;for(;h>0;)s.push(255&h),h>>=8}for(var d=0;t[d]===o&&d<t.length-1;++d)s.push(0);return"undefined"!=typeof Buffer?Buffer.from(s.reverse()):new Uint8Array(s.reverse())}}])});
+            
+            var sha256;
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                {% if not os is defined %}
+                const operatingSystem = detectOperatingSystem();
+
+                showOperatingSystem(operatingSystem);
+                {% endif %}
+
+                var selectDownload = document.getElementById("selectDownload");
+                selectDownload.onclick = function () {
+                    var fileInput = document.getElementById('fileInput');
+
+                    fileInput.addEventListener('change', async function (event) {
+                        var selectedFile = event.target.files[0];
+                        const serverChecksum = "{{ sha256_checksum }}";
+                        generateSHA256Checksum(selectedFile)
+                            .then((checksum) => {
+                                console.log(serverChecksum);
+                                console.log(checksum);
+
+                                const isVerified = serverChecksum === checksum;
+
+                                document.getElementById("progressBar").style.display = "none";
+                                
+                                displayResult(isVerified);
+                            })
+                            .catch((error) => {
+                                displayResult(false);
+                            });
+                    });
+
+                    fileInput.click();
+                }
+            });
+
+            {% if not os is defined %}
+            function detectOperatingSystem() {
+                const userAgent = navigator.userAgent.toLowerCase();
+
+                if (userAgent.includes("win")) {
+                    return "windows";
+                } else if (userAgent.includes("mac")) {
+                    return "macOS";
+                } else if (userAgent.includes("linux")) {
+                    return "linux";
+                } else {
+                    return null;
+                }
+            }
+
+            function showOperatingSystem(operatingSystem) {
+                var allSteps = document.getElementById("all-steps");
+                var onlyWindows = document.getElementById("only-windows");
+                var onlyMacOS = document.getElementById("only-macOS");
+                var onlyLinux = document.getElementById("only-linux");
+
+                if (!(operatingSystem === null)) {
+                    onlyWindows.style.display = "none";
+                    onlyMacOS.style.display = "none";
+                    onlyLinux.style.display = "none";
+
+                    var correctParagraph = document.getElementById("only-" + operatingSystem);
+                    correctParagraph.style.display = "block";
+
+                    allSteps.style.display = "block";
+                }
+            }
+            {% endif %}
+
+            async function generateSHA256Checksum(file) {
+                var sha256 = forge.md.sha256.create();
+
+                function updateChecksum(chunk) {
+                    var buffer = new Uint8Array(chunk);
+                    sha256.update(buffer);
+                }
+
+                async function readAndHashFile(file) {
+                    return new Promise((resolve, reject) => {
+                        var reader = new FileReader();
+
+                        reader.onload = function (event) {
+                            updateChecksum(event.target.result);
+
+                            if (event.target.readyState === FileReader.DONE) {
+                                resolve();
+                            }
+                        };
+
+                        reader.onerror = function (event) {
+                            reject(new Error("Error reading file: " + event.target.error));
+                        };
+
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+
+                try {
+                    await readAndHashFile(file);
+                    var fileChecksum = sha256.digest().toHex();
+                    return fileChecksum;
+                } catch (error) {
+                    console.error("Error generating SHA-256 checksum:", error);
+                    throw error;
+                }
+            }
+
+
+            function displayResult(isVerified) {
+                var result = document.getElementById('result');
+                result.style.display = "block";
+                result.innerHTML = `Verification Result: <span style="color: ${isVerified ? 'green' : 'red'}">${isVerified ? 'Verified' : 'Not Verified'}</span>`;
+            }
+        </script>
+    </head>
+    <body>
+        <header>
+            <a href="/">
+                <img src="data:image/png;base64,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" alt="Logo">
+            </a>
+            <nav>
+                <a href="/about">About</a>
+                <a href="https://donate.torproject.org/" target="_blank">Donate to Tor</a>
+            </nav>
+        </header>
+        <main>
+            <h1>Installing CipherChat</h1>
+            <p>This project is in <c>beta</c>, which means that not all functions are available yet, or that errors may occur.</p>
+
+            <div class="step">1. Choose your OS:</div>
+            {% if not os is defined %}
+            <div class="os-buttons">
+                <a class="button" href="/setup/windows" onclick="showOperatingSystem('windows'); return false;">Windows</a>
+                <a class="button" href="/setup/macOS" onclick="showOperatingSystem('macOS'); return false;">macOS</a>
+                <a class="button" href="/setup/linux" onclick="showOperatingSystem('linux'); return false;">Linux</a>
+            </div>
+            {% else %}
+            <div class="os-buttons">
+                <a class="button" href="/setup/windows">Windows</a>
+                <a class="button" href="/setup/macOS">macOS</a>
+                <a class="button" href="/setup/linux">Linux</a>
+            </div>
+            {% endif %}
+            
+            {% if not os is defined %}
+            <div id="all-steps">
+                <div class="step">2. Before we start...</div>
+                <p>We recommend:<br>- that you only download files via Tor<br>- verify files before using<br><br>Tor can't protect you from everything. Watch out.</p>
+
+                <div class="step">3. Download CipherChat:</div>
+                <p>Now download the ZIP file from one of the following instances:</p>
+                <div class="download-buttons">
+                    <a class="button" href="https://github.com/tn3w/CipherChat/archive/refs/heads/master.zip" target="_blank">
+                        <img id="github-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYEAQAAAAa7ikwAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMFxQ4MOXChEYAAAJ8SURBVEjHnVU7SzNREJ27iUoiJviKmoAWvvAVIwiCKNiIVopgr4USREFQ1lLJDwgWolgoIlj4EwQRSVBEELVPgo0PMApaGDDBOV+x+bLevNdpljv37Jkz596dFVQgAJOJ0N9PoqWFyOHQsq+vhHCYxM2NED8/hThyELe3g/f3wdEocgVHo8DeHritzQCx1Qrs7gKJBIqORALY2QGs1vzk3NQEvrsrnji9o9tbcGNjDuXV1UAo9GfyVDw8gP+fVUq52QxcXOigYBCsqsD1dWHCy0tgZUXGBgKAyfSrgNcrt+r16nvT08DGBjA5CR4aAg8PA1NTgM8HTEzoOFWVOebmktZYLMDLi6xqZsbwreOlJZnj+RmwWBSisTGi+noZXVtr+F6Lyko50dBANDpKwOGh3FokAi4tNdwBrFbg6Unu4uBAIfJ4ZCVHR0KJxw03IGIxwvGxnO3rUwhOpywlEjFsT6pKKCQnnE6FhM0mgwp8jXmjvFxe2+0K0fu73EFr698LpM+ktzeSPzAAHA6DzWaj1OCyMuDxUT7kYFAhCgRki5qbSaiqYfFifZ3I5ZKTgQCBe3v1ip+fyTYY7PcDVVWFlTscwPZ29uHX05MEnZ1pmc1NoKsLHA5r61gMCAaB2dkMYiwugq+ugO/v7OSnp79UuN1APK7t+Hza+uNDRw8OZhYYH889AONxcHd32gtra9rm1xfgcoFrarRBNzICCJFpTV1d7gKrq9n9xNaWBri/Bw8MAIoCWCzZva+oyG6N31/g0FRV/10ya4/Mawu22TJswfJyUTcO7HaDz891VSUlmRi7XRdxcgJ0dhZFLlvm8YDn53PvLywAHR35OP4BHo2IIGtW+jMAAAAASUVORK5CYII=">&nbsp;<span>GitHub</span>
+                    </a>
+                    <a class="button" href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat?as_zip=1" target="_blank">
+                        <img id="hidden-service-image" src="data:image/webp;base64,UklGRgoDAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSKsBAAABL8OgbSRHn8z18vwBvx5DROTDJxApCA47dhQkXQVehEZ6KkIk0zRIsqDFCQSlMQuo/ECCbW2GJH1/Rts9tm3btq2M+L/v3/8iOjOiZgcR/Z8AVO4L/XPS/3nsxQSvhrPS43rLXHC43HgcUUjGbI2dKxrJZh22RE+VsxXXqHHeP4EELITEKyOHXPURrwF8DvnBoaz2fBR4LuWBULXvuPUtJL0CfkoBYK2wOndI+OLUEyBYVoFg44fLsHTeyU04Uhjo/raQ/UuzO05PcP6zY2rJJH/YVKZvx0PysFrL4r0incEq9aVbLmIbsM0VQJEATbAAJvUzpv/xVGUZGzpJbM2A/WI/byQBTjADqWeG5cntD/IR4PyepjJ1sUXhVKDL9NO46bqQitoDOEAJCJUEtUZsBuZCPIWtRQR2sa50AC5R+m2QuBNANEyv3KakPIUHVADAemb1v0KyvJnCYWde24C7XkWyjyXrzmT6HQzap6pfL04iAR+d/GhDwFsfy8kwhfsh+htU2vFew2X5wNM/Iak/ajUAggPj0aH9fcRQxDtMdgZ7nn39+nQ3ZlALAFZQOCA4AQAAkAYAnQEqIAAgAD5tMJNGpCMhoTAYCACADYlpAA4CtWAHKC9dvYL/ZLrAeTMuZcY9wCeGkWjY9yPY6OlxAAD+/7oP2D9Pf+eD4tAv21fUZFxDgJ7z//yUc7j/f9hqJr9rldT5N/MZSozC6wcl54RYutRf4H4x4bSf7/DHozsjvX/6HHAaWvU9VTrpMIyTmD/YdbJG/hBjNEn/7pJqyTH+mx4yMPPE7UOf8C91ym+5o//2GfWWvNSqr56vwaoYaE2Aiy9geL8f90+nu7XJq/g+3LKsCrFx9fs67nCX5rOfep41c/niWTLmZxPOGDxrZFK6+5T2mzLBlbZNf2v4n6qu3Mkm2TfJyCF5gk0pl1zP6L+atwjwVyW39TOSpQPCJhWXcI+e1v+qBevO9Pxkpr/CxcTH0hMtiAAA">&nbsp;<span>Tor Hidden Service</span>
+                    </a>
+                    <a class="button" href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                        <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 1</span>
+                    </a>
+                    <a class="button" href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                        <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 2</span>
+                    </a>
+                </div>
+
+                <div class="step">4. Verify your download:</div><br>
+                <a class="button" id="selectDownload">Select your download...</a>
+                <br>
+                <p id="result" style="display: none;"></p>
+                <p>or verify using the <a href="openpgp-signature.asc" download>OpenPGP signature</a>.</p>
+
+                <div class="step">5. Unzip the file:</div>
+                <p id="only-windows">If you have not yet installed WinZip, use <a href="https://www.winzip.com/en/download/winzip/" target="_blank">https://www.winzip.com/en/download/winzip/</a> to download and install it.<br><br>Navigate to the directory in which the "CipherChat.zip" or "CipherChat-master.zip" file is located. This could be your download folder, for example.<br>Double-click on the file to open it with WinZip. (If another program starts use right click > "Open with..." and select WinZip)<br>In the WinZip window, select all files by clicking on each checkbox of each file. Click on the "Extract" button in the WinZip interface.<br>You will then be asked for the destination folder where the extracted files should be saved. Create a new folder called "CipherChat" and go to it, then press "Open".<br><br>Or use the following commands:<br><code>mkdir CipherChat</code><br><code>expand -r CipherChat.zip -F:* CipherChat</code></p>
+                <p id="only-macOS">Navigate to the directory that contains the "CipherChat.zip" or "CipherChat-master.zip" file, e.g. the folder in which you downloaded the file.<br>Double-click on the "CipherChat.zip" file. This should start the built-in "Archive Utility" of macOS. The program will open automatically and begin the extraction process.<br>The "Archive Utility" will automatically create a folder with the same name as the ZIP file (without the ".zip" extension) in the same directory. In this case, it will create a folder called "CipherChat". (If it is not called CipherChat rename it)<br><br>Or use the following command in the folder where the file CipherChat.zip or CipherChat-master.zip is located:<br><code>unzip CipherChat.zip -d CipherChat</code><br>or<br><code>unzip CipherChat-master.zip -d CipherChat</code></br></p>
+                <p id="only-linux">Use the following command in the folder where the file CipherChat.zip or CipherChat-master.zip is located:<br><code>unzip CipherChat.zip -d CipherChat</code><br>or<br><code>unzip CipherChat-master.zip -d CipherChat</code></br></p>
+
+                <div class="step">6. Install all required packages:</div>
+                <p>If you have not yet installed Python, install it at <a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a> by clicking on <code>Download Python</code> and install it.<br><br>Use <code>cd CipherChat</code> to get into the right folder.<br><br>Use the following command to install all packages:<br><code>python3 -m pip install -r requirements.txt</code><br><br>Or create a virtual environment with python3-venv and install the packages:<br><code>python3 -m venv .venv</code><br><code>.venv/bin/python -m pip install -r requirements.txt</code></p>
+
+                <div class="step">7. Done!</div>
+                <p>You have successfully downloaded, verified, and unzipped CipherChat. Use <code>python main.py -h</code> or <code>.venv/bin/python main.py -h</code> to get an overview of all commands.</p>
+                
+                <div class="step">8. Use of this hidden service:</div>
+                <p>If you now start the client with <code>python main.py</code> or <code>.venv/bin/python main.py</code>, enter this hidden service as your CipherChat chat server: <code>{{ hidden_service_hostname }}</code></p>
+            </div>
+            {% endif %}
+
+            {% if os == "windows" %}
+            <div class="step">2. Before we start...</div>
+            <p>We recommend:<br>- that you only download files via Tor<br>- verify files before using<br><br>Tor can't protect you from everything. Watch out.</p>
+
+            <div class="step">3. Download CipherChat:</div>
+            <p>Now download the ZIP file from one of the following instances:</p>
+            <div class="download-buttons">
+                <a class="button" href="https://github.com/tn3w/CipherChat/archive/refs/heads/master.zip" target="_blank">
+                    <img id="github-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYEAQAAAAa7ikwAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMFxQ4MOXChEYAAAJ8SURBVEjHnVU7SzNREJ27iUoiJviKmoAWvvAVIwiCKNiIVopgr4USREFQ1lLJDwgWolgoIlj4EwQRSVBEELVPgo0PMApaGDDBOV+x+bLevNdpljv37Jkz596dFVQgAJOJ0N9PoqWFyOHQsq+vhHCYxM2NED8/hThyELe3g/f3wdEocgVHo8DeHritzQCx1Qrs7gKJBIqORALY2QGs1vzk3NQEvrsrnji9o9tbcGNjDuXV1UAo9GfyVDw8gP+fVUq52QxcXOigYBCsqsD1dWHCy0tgZUXGBgKAyfSrgNcrt+r16nvT08DGBjA5CR4aAg8PA1NTgM8HTEzoOFWVOebmktZYLMDLi6xqZsbwreOlJZnj+RmwWBSisTGi+noZXVtr+F6Lyko50dBANDpKwOGh3FokAi4tNdwBrFbg6Unu4uBAIfJ4ZCVHR0KJxw03IGIxwvGxnO3rUwhOpywlEjFsT6pKKCQnnE6FhM0mgwp8jXmjvFxe2+0K0fu73EFr698LpM+ktzeSPzAAHA6DzWaj1OCyMuDxUT7kYFAhCgRki5qbSaiqYfFifZ3I5ZKTgQCBe3v1ip+fyTYY7PcDVVWFlTscwPZ29uHX05MEnZ1pmc1NoKsLHA5r61gMCAaB2dkMYiwugq+ugO/v7OSnp79UuN1APK7t+Hza+uNDRw8OZhYYH889AONxcHd32gtra9rm1xfgcoFrarRBNzICCJFpTV1d7gKrq9n9xNaWBri/Bw8MAIoCWCzZva+oyG6N31/g0FRV/10ya4/Mawu22TJswfJyUTcO7HaDz891VSUlmRi7XRdxcgJ0dhZFLlvm8YDn53PvLywAHR35OP4BHo2IIGtW+jMAAAAASUVORK5CYII=">&nbsp;<span>GitHub</span>
+                </a>
+                <a class="button" href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img id="hidden-service-image" src="data:image/webp;base64,UklGRgoDAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSKsBAAABL8OgbSRHn8z18vwBvx5DROTDJxApCA47dhQkXQVehEZ6KkIk0zRIsqDFCQSlMQuo/ECCbW2GJH1/Rts9tm3btq2M+L/v3/8iOjOiZgcR/Z8AVO4L/XPS/3nsxQSvhrPS43rLXHC43HgcUUjGbI2dKxrJZh22RE+VsxXXqHHeP4EELITEKyOHXPURrwF8DvnBoaz2fBR4LuWBULXvuPUtJL0CfkoBYK2wOndI+OLUEyBYVoFg44fLsHTeyU04Uhjo/raQ/UuzO05PcP6zY2rJJH/YVKZvx0PysFrL4r0incEq9aVbLmIbsM0VQJEATbAAJvUzpv/xVGUZGzpJbM2A/WI/byQBTjADqWeG5cntD/IR4PyepjJ1sUXhVKDL9NO46bqQitoDOEAJCJUEtUZsBuZCPIWtRQR2sa50AC5R+m2QuBNANEyv3KakPIUHVADAemb1v0KyvJnCYWde24C7XkWyjyXrzmT6HQzap6pfL04iAR+d/GhDwFsfy8kwhfsh+htU2vFew2X5wNM/Iak/ajUAggPj0aH9fcRQxDtMdgZ7nn39+nQ3ZlALAFZQOCA4AQAAkAYAnQEqIAAgAD5tMJNGpCMhoTAYCACADYlpAA4CtWAHKC9dvYL/ZLrAeTMuZcY9wCeGkWjY9yPY6OlxAAD+/7oP2D9Pf+eD4tAv21fUZFxDgJ7z//yUc7j/f9hqJr9rldT5N/MZSozC6wcl54RYutRf4H4x4bSf7/DHozsjvX/6HHAaWvU9VTrpMIyTmD/YdbJG/hBjNEn/7pJqyTH+mx4yMPPE7UOf8C91ym+5o//2GfWWvNSqr56vwaoYaE2Aiy9geL8f90+nu7XJq/g+3LKsCrFx9fs67nCX5rOfep41c/niWTLmZxPOGDxrZFK6+5T2mzLBlbZNf2v4n6qu3Mkm2TfJyCF5gk0pl1zP6L+atwjwVyW39TOSpQPCJhWXcI+e1v+qBevO9Pxkpr/CxcTH0hMtiAAA">&nbsp;<span>Tor Hidden Service</span>
+                </a>
+                <a class="button" href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 1</span>
+                </a>
+                <a class="button" href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 2</span>
+                </a>
+            </div>
+
+            <div class="step">4. Verify your download:</div><br>
+            <a class="button" id="selectDownload">Select your download...</a>
+            <br>
+            <p id="result" style="display: none;"></p>
+            <p>or verify using the <a href="openpgp-signature.asc" download>OpenPGP signature</a>.</p>
+
+            <div class="step">5. Unzip the file:</div>
+            <p>If you have not yet installed WinZip, use <a href="https://www.winzip.com/en/download/winzip/" target="_blank">https://www.winzip.com/en/download/winzip/</a> to download and install it.<br><br>Navigate to the directory in which the "CipherChat.zip" or "CipherChat-master.zip" file is located. This could be your download folder, for example.<br>Double-click on the file to open it with WinZip. (If another program starts use right click > "Open with..." and select WinZip)<br>In the WinZip window, select all files by clicking on each checkbox of each file. Click on the "Extract" button in the WinZip interface.<br>You will then be asked for the destination folder where the extracted files should be saved. Create a new folder called "CipherChat" and go to it, then press "Open".<br><br>Or use the following commands:<br><code>mkdir CipherChat</code><br><code>expand -r CipherChat.zip -F:* CipherChat</code></p>
+            
+            <div class="step">6. Install all required packages:</div>
+            <p>If you have not yet installed Python, install it at <a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a> by clicking on <code>Download Python</code> and install it.<br><br>Use <code>cd CipherChat</code> to get into the right folder.<br><br>Use the following command to install all packages:<br><code>python3 -m pip install -r requirements.txt</code><br><br>Or create a virtual environment with python3-venv and install the packages:<br><code>python3 -m venv .venv</code><br><code>.venv/bin/python -m pip install -r requirements.txt</code></p>
+
+            <div class="step">7. Done!</div>
+            <p>You have successfully downloaded, verified, and unzipped CipherChat. Use <code>python main.py -h</code> or <code>.venv/bin/python main.py -h</code> to get an overview of all commands.</p>
+            
+            <div class="step">8. Use of this hidden service:</div>
+            <p>If you now start the client with <code>python main.py</code> or <code>.venv/bin/python main.py</code>, enter this hidden service as your CipherChat chat server: <code>{{ hidden_service_hostname }}</code></p>
+            {% endif %}
+
+            {% if os == "macOS" %}
+            <div class="step">2. Before we start...</div>
+            <p>We recommend:<br>- that you only download files via Tor<br>- verify files before using<br><br>Tor can't protect you from everything. Watch out.</p>
+
+            <div class="step">3. Download CipherChat:</div>
+            <p>Now download the ZIP file from one of the following instances:</p>
+            <div class="download-buttons">
+                <a class="button" href="https://github.com/tn3w/CipherChat/archive/refs/heads/master.zip" target="_blank">
+                    <img id="github-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYEAQAAAAa7ikwAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMFxQ4MOXChEYAAAJ8SURBVEjHnVU7SzNREJ27iUoiJviKmoAWvvAVIwiCKNiIVopgr4USREFQ1lLJDwgWolgoIlj4EwQRSVBEELVPgo0PMApaGDDBOV+x+bLevNdpljv37Jkz596dFVQgAJOJ0N9PoqWFyOHQsq+vhHCYxM2NED8/hThyELe3g/f3wdEocgVHo8DeHritzQCx1Qrs7gKJBIqORALY2QGs1vzk3NQEvrsrnji9o9tbcGNjDuXV1UAo9GfyVDw8gP+fVUq52QxcXOigYBCsqsD1dWHCy0tgZUXGBgKAyfSrgNcrt+r16nvT08DGBjA5CR4aAg8PA1NTgM8HTEzoOFWVOebmktZYLMDLi6xqZsbwreOlJZnj+RmwWBSisTGi+noZXVtr+F6Lyko50dBANDpKwOGh3FokAi4tNdwBrFbg6Unu4uBAIfJ4ZCVHR0KJxw03IGIxwvGxnO3rUwhOpywlEjFsT6pKKCQnnE6FhM0mgwp8jXmjvFxe2+0K0fu73EFr698LpM+ktzeSPzAAHA6DzWaj1OCyMuDxUT7kYFAhCgRki5qbSaiqYfFifZ3I5ZKTgQCBe3v1ip+fyTYY7PcDVVWFlTscwPZ29uHX05MEnZ1pmc1NoKsLHA5r61gMCAaB2dkMYiwugq+ugO/v7OSnp79UuN1APK7t+Hza+uNDRw8OZhYYH889AONxcHd32gtra9rm1xfgcoFrarRBNzICCJFpTV1d7gKrq9n9xNaWBri/Bw8MAIoCWCzZva+oyG6N31/g0FRV/10ya4/Mawu22TJswfJyUTcO7HaDz891VSUlmRi7XRdxcgJ0dhZFLlvm8YDn53PvLywAHR35OP4BHo2IIGtW+jMAAAAASUVORK5CYII=">&nbsp;<span>GitHub</span>
+                </a>
+                <a class="button" href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img id="hidden-service-image" src="data:image/webp;base64,UklGRgoDAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSKsBAAABL8OgbSRHn8z18vwBvx5DROTDJxApCA47dhQkXQVehEZ6KkIk0zRIsqDFCQSlMQuo/ECCbW2GJH1/Rts9tm3btq2M+L/v3/8iOjOiZgcR/Z8AVO4L/XPS/3nsxQSvhrPS43rLXHC43HgcUUjGbI2dKxrJZh22RE+VsxXXqHHeP4EELITEKyOHXPURrwF8DvnBoaz2fBR4LuWBULXvuPUtJL0CfkoBYK2wOndI+OLUEyBYVoFg44fLsHTeyU04Uhjo/raQ/UuzO05PcP6zY2rJJH/YVKZvx0PysFrL4r0incEq9aVbLmIbsM0VQJEATbAAJvUzpv/xVGUZGzpJbM2A/WI/byQBTjADqWeG5cntD/IR4PyepjJ1sUXhVKDL9NO46bqQitoDOEAJCJUEtUZsBuZCPIWtRQR2sa50AC5R+m2QuBNANEyv3KakPIUHVADAemb1v0KyvJnCYWde24C7XkWyjyXrzmT6HQzap6pfL04iAR+d/GhDwFsfy8kwhfsh+htU2vFew2X5wNM/Iak/ajUAggPj0aH9fcRQxDtMdgZ7nn39+nQ3ZlALAFZQOCA4AQAAkAYAnQEqIAAgAD5tMJNGpCMhoTAYCACADYlpAA4CtWAHKC9dvYL/ZLrAeTMuZcY9wCeGkWjY9yPY6OlxAAD+/7oP2D9Pf+eD4tAv21fUZFxDgJ7z//yUc7j/f9hqJr9rldT5N/MZSozC6wcl54RYutRf4H4x4bSf7/DHozsjvX/6HHAaWvU9VTrpMIyTmD/YdbJG/hBjNEn/7pJqyTH+mx4yMPPE7UOf8C91ym+5o//2GfWWvNSqr56vwaoYaE2Aiy9geL8f90+nu7XJq/g+3LKsCrFx9fs67nCX5rOfep41c/niWTLmZxPOGDxrZFK6+5T2mzLBlbZNf2v4n6qu3Mkm2TfJyCF5gk0pl1zP6L+atwjwVyW39TOSpQPCJhWXcI+e1v+qBevO9Pxkpr/CxcTH0hMtiAAA">&nbsp;<span>Tor Hidden Service</span>
+                </a>
+                <a class="button" href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 1</span>
+                </a>
+                <a class="button" href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 2</span>
+                </a>
+            </div>
+
+            <div class="step">4. Verify your download:</div><br>
+            <a class="button" id="selectDownload">Select your download...</a>
+            <br>
+            <p id="result" style="display: none;"></p>
+            <p>or verify using the <a href="openpgp-signature.asc" download>OpenPGP signature</a>.</p>
+
+            <div class="step">5. Unzip the file:</div>
+            <p>Navigate to the directory that contains the "CipherChat.zip" or "CipherChat-master.zip" file, e.g. the folder in which you downloaded the file.<br>Double-click on the "CipherChat.zip" file. This should start the built-in "Archive Utility" of macOS. The program will open automatically and begin the extraction process.<br>The "Archive Utility" will automatically create a folder with the same name as the ZIP file (without the ".zip" extension) in the same directory. In this case, it will create a folder called "CipherChat". (If it is not called CipherChat rename it)<br><br>Or use the following command in the folder where the file CipherChat.zip or CipherChat-master.zip is located:<br><code>unzip CipherChat.zip -d CipherChat</code><br>or<br><code>unzip CipherChat-master.zip -d CipherChat</code></br></p>
+            
+            <div class="step">6. Install all required packages:</div>
+            <p>If you have not yet installed Python, install it at <a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a> by clicking on <code>Download Python</code> and install it.<br><br>Use <code>cd CipherChat</code> to get into the right folder.<br><br>Use the following command to install all packages:<br><code>python3 -m pip install -r requirements.txt</code><br><br>Or create a virtual environment with python3-venv and install the packages:<br><code>python3 -m venv .venv</code><br><code>.venv/bin/python -m pip install -r requirements.txt</code></p>
+
+            <div class="step">7. Done!</div>
+            <p>You have successfully downloaded, verified, and unzipped CipherChat. Use <code>python main.py -h</code> or <code>.venv/bin/python main.py -h</code> to get an overview of all commands.</p>
+            
+            <div class="step">8. Use of this hidden service:</div>
+            <p>If you now start the client with <code>python main.py</code> or <code>.venv/bin/python main.py</code>, enter this hidden service as your CipherChat chat server: <code>{{ hidden_service_hostname }}</code></p>
+            {% endif %}
+
+            {% if os == "linux" %}
+            <div class="step">2. Before we start...</div>
+            <p>We recommend:<br>- that you only download files via Tor<br>- verify files before using<br><br>Tor can't protect you from everything. Watch out.</p>
+
+            <div class="step">3. Download CipherChat:</div>
+            <p>Now download the ZIP file from one of the following instances:</p>
+            <div class="download-buttons">
+                <a class="button" href="https://github.com/tn3w/CipherChat/archive/refs/heads/master.zip" target="_blank">
+                    <img id="github-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYEAQAAAAa7ikwAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMFxQ4MOXChEYAAAJ8SURBVEjHnVU7SzNREJ27iUoiJviKmoAWvvAVIwiCKNiIVopgr4USREFQ1lLJDwgWolgoIlj4EwQRSVBEELVPgo0PMApaGDDBOV+x+bLevNdpljv37Jkz596dFVQgAJOJ0N9PoqWFyOHQsq+vhHCYxM2NED8/hThyELe3g/f3wdEocgVHo8DeHritzQCx1Qrs7gKJBIqORALY2QGs1vzk3NQEvrsrnji9o9tbcGNjDuXV1UAo9GfyVDw8gP+fVUq52QxcXOigYBCsqsD1dWHCy0tgZUXGBgKAyfSrgNcrt+r16nvT08DGBjA5CR4aAg8PA1NTgM8HTEzoOFWVOebmktZYLMDLi6xqZsbwreOlJZnj+RmwWBSisTGi+noZXVtr+F6Lyko50dBANDpKwOGh3FokAi4tNdwBrFbg6Unu4uBAIfJ4ZCVHR0KJxw03IGIxwvGxnO3rUwhOpywlEjFsT6pKKCQnnE6FhM0mgwp8jXmjvFxe2+0K0fu73EFr698LpM+ktzeSPzAAHA6DzWaj1OCyMuDxUT7kYFAhCgRki5qbSaiqYfFifZ3I5ZKTgQCBe3v1ip+fyTYY7PcDVVWFlTscwPZ29uHX05MEnZ1pmc1NoKsLHA5r61gMCAaB2dkMYiwugq+ugO/v7OSnp79UuN1APK7t+Hza+uNDRw8OZhYYH889AONxcHd32gtra9rm1xfgcoFrarRBNzICCJFpTV1d7gKrq9n9xNaWBri/Bw8MAIoCWCzZva+oyG6N31/g0FRV/10ya4/Mawu22TJswfJyUTcO7HaDz891VSUlmRi7XRdxcgJ0dhZFLlvm8YDn53PvLywAHR35OP4BHo2IIGtW+jMAAAAASUVORK5CYII=">&nbsp;<span>GitHub</span>
+                </a>
+                <a class="button" href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img id="hidden-service-image" src="data:image/webp;base64,UklGRgoDAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSKsBAAABL8OgbSRHn8z18vwBvx5DROTDJxApCA47dhQkXQVehEZ6KkIk0zRIsqDFCQSlMQuo/ECCbW2GJH1/Rts9tm3btq2M+L/v3/8iOjOiZgcR/Z8AVO4L/XPS/3nsxQSvhrPS43rLXHC43HgcUUjGbI2dKxrJZh22RE+VsxXXqHHeP4EELITEKyOHXPURrwF8DvnBoaz2fBR4LuWBULXvuPUtJL0CfkoBYK2wOndI+OLUEyBYVoFg44fLsHTeyU04Uhjo/raQ/UuzO05PcP6zY2rJJH/YVKZvx0PysFrL4r0incEq9aVbLmIbsM0VQJEATbAAJvUzpv/xVGUZGzpJbM2A/WI/byQBTjADqWeG5cntD/IR4PyepjJ1sUXhVKDL9NO46bqQitoDOEAJCJUEtUZsBuZCPIWtRQR2sa50AC5R+m2QuBNANEyv3KakPIUHVADAemb1v0KyvJnCYWde24C7XkWyjyXrzmT6HQzap6pfL04iAR+d/GhDwFsfy8kwhfsh+htU2vFew2X5wNM/Iak/ajUAggPj0aH9fcRQxDtMdgZ7nn39+nQ3ZlALAFZQOCA4AQAAkAYAnQEqIAAgAD5tMJNGpCMhoTAYCACADYlpAA4CtWAHKC9dvYL/ZLrAeTMuZcY9wCeGkWjY9yPY6OlxAAD+/7oP2D9Pf+eD4tAv21fUZFxDgJ7z//yUc7j/f9hqJr9rldT5N/MZSozC6wcl54RYutRf4H4x4bSf7/DHozsjvX/6HHAaWvU9VTrpMIyTmD/YdbJG/hBjNEn/7pJqyTH+mx4yMPPE7UOf8C91ym+5o//2GfWWvNSqr56vwaoYaE2Aiy9geL8f90+nu7XJq/g+3LKsCrFx9fs67nCX5rOfep41c/niWTLmZxPOGDxrZFK6+5T2mzLBlbZNf2v4n6qu3Mkm2TfJyCF5gk0pl1zP6L+atwjwVyW39TOSpQPCJhWXcI+e1v+qBevO9Pxkpr/CxcTH0hMtiAAA">&nbsp;<span>Tor Hidden Service</span>
+                </a>
+                <a class="button" href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 1</span>
+                </a>
+                <a class="button" href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat?as_zip=1" target="_blank">
+                    <img class="mirror-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cMGAkRM3QQamIAAANOSURBVFjD7ZZPSFRRFMbPfaZLF7qIYSQqHBzIkjAXYpSYKGJiaUVubNGuVbtCcF3uY5I2YQs34kZQ3IhiJOZGFMtB7Y+VaAnaUCsn76/FaXzm/Hlvpln2bWbuveee7zvnvnPuFckC2KIiuHULBgchGsX+/AmxGCwtweAgtq0NW1SUjU//5HR0YNfW8MT799jm5jwSOw709XkTH8WjR3kS8Phx9uQJPHjwj+TXrnmTWAvr66mP4sSJ3MltYSGsrGQm39vD3rihYqenU5FDezs4Tg7Rd3R4ktPZqWJDIez2dhK57e6G/X1sU1MOAgYGfJPz5UtacgBevMhBwNJSfsgBolEfhCMjsLMD4bCOd3aSyX/9gq6uZPKPH+HUKd13+7baHUYspmvhsPodH08h4Pt3Na6u1nEslh9ygG/fdF9NjY53d1MIiEa1qtra/hrnnPbDWFhwKwLg7dsEr1sebGyIiIgpL9eJ2Vn9jcdFurqMGR7GhkJiJidFgkGRDx+E+nrjfPqE7e4W8/y5SJpyY25O//zxneD6OwO9vZqBiQkdNzSkjdxub/uLPIHWVvU5NaXjnp4UAs6f18V4HHv8OBiDbWxMTjvAzIzuuXPHm3xxEQoKIBCAeFwDqKpKIcAYWFjQTU+eHMwnkSfw+bO24UzY34crV9R/JKLk8/MZSjHR+/f24MwZnbt/n5yhqcaePetGf/VqBgHGuD19ZQVKSnS+p8c71Ucjf/hQ/ZWUHLwj7OSkj4YUDMLWljqannZF1NWl746HYOfnoaFB95SWwsuXurC5CYGApwBN2aVL+twCWF3FVlaqQ8eBy5ehvx9evdJvY2MD5uYgEsE2NSVuPmxVlfuC+vEDe/GiL3JXRE0NfP16UBn090Mw6L2vrAz77NnBmbO1hb1wIZ29yXwcJ08KkYiYlhadsVZkZkZkdFRYWxOzuamGgYCYUEiktVWkttZtSGNjwr17xllfzyr6ZCHXr8Pr176/QTs7C+3tfnwbP0aukHBY5OZNkXPnhMpKMRUVuhKNirx5I7K4KDI0ZIyP6zcfgN3dlDdbFsj+rZZn/BfwX8AxLwN4+lRI964vLhYRwb57l3p9aso4d+/+kwChvFzM6dMZbdKuLy97uf8NF0jkQgC0Df4AAAAASUVORK5CYII=">&nbsp;<span>Mirror 2</span>
+                </a>
+            </div>
+
+            <div class="step">4. Verify your download:</div><br>
+            <a class="button" id="selectDownload">Select your download...</a>
+            <br>
+            <p id="result" style="display: none;"></p>
+            <p>or verify using the <a href="openpgp-signature.asc" download>OpenPGP signature</a>.</p>
+
+            <div class="step">5. Unzip the file:</div>
+            <p>Use the following command in the folder where the file CipherChat.zip or CipherChat-master.zip is located:<br><code>unzip CipherChat.zip -d CipherChat</code><br>or<br><code>unzip CipherChat-master.zip -d CipherChat</code></br></p>
+            
+            <div class="step">6. Install all required packages:</div>
+            <p>If you have not yet installed Python, install it at <a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a> by clicking on <code>Download Python</code> and install it.<br><br>Use <code>cd CipherChat</code> to get into the right folder.<br><br>Use the following command to install all packages:<br><code>python3 -m pip install -r requirements.txt</code><br><br>Or create a virtual environment with python3-venv and install the packages:<br><code>python3 -m venv .venv</code><br><code>.venv/bin/python -m pip install -r requirements.txt</code></p>
+
+            <div class="step">7. Done!</div>
+            <p>You have successfully downloaded, verified, and unzipped CipherChat. Use <code>python main.py -h</code> or <code>.venv/bin/python main.py -h</code> to get an overview of all commands.</p>
+            
+            <div class="step">8. Use of this hidden service:</div>
+            <p>If you now start the client with <code>python main.py</code> or <code>.venv/bin/python main.py</code>, enter this hidden service as your CipherChat chat server: <code>{{ hidden_service_hostname }}</code></p>
+            {% endif %}
+            <br>
+            <br>
+            <br>
+            <br>
+        </main>
+        <footer>
+            <div class="footer-links">
+                <p>Source Code on:</p>
+                <a href="https://github.com/tn3w/CipherChat" target="_blank">Github</a>
+                <a href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat" target="_blank">Hidden Service 1</a>
+                <a href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat" target="_blank">Hidden Service 2</a>
+                <a href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat" target="_blank">Hidden Service 3</a>
+            </div>
+        </footer>
+        <input type="file" id="fileInput" style="display:none;">
+    </body>
+</html>

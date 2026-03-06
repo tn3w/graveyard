@@ -1,0 +1,40 @@
+{
+  "classes": {
+    "active": "a",
+    "captcha-left": "b",
+    "captcha-right": "c",
+    "captcha-widget": "d",
+    "checkbox": "e",
+    "checked": "f",
+    "content": "g",
+    "error": "h",
+    "favicon": "i",
+    "flow-message": "j",
+    "footer-message": "k",
+    "header": "l",
+    "hidden": "m",
+    "instructions": "n",
+    "links": "o",
+    "loading": "p",
+    "main-container": "q",
+    "pof-icon": "r",
+    "pof-logo": "s",
+    "pof-text": "t",
+    "site-title": "u",
+    "verify-text": "v"
+  },
+  "ids": {
+    "captchaWidget": "w",
+    "checkbox": "x",
+    "lockGradient": "y",
+    "nonceInput": "z",
+    "powForm": "A"
+  },
+  "stats": {
+    "original_size": 7141,
+    "minified_size": 4754,
+    "compression_ratio": 0.6657330906035569,
+    "classes_renamed": 22,
+    "ids_renamed": 5
+  }
+}

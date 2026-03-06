@@ -1,0 +1,4 @@
+Study SPEC.md
+Study IMPLEMENTATION_PLAN.md
+
+Select the highest priority task(s) based on impact and dependencies. Follow: production-quality code per current language standards, minimal files, clear structure, self-documenting (no comments), concise/readable, max 90 chars/line, no abbreviations, early returns, extracted functions (max 3 nesting levels), simple control flow. Include comprehensive tests and documentation in existing test/doc files. Update IMPLEMENTATION_PLAN.md: concisely document key implementation decisions and findings, then mark task as [x] completed. Since this runs stateless, maintain clear context for next iteration.

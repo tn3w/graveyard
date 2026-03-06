@@ -1,0 +1,9 @@
+# VSCode
+.vscode/
+
+# Rust stuff
+target/
+Cargo.lock
+
+# App Database
+*.db

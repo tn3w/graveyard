@@ -1,0 +1,2 @@
+# PyVault
+PyVault is a versatile Python tool for secure file operations, including encryption, decryption, password protection, public/private key encryption, keyfile usage, secure data deletion, and signature creation and verification.

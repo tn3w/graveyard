@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAmCaptcha — Human Verification, Reimagined</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" async></script>
+    <script src="/static/index.js" async></script>
+    <script src="/iam-passive.js" async></script>
+    <script src="/iam-captcha.js" async defer></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <div class="logo-icon">✓</div>
+            IAmCaptcha
+        </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#docs">Docs</a>
+            <a href="#pricing">Pricing</a>
+            <div class="auth-dropdown-wrapper">
+                <button class="nav-cta" id="auth-toggle">Sign in</button>
+                <div class="auth-dropdown hidden" id="auth-dropdown">
+                    <div class="auth-dropdown-content">
+                        <!-- Login Form -->
+                        <div id="dropdown-login" class="dropdown-view">
+                            <h3>Sign In</h3>
+                            <form id="dropdownLoginForm" class="dropdown-form">
+                                <div class="form-group">
+                                    <input type="text" id="dropdown-login-username" placeholder="Username" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" id="dropdown-login-password" placeholder="Password" required>
+                                </div>
+                                <div class="captcha-wrapper">
+                                    <div class="iam-captcha" id="dropdown-login-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-passive-mode="true" data-auto-submit="true"></div>
+                                </div>
+                                <button type="submit" class="btn-dropdown-primary">Sign In</button>
+                            </form>
+                            <p class="dropdown-switch">Don't have an account? <a href="#" onclick="showDropdownView('register'); return false;">Create one</a></p>
+                        </div>
+                        <!-- Register Form - Step 1 -->
+                        <div id="dropdown-register" class="dropdown-view hidden">
+                            <h3>Create Account</h3>
+                            <form id="dropdownRegisterForm" class="dropdown-form">
+                                <div class="form-group">
+                                    <input type="text" id="dropdown-reg-username" placeholder="Username" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_]+">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" id="dropdown-reg-password" placeholder="Password (min 12 chars + special)" required minlength="12">
+                                    <div class="password-strength" id="dropdown-password-strength"></div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" id="dropdown-reg-password-confirm" placeholder="Confirm Password" required>
+                                </div>
+                                <button type="submit" class="btn-dropdown-primary">Continue</button>
+                            </form>
+                            <p class="dropdown-switch">Already have an account? <a href="#" onclick="showDropdownView('login'); return false;">Sign in</a></p>
+                        </div>
+                        <!-- Register Form - Step 2 (Captcha) -->
+                        <div id="dropdown-register-captcha" class="dropdown-view hidden">
+                            <h3>Verify You're Human</h3>
+                            <p class="dropdown-subtitle">Complete the challenge to create your account</p>
+                            <div class="captcha-wrapper captcha-center">
+                                <div class="iam-captcha" id="dropdown-reg-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-mode="inline" data-challenge-size="small"></div>
+                            </div>
+                            <p class="dropdown-back"><a href="#" onclick="showDropdownView('register'); return false;">← Back</a></p>
+                        </div>
+                        <div id="dropdown-error" class="dropdown-error hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="badge">
+                    <span class="badge-dot"></span>
+                    Privacy-first verification
+                </div>
+                <h1>Human verification, reimagined.</h1>
+                <p>Stop bots without stopping users. IAmCaptcha uses intelligent challenges that take seconds for humans but are impossible for automated attacks.</p>
+                <div class="hero-actions">
+                    <a href="#" class="btn-primary" onclick="openAuthModal(); return false;">Start Free</a>
+                    <a href="#docs" class="btn-secondary">View Docs</a>
+                </div>
+            </div>
+            <div class="hero-demo">
+                <div class="demo-card">
+                    <div class="demo-header">
+                        <h3>Try it yourself</h3>
+                        <p>Click the checkbox to verify</p>
+                    </div>
+                    <div class="iam-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-passive-mode="true"></div>
+                    <div class="demo-stats">
+                        <div class="stat">
+                            <div class="stat-value">99.9%</div>
+                            <div class="stat-label">Passive Mode</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">&lt;2s</div>
+                            <div class="stat-label">Avg. Solve Time</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Data Collected</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="features-header">
+            <h2>Built for developers</h2>
+            <p>Simple integration, powerful protection. Everything you need to secure your forms.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Bot Protection</h3>
+                <p>Advanced behavioral analysis detects and blocks automated attacks before they reach your systems.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Optimized challenges that verify humans in under 2 seconds without frustrating your users.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy First</h3>
+                <p>No tracking, no cookies, no personal data collection. Just verification.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Customizable</h3>
+                <p>Match your brand with custom themes, colors, and positioning options.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Mobile Ready</h3>
+                <p>Responsive design that works flawlessly on any device or screen size.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Easy Integration</h3>
+                <p>Drop-in JavaScript widget with server-side verification in any language.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="modes-demo" id="modes">
+        <div class="features-header">
+            <h2>Multiple Display Modes</h2>
+            <p>Choose the integration style that fits your use case.</p>
+        </div>
+        <div class="modes-grid">
+            <div class="mode-card">
+                <h3>Inline Mode</h3>
+                <p>Show the challenge directly without the checkbox. Perfect for registration flows.</p>
+                <div class="mode-demo">
+                    <div class="iam-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-mode="inline" data-theme="dark"></div>
+                </div>
+                <pre><code>&lt;div class="iam-captcha"
+     data-sitekey="YOUR_KEY"
+     data-mode="inline"&gt;&lt;/div&gt;</code></pre>
+            </div>
+            <div class="mode-card">
+                <h3>Bond to Button</h3>
+                <p>Attach captcha to any button. Great for chat widgets or action buttons.</p>
+                <div class="mode-demo">
+                    <button id="chat-button" class="chat-btn">
+                        <span>💬</span> Start Chat
+                    </button>
+                    <div class="iam-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-bond="#chat-button" data-passive-mode="true" data-float="auto"></div>
+                </div>
+                <pre><code>&lt;button id="chat-btn"&gt;Start Chat&lt;/button&gt;
+&lt;div class="iam-captcha"
+     data-sitekey="YOUR_KEY"
+     data-bond="#chat-btn"
+     data-passive-mode="true"&gt;&lt;/div&gt;</code></pre>
+            </div>
+            <div class="mode-card">
+                <h3>Auto-Position Float</h3>
+                <p>Challenge automatically positions itself to stay within the viewport.</p>
+                <div class="mode-demo mode-demo-float">
+                    <div class="iam-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-float="auto" data-theme="dark"></div>
+                </div>
+                <pre><code>&lt;div class="iam-captcha"
+     data-sitekey="YOUR_KEY"
+     data-float="auto"&gt;&lt;/div&gt;
+// Options: auto, top, bottom, left, right</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 IAmCaptcha. Protecting the web, one verification at a time.</p>
+    </footer>
+
+    <!-- Mobile Auth Modal -->
+    <div class="auth-modal-overlay hidden" id="auth-modal-overlay">
+        <div class="auth-modal" id="auth-modal">
+            <button class="modal-close" onclick="closeAuthModal()">×</button>
+            <div class="auth-modal-content">
+                <!-- Login Form -->
+                <div id="modal-login" class="modal-view">
+                    <h3>Sign In</h3>
+                    <form id="modalLoginForm" class="dropdown-form">
+                        <div class="form-group">
+                            <input type="text" id="modal-login-username" placeholder="Username" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="modal-login-password" placeholder="Password" required>
+                        </div>
+                        <div class="captcha-wrapper">
+                            <div class="iam-captcha" id="modal-login-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-passive-mode="true"></div>
+                        </div>
+                        <button type="submit" class="btn-dropdown-primary">Sign In</button>
+                    </form>
+                    <p class="dropdown-switch">Don't have an account? <a href="#" onclick="showModalView('register'); return false;">Create one</a></p>
+                </div>
+                <!-- Register Form - Step 1 -->
+                <div id="modal-register" class="modal-view hidden">
+                    <h3>Create Account</h3>
+                    <form id="modalRegisterForm" class="dropdown-form">
+                        <div class="form-group">
+                            <input type="text" id="modal-reg-username" placeholder="Username" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_]+">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="modal-reg-password" placeholder="Password (min 12 chars + special)" required minlength="12">
+                            <div class="password-strength" id="modal-password-strength"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="modal-reg-password-confirm" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn-dropdown-primary">Continue</button>
+                    </form>
+                    <p class="dropdown-switch">Already have an account? <a href="#" onclick="showModalView('login'); return false;">Sign in</a></p>
+                </div>
+                <!-- Register Form - Step 2 (Captcha) -->
+                <div id="modal-register-captcha" class="modal-view hidden">
+                    <h3>Verify You're Human</h3>
+                    <p class="dropdown-subtitle">Complete the challenge to create your account</p>
+                    <div class="captcha-wrapper captcha-center">
+                        <div class="iam-captcha" id="modal-reg-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-mode="inline" data-challenge-size="small"></div>
+                    </div>
+                    <p class="dropdown-back"><a href="#" onclick="showModalView('register'); return false;">← Back</a></p>
+                </div>
+                <div id="modal-error" class="dropdown-error hidden"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

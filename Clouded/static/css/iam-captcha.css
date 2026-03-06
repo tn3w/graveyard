@@ -1,0 +1,799 @@
+/* IAm Captcha - Compact Modern Design */
+:root {
+    --iam-bg: #12121a;
+    --iam-bg-dark: #0a0a0f;
+    --iam-text: #f0f0f5;
+    --iam-text-dim: #8888a0;
+    --iam-text-muted: #5a5a70;
+    --iam-border: rgba(255, 255, 255, 0.06);
+    --iam-accent: #6366f1;
+    --iam-accent-glow: rgba(99, 102, 241, 0.4);
+    --iam-radius: 12px;
+}
+
+.iam-widget {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    position: relative;
+    width: 100%;
+}
+
+/* Checkbox */
+.iam-checkbox-container {
+    background: var(--iam-bg);
+    border: 1px solid var(--iam-border);
+    border-radius: var(--iam-radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s;
+}
+
+.iam-checkbox-container:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.iam-checkbox-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iam-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--iam-text-muted);
+    border-radius: 6px;
+    background: var(--iam-bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.iam-checkbox.checked {
+    background: var(--iam-accent);
+    border-color: var(--iam-accent);
+    box-shadow: 0 0 12px var(--iam-accent-glow);
+}
+
+.iam-checkbox svg {
+    display: none;
+    color: #fff;
+}
+
+.iam-checkbox.checked svg {
+    display: block;
+}
+
+.iam-checkbox.loading {
+    border-color: transparent;
+    background: transparent;
+}
+
+.iam-spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--iam-text-muted);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: iam-spin 0.7s linear infinite;
+}
+
+.iam-checkbox.loading .iam-spinner {
+    display: block;
+}
+
+@keyframes iam-spin {
+    to { transform: rotate(360deg); }
+}
+
+.iam-label {
+    color: var(--iam-text-dim);
+    font-size: 13px;
+}
+
+.iam-branding {
+    text-align: right;
+}
+
+.iam-logo {
+    color: var(--iam-text-muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.iam-links {
+    font-size: 9px;
+    color: var(--iam-text-muted);
+}
+
+.iam-links a {
+    color: var(--iam-text-muted);
+    text-decoration: none;
+}
+
+.iam-links a:hover {
+    text-decoration: underline;
+}
+
+/* Challenge Popup */
+.iam-challenge {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    background: var(--iam-bg);
+    border: 1px solid var(--iam-border);
+    border-radius: var(--iam-radius);
+    padding: 16px;
+    z-index: 1;
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 20px 50px -20px rgba(0, 0, 0, 0.5),
+        0 0 80px -40px var(--iam-accent-glow);
+}
+
+.iam-challenge.open {
+    display: block;
+}
+
+.iam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.iam-round {
+    color: var(--iam-text-muted);
+    font-size: 11px;
+}
+
+.iam-close {
+    background: none;
+    border: none;
+    color: var(--iam-text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iam-close:hover {
+    color: #fff;
+}
+
+/* Prompt - White text */
+.iam-prompt {
+    color: var(--iam-text);
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+/* Content */
+.iam-content {
+    display: flex;
+    gap: 8px;
+}
+
+.iam-reference {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.iam-reference-canvas {
+    border: 1px solid var(--iam-border);
+    border-radius: 8px;
+    display: block;
+    background: var(--iam-bg-dark);
+}
+
+.iam-ref-label {
+    color: var(--iam-text-muted);
+    font-size: 10px;
+    text-align: center;
+    margin-top: 4px;
+}
+
+.iam-scene-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.iam-scene-canvas {
+    border: 1px solid var(--iam-border);
+    border-radius: 8px;
+    display: block;
+    background: var(--iam-bg-dark);
+}
+
+/* Controls */
+.iam-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.iam-arrow {
+    background: var(--iam-bg-dark);
+    border: 1px solid var(--iam-border);
+    color: var(--iam-text-dim);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+}
+
+.iam-arrow:hover {
+    background: var(--iam-bg);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: var(--iam-text);
+}
+
+.iam-arrow svg {
+    width: 14px;
+    height: 14px;
+}
+
+.iam-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.iam-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--iam-bg-dark);
+    border: 1px solid var(--iam-text-muted);
+    cursor: pointer;
+    padding: 0;
+}
+
+.iam-dot:hover {
+    border-color: var(--iam-text-dim);
+}
+
+.iam-dot.active {
+    background: var(--iam-accent);
+    border-color: var(--iam-accent);
+}
+
+/* Submit */
+.iam-submit {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: var(--iam-accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px var(--iam-accent-glow);
+}
+
+.iam-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--iam-accent-glow);
+}
+
+.iam-submit:disabled {
+    background: var(--iam-bg-dark);
+    color: var(--iam-text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.iam-token {
+    color: var(--iam-text-muted);
+    font-size: 9px;
+    font-family: monospace;
+    text-align: center;
+    margin-top: 6px;
+    word-break: break-all;
+}
+
+.iam-error {
+    color: #ef4444;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Responsive - Scale down on small screens */
+@media (max-width: 400px) {
+    .iam-widget {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .iam-challenge {
+        padding: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .iam-content {
+        gap: 6px;
+    }
+    
+    .iam-prompt {
+        font-size: 12px;
+    }
+    
+    .iam-arrow {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .iam-arrow svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .iam-dot {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+@media (max-width: 340px) {
+    .iam-controls {
+        gap: 4px;
+    }
+    
+    .iam-dots {
+        gap: 4px;
+    }
+}
+
+
+/* Light Theme */
+.iam-widget.iam-theme-light {
+    --iam-bg: #ffffff;
+    --iam-bg-dark: #f5f5f5;
+    --iam-text: #1a1a2e;
+    --iam-text-dim: #4a4a5a;
+    --iam-text-muted: #8a8a9a;
+    --iam-border: rgba(0, 0, 0, 0.1);
+    --iam-accent: #6366f1;
+    --iam-accent-glow: rgba(99, 102, 241, 0.3);
+}
+
+.iam-widget.iam-theme-light .iam-checkbox-container {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.iam-widget.iam-theme-light .iam-challenge {
+    box-shadow: 
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        0 20px 50px -20px rgba(0, 0, 0, 0.2),
+        0 0 80px -40px var(--iam-accent-glow);
+}
+
+.iam-widget.iam-theme-light .iam-spinner {
+    border-color: var(--iam-text-muted);
+    border-top-color: var(--iam-text);
+}
+
+/* Compact Size */
+.iam-widget.iam-size-compact .iam-checkbox-container {
+    padding: 10px 12px;
+}
+
+.iam-widget.iam-size-compact .iam-checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+.iam-widget.iam-size-compact .iam-checkbox svg {
+    width: 12px;
+    height: 12px;
+}
+
+.iam-widget.iam-size-compact .iam-label {
+    font-size: 12px;
+}
+
+.iam-widget.iam-size-compact .iam-logo {
+    font-size: 10px;
+}
+
+.iam-widget.iam-size-compact .iam-links {
+    font-size: 8px;
+}
+
+/* h-captcha compatibility class */
+.h-captcha {
+    display: inline-block;
+}
+
+/* ============================================
+   Inline Mode Styles
+   ============================================ */
+.iam-mode-inline {
+    display: block;
+    width: 100%;
+}
+
+.iam-challenge-inline {
+    position: relative;
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.iam-challenge-inline .iam-prompt {
+    width: 100%;
+    text-align: center;
+}
+
+.iam-challenge-inline .iam-content {
+    width: 100%;
+    justify-content: center;
+}
+
+.iam-challenge-inline .iam-submit {
+    width: 100%;
+}
+
+.iam-challenge-inline .iam-header {
+    margin-bottom: 12px;
+}
+
+.iam-branding-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.iam-branding-inline .iam-logo {
+    color: var(--iam-text-muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Success overlay for inline mode */
+.iam-success-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(18, 18, 26, 0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: var(--iam-radius);
+    z-index: 10;
+}
+
+.iam-success-overlay.show {
+    display: flex;
+}
+
+.iam-success-overlay svg {
+    color: #22c55e;
+}
+
+.iam-success-overlay span {
+    color: #22c55e;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.iam-submit-success {
+    background: #22c55e !important;
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4) !important;
+}
+
+/* ============================================
+   Float Position Styles
+   ============================================ */
+.iam-challenge[data-float="top"] {
+    bottom: calc(100% + 8px);
+    top: auto;
+    left: 0;
+}
+
+.iam-challenge[data-float="bottom"] {
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: 0;
+}
+
+.iam-challenge[data-float="left"] {
+    right: calc(100% + 8px);
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.iam-challenge[data-float="right"] {
+    left: calc(100% + 8px);
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Float arrow indicators */
+.iam-challenge[data-float="top"]::after,
+.iam-challenge[data-float="bottom"]::before,
+.iam-challenge[data-float="left"]::after,
+.iam-challenge[data-float="right"]::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--iam-bg);
+    border: 1px solid var(--iam-border);
+    transform: rotate(45deg);
+}
+
+.iam-challenge[data-float="top"]::after {
+    bottom: -7px;
+    left: 24px;
+    border-top: none;
+    border-left: none;
+}
+
+.iam-challenge[data-float="bottom"]::before {
+    top: -7px;
+    left: 24px;
+    border-bottom: none;
+    border-right: none;
+}
+
+.iam-challenge[data-float="left"]::after {
+    right: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-top: none;
+    border-left: none;
+}
+
+.iam-challenge[data-float="right"]::before {
+    left: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-bottom: none;
+    border-right: none;
+}
+
+/* ============================================
+   Bond Feature Styles
+   ============================================ */
+.iam-bonded {
+    position: fixed;
+    z-index: 10000;
+}
+
+.iam-bonded .iam-challenge {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    z-index: 10000;
+}
+
+.iam-bonded .iam-checkbox-container {
+    display: none;
+}
+
+.iam-bonded .iam-challenge.open {
+    display: block;
+}
+
+/* Bond element states */
+.iam-bond-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.iam-bond-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: iam-spin 0.7s linear infinite;
+}
+
+.iam-bond-verified {
+    position: relative;
+}
+
+.iam-bond-verified::before {
+    content: '✓';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    background: #22c55e;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+/* ============================================
+   Light Theme Additions
+   ============================================ */
+.iam-widget.iam-theme-light .iam-success-overlay {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.iam-widget.iam-theme-light .iam-bond-loading::after {
+    border-color: rgba(0, 0, 0, 0.2);
+    border-top-color: var(--iam-accent);
+}
+
+/* ============================================
+   Challenge Size Variants
+   ============================================ */
+
+/* Small size */
+.iam-challenge.iam-challenge-small {
+    padding: 12px;
+}
+
+.iam-challenge.iam-challenge-small .iam-prompt {
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.iam-challenge.iam-challenge-small .iam-content {
+    gap: 6px;
+    justify-content: center;
+}
+
+.iam-challenge.iam-challenge-small .iam-reference {
+    flex-shrink: 0;
+}
+
+.iam-challenge.iam-challenge-small .iam-scene-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.iam-challenge.iam-challenge-small .iam-ref-label {
+    font-size: 8px;
+}
+
+.iam-challenge.iam-challenge-small .iam-controls {
+    gap: 4px;
+    margin-top: 6px;
+    width: 100%;
+    justify-content: center;
+}
+
+.iam-challenge.iam-challenge-small .iam-arrow {
+    width: 22px;
+    height: 22px;
+}
+
+.iam-challenge.iam-challenge-small .iam-arrow svg {
+    width: 10px;
+    height: 10px;
+}
+
+.iam-challenge.iam-challenge-small .iam-dot {
+    width: 6px;
+    height: 6px;
+}
+
+.iam-challenge.iam-challenge-small .iam-dots {
+    gap: 4px;
+}
+
+.iam-challenge.iam-challenge-small .iam-submit {
+    padding: 8px;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.iam-challenge.iam-challenge-small .iam-round {
+    font-size: 10px;
+}
+
+.iam-challenge.iam-challenge-small .iam-token {
+    font-size: 8px;
+    margin-top: 4px;
+}
+
+/* Normal size (default, explicit - no changes needed) */
+
+/* Large size */
+.iam-challenge.iam-challenge-large {
+    padding: 24px;
+}
+
+.iam-challenge.iam-challenge-large .iam-prompt {
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.iam-challenge.iam-challenge-large .iam-content {
+    gap: 16px;
+}
+
+.iam-challenge.iam-challenge-large .iam-ref-label {
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.iam-challenge.iam-challenge-large .iam-controls {
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.iam-challenge.iam-challenge-large .iam-arrow {
+    width: 36px;
+    height: 36px;
+}
+
+.iam-challenge.iam-challenge-large .iam-arrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+.iam-challenge.iam-challenge-large .iam-dot {
+    width: 10px;
+    height: 10px;
+}
+
+.iam-challenge.iam-challenge-large .iam-dots {
+    gap: 8px;
+}
+
+.iam-challenge.iam-challenge-large .iam-submit {
+    padding: 14px;
+    margin-top: 16px;
+    font-size: 15px;
+    border-radius: 10px;
+}
+
+.iam-challenge.iam-challenge-large .iam-round {
+    font-size: 13px;
+}
+
+.iam-challenge.iam-challenge-large .iam-token {
+    font-size: 10px;
+    margin-top: 8px;
+}

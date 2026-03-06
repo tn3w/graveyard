@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tunnels: Uploading and distributing files</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Arial', sans-serif;
+                background-color: #f5f5f5;
+                color: #333;
+            }
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            header .logo {
+                display: flex;
+                align-items: center;
+            }
+
+            header .logo img {
+                width: 40px;
+                height: 40px;
+                margin-right: 10px;
+            }
+
+            header .logo h1 {
+                font-size: 24px;
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+                background: linear-gradient(135deg, #FF9671, #814EA3);
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+
+            header .menu {
+                display: flex;
+                gap: 15px;
+            }
+
+            header .menu a {
+                display: flex;
+                align-items: center;
+                color: #333;
+                text-decoration: none;
+                font-size: 18px;
+            }
+
+            header .menu a svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 5px;
+            }
+
+            section {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                height: 700px; /* Adjusted section height */
+                overflow: hidden;
+                text-align: center;
+                padding: 20px;
+                z-index: 1;
+            }
+
+            section .background-waves {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+            }
+
+            section .wave {
+                fill: url(#gradient);
+            }
+
+            section .section-content {
+                position: relative;
+                z-index: 1;
+                margin-top: 60px;
+            }
+
+            section h2 {
+                font-size: 48px;
+                margin: 0;
+            }
+
+            section h2 span {
+                background: linear-gradient(135deg, #FF9671, #B1A7EB);
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                position: relative;
+            }
+
+            section h2 span::after {
+                content: '';
+                display: block;
+                height: 5px;
+                background: linear-gradient(135deg, #FF9671, #B1A7EB);
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                right: 0;
+            }
+
+            section p {
+                font-size: 18px;
+                max-width: 600px;
+                margin: 20px auto;
+            }
+
+            section .upload-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #FF9671, #B1A7EB);
+                color: #fff;
+                border: none;
+                border-radius: 30px;
+                padding: 10px 20px;
+                font-size: 18px;
+                cursor: pointer;
+                text-decoration: none;
+                margin-top: 40px;
+            }
+
+            section .upload-btn svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+
+            @media (max-width: 768px) {
+                section h2 {
+                    font-size: 36px;
+                }
+
+                section p {
+                    font-size: 16px;
+                }
+
+                section .upload-btn {
+                    font-size: 16px;
+                    padding: 8px 16px;
+                }
+
+                section .section-content {
+                    margin-top: 80px;
+                }
+            }
+
+            @media (max-width: 540px) {
+                .hide-on-mobile {
+                    display: none;
+                }
+
+                section .section-content {
+                    margin-top: 50px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class = "logo">
+                <img src="data:image/webp;base64,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" alt="Tunnels">
+                <h1>Tunnels</h1>
+            </div>
+            <nav class="menu">
+                <a href="#upload">
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h3v6h4V6h3V5L8 0 3 5zM2 16h12v-2H2z" /></svg>
+                    <span class="hide-on-mobile">Upload</span>
+                </a>
+                <a href="#about">
+                    <svg viewBox="0 0 14 14" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.555 11.542c-.446-.523-1.19-1.083-1.91-1.437a6.2 6.2 0 0 0-2.204-.633 6 6 0 0 1-.285-.031c-.002 0 .002-1.615.01-3.585l.014-3.58.142.013a6.4 6.4 0 0 1 2.597.88 6.4 6.4 0 0 1 1.718 1.602l.106.148v3.402c0 1.87-.008 3.4-.018 3.4a1.3 1.3 0 0 1-.17-.179m.726-3.23V4.897l.204-.273a7 7 0 0 1 1.133-1.133 6.03 6.03 0 0 1 3.087-1.204l.147-.015v7.172l-.17.016c-1.608.15-3.002.813-4.092 1.947l-.309.321zm.996 3.184a5.74 5.74 0 0 1 2.306-1.299 6 6 0 0 1 1.389-.21c.199 0 .309-.042.371-.144.047-.077.047-.11.048-3.016V3.889l.087.016c.049.01.186.048.305.086L13 4.06v3.667c0 2.016-.008 3.666-.018 3.666s-.155-.03-.322-.069a7.2 7.2 0 0 0-1.922-.18 7.3 7.3 0 0 0-2.343.422l-.305.105.187-.176zm-2.672.057a8.4 8.4 0 0 0-1.253-.32 7 7 0 0 0-1.472-.09 6.6 6.6 0 0 0-1.493.17l-.323.073L1 11.4V4.046l.276-.08.304-.09c.023-.01.03.59.03 2.935 0 3.206-.008 3.027.13 3.117.047.03.146.045.428.062a5.7 5.7 0 0 1 3.057 1.082c.188.138.638.518.663.56.018.029.006.026-.282-.078z"/></svg>
+                    <span class="hide-on-mobile">About</span>
+                </a>
+                <a href="https://github.com/tn3w/Tunnels" target="_blank">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="M12 2.247a10 10 0 0 0-3.162 19.487c.5.088.687-.212.687-.475 0-.237-.012-1.025-.012-1.862-2.513.462-3.163-.613-3.363-1.175a3.64 3.64 0 0 0-1.025-1.413c-.35-.187-.85-.65-.013-.662a2 2 0 0 1 1.538 1.025 2.137 2.137 0 0 0 2.912.825 2.1 2.1 0 0 1 .638-1.338c-2.225-.25-4.55-1.112-4.55-4.937a3.9 3.9 0 0 1 1.025-2.688 3.6 3.6 0 0 1 .1-2.65s.837-.262 2.75 1.025a9.43 9.43 0 0 1 5 0c1.912-1.3 2.75-1.025 2.75-1.025a3.6 3.6 0 0 1 .1 2.65 3.87 3.87 0 0 1 1.025 2.688c0 3.837-2.338 4.687-4.562 4.937a2.37 2.37 0 0 1 .674 1.85c0 1.338-.012 2.413-.012 2.75 0 .263.187.575.687.475A10.005 10.005 0 0 0 12 2.247"/></svg>
+                    <span class="hide-on-mobile">View source</span>
+                </a>
+            </nav>
+        </header>
+        <section>
+            <svg class="background-waves" viewBox="0 0 1440 320">
+                <defs>
+                    <linearGradient id="gradient" gradientTransform="rotate(90)">
+                        <stop offset="0%" stop-color="#FFEDB2" />
+                        <stop offset="25%" stop-color="#FFD7A5" />
+                        <stop offset="50%" stop-color="#FFB25E" />
+                        <stop offset="75%" stop-color="#FF9B4D" />
+                        <stop offset="100%" stop-color="#FF6B35" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#gradient)" d="M0,192L48,181.3C96,171,192,149,288,160C384,171,480,213,576,202.7C672,192,768,128,864,117.3C960,107,1056,149,1152,181.3C1248,213,1344,235,1392,245.3L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+            <div class="section-content">
+                <h2>Peer-to-Peer but <span>more secure</span></h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus. Ut vulputate semper dui.</p>
+                <a href="#upload" class="upload-btn">
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#fff"><path d="M3 6h3v6h4V6h3V5L8 0 3 5zM2 16h12v-2H2z" /></svg>
+                    Upload
+                </a>
+            </div>
+        </section>
+    </body>
+</html>
+<!--
+Color: #ff9671
+
+https://www.flaticon.com/free-icon/tunnel_8654212?term=tunnel&related_id=8654212
+https://www.flaticon.com/free-icon/photo-gallery_8344862?term=img&related_id=8344862
+https://www.flaticon.com/free-icon/document_9683569?term=document&page=1&position=45&origin=search&related_id=9683569
+-->

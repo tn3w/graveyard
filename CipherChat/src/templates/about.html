@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CipherChat</title>
+        <style>
+            body {
+                background-color: #121212;
+                color: #ffffff;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+
+            a {
+                color: #ffffff;
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            header {
+                background-color: #1e1e1e;
+                padding: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            header img {
+                width: 200px;
+                height: auto;
+            }
+
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            nav a {
+                padding: 8px;
+                border: 1px solid #ffffff;
+                border-radius: 5px;
+            }
+
+            main {
+                padding: 20px;
+                text-align: center;
+                margin: auto;
+                max-width: 70%;
+            }
+
+            main p c {
+                color:#FF9E33;
+            }
+
+            main h2, main h3 {
+                color: #FF9E33;
+            }
+
+            #grid-container {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                padding: 20px;
+                padding-left: 200px;
+                padding-right: 200px;
+            }
+
+            .grid-item {
+                text-align: center;
+                padding: 10px;
+                border: 2px solid #FF9E33;
+                border-radius: 10px;
+            }
+
+            #faq-container {
+                margin: auto;
+                max-width: 1000px;
+            }
+
+            .faq-section {
+                margin-bottom: 20px;
+                padding: 20px;
+                border: 1px solid #464646;
+                border-radius: 10px;
+            }
+
+            footer {
+                background-color: #1e1e1e;
+                padding: 10px;
+                padding-bottom: 20px;
+                bottom: 0;
+                width: 100%;
+                justify-content: space-around;
+                text-align: center;
+            }
+
+            .footer-links a {
+                margin: 0 10px;
+            }
+
+            @media screen and (max-width: 1000px) {
+                #grid-container {
+                    padding-left: 100px;
+                    padding-right: 100px;
+                }
+            }
+
+            @media screen and (max-width: 620px) {
+                header {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                nav {
+                    margin-top: 10px;
+                }
+
+                #grid-container {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                }
+            }
+
+            @media screen and (max-width: 415px) {
+                nav {
+                    gap: 5px;
+                }
+
+                nav a {
+                    border: none;
+                    padding: 4px;
+                    text-align: center;
+                }
+
+                #grid-container {
+                    grid-template-columns: repeat(1, 1fr);
+                    padding-left: 20px;
+                    padding-right: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <a href="/">
+                <img src="data:image/png;base64,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" alt="Logo">
+            </a>
+            <nav>
+                <a href="/">Home</a>
+                <a href="https://donate.torproject.org/" target="_blank">Donate to Tor</a>
+            </nav>
+        </header>
+        <main>
+            <h2>About CipherChat</h2>
+            <div id="grid-container">
+                <div class="grid-item">
+                    <p>🧑‍💻 GitHub</p>
+                    <p><a href="https://github.com/tn3w/CipherChat" target="_blank">tn3w/CipherChat</a></p>
+                </div>
+                <div class="grid-item">
+                    <p>📌 Version</p>
+                    <p>{{ version }}</p>
+                </div>
+                <div class="grid-item">
+                    <p>📊 Status</p>
+                    <p>{{ status }}</p>
+                </div>
+            </div>
+            <p>This project is in <c>beta</c>, which means that not all functions are available yet, or that errors may occur.</p>
+            <br>
+            <h3>FAQ</h3>
+            <div id="faq-container">
+                <div class="faq-section">
+                    <h4>What is CipherChat?</h2>
+                    <p>CipherChat is an open source chat service with a focus on security and privacy. The project was created on August 12, 2023. It is currently programmed only by TN3W. Anyone can host an instance of CipherChat, or edit the source code of the server as well as that of the client, as long as they make it open source again under GPL v3.</p>
+                </div>
+                <div class="faq-section">
+                    <h4>What data does the server receive when you communicate with it or create an account?</h2>
+                    <p>The server generally knows almost nothing about you, and you know nothing about the server except its onion address, which is a good thing and protects you and the server operator from instances such as hackers or government agencies (e.g. NSA). When you register, the server knows your user name and your user password (because you send this data to it). Your encryption password is not sent to the server; it is used to encrypt your private key and sent to the server with the public key.<br>Important: Your account name or any passwords you use in the client must not contain any names or other identifying data for the model presented above to work.</p>
+                </div>
+                <div class="faq-section">
+                    <h4>How does all this work?</h2>
+                    <p>CipherChat is a console tool that uses built-in but also imported Python libraries to display a user interface (e.g. rich). It downloads the Tor Expert Bundle from torproject.org to work with. Built-in proxies are used in this process. If the user now starts the client and wants to start a hidden service, a temporary torrc file is created containing information such as control port and socks port as well as a hashed password and the hidden directory (where the files of the hidden service are stored) and Tor is set started with this configuration in a separate data directory than that of the normal client. Flask is used to host the web app. On the client side, after the bridge configuration, you will be asked whether you want built-in bridges or not. If not, then either bridges from Github or bridges from Tor's BridgeDB are downloaded. Then the persistent storage password is set by either a configuration file already existing, then you are not asked for a new password but for the existing one and this is verified with the encrypted persistent storage key. Otherwise you will be asked for a password, which will first be checked for strength and then with the PwnedPasswords API for data leaks. Bridges are then selected by querying them. Tor is then started again with a torrc file and these bridges to then connect to hidden services. It's actually quite simple, isn't it? (It should be noted that this is a simplification of the actual processes, read the source code to understand all processes.)</p>
+                </div>
+                <div class="faq-section">
+                    <h4>Can/Should you trust the owners of a CipherChat server or the developers of CipherChat?</h2>
+                    <p>No, you can't trust anyone, always check CipherChat's source code for malicious places, any instance (e.g. the Code Source or the Developer) could be compromised. CipherChat server operators voluntarily take risks and store your data even though they have nothing to gain from it. They cannot read your data because of end-to-end encryption (meaning that only the sender and the recipient, not the server, for example, know the contents of a message).</p>
+                </div>
+                <div class="faq-section">
+                    <h4>Is CipherChat for criminals/is it used by criminals?</h2>
+                    <p>No, CipherChat is not (only) aimed at criminals, but the promises we make are very appealing to criminals, which is why criminals will also use this service alongside normal users. The problem is that you can't/don't want to distinguish criminals from normal users because everyone should be able to use this platform. A computer can be used for gaming, but it can also be used for criminal activities such as hacking.</p>
+                </div>
+            </div>
+            <br>
+            <h3>No one is safe.</h3>
+            <p>CipherChat was programmed with the belief that no system is secure, so data that is important to attackers is only stored, sent and received in encrypted form. However, if the attacker already has all rights on your system, CipherChat can no longer protect you.</p>
+            <p>CipherChat is designed to communicate easily, anonymously and securely in conjunction with technologies such as the Tor network, and is programmed in such a way that it could be translated into other languages and transferred to other applications such as mobile apps.</p>
+            <h3>Tor protects your identity</h3>
+            <p>No connections to chat servers are possible without Tor protecting your connection. Even if the client downloads Tor, built-in proxies are used to obfuscate your connections.</p>
+            <p>During development, care was taken to ensure that Tor was integrated into the code as well as possible. There are many other techniques that are utilized such as bridges when you connect to a Tor relay.</p>
+            <p>We recommend that you <a href="https://donate.torproject.org/" target="_blank">donate to Tor</a>.</p>
+            <br>
+        </main>
+        <footer>
+            <div class="footer-links">
+                <p>Source Code on: </p>
+                <a href="https://github.com/tn3w/CipherChat" target="_blank">Github</a>
+                <a href="http://tn3wtor4vgnrimugptubpaqsf2gc4pcsktknkxt74w7p5yzbt7rwrkid.onion/projects/CipherChat" target="_blank">Hidden Service 1</a>
+                <a href="http://tn3wvjimrn3hydx4u52kzfnkgu6kffef2js27ewlhdf5htulno34vqad.onion/projects/CipherChat" target="_blank">Hidden Service 2</a>
+                <a href="http://tn3wtor7cfz3epmuetrhkj3mangjxqpd47lxxicfwwdwja6dwq6dbdad.onion/projects/CipherChat" target="_blank">Hidden Service 3</a>
+            </div>
+        </footer>
+    </body>
+</html>

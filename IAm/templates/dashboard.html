@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Secure Auth</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Welcome!</h1>
+        <div id="user-info">
+            <p>Loading...</p>
+        </div>
+        <div class="security-status">
+            <h2>Security Status</h2>
+            <p id="totp-status">TOTP: Loading...</p>
+            <p id="webauthn-status">Security Key: Loading...</p>
+        </div>
+        <button id="btn-logout" class="btn btn-secondary">Logout</button>
+        <div id="error" class="error hidden"></div>
+    </div>
+    <script src="/static/app.js"></script>
+    <script>
+        const token = localStorage.getItem('access_token');
+        if (!token) window.location.href = '/';
+
+        async function loadUser() {
+            try {
+                const response = await authFetch('/api/user');
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('user-info').innerHTML = `
+                        <p><strong>Username:</strong> ${data.username}</p>
+                        <p><strong>Account Created:</strong> ${new Date(data.created_at).toLocaleDateString()}</p>
+                    `;
+                    document.getElementById('totp-status').textContent = `TOTP: ${data.totp_enabled ? '✅ Enabled' : '❌ Disabled'}`;
+                    document.getElementById('webauthn-status').textContent = `Security Key: ${data.webauthn_enabled ? '✅ Enabled' : '❌ Disabled'}`;
+                } else {
+                    showError(data.error);
+                    if (response.status === 401) window.location.href = '/';
+                }
+            } catch (err) {
+                showError('Failed to load user data');
+            }
+        }
+
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            try { await authFetch('/api/logout', { method: 'POST' }); } catch {}
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.href = '/';
+        });
+
+        loadUser();
+    </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Page</title>
+    <style>
+        :root {
+            --color-background-light: #ffffff;
+            --color-background-dark: #1c1c1c;
+            --color-text-light: #000000;
+            --color-text-dark: #ffffff;
+            --color-green: #28a745;
+            --color-orange: #ff9800;
+            --color-red: #ff0000;
+            --color-blue: #007bff;
+            --color-border: #cccccc;
+        }
+        
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--color-background-light);
+            color: var(--color-text-light);
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--color-background-dark);
+            color: var(--color-text-dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+        }
+        
+        .overall-status .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .status-text {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
+        
+        .status-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            box-shadow: 0 0 5px;
+        }
+        
+        .status-indicator.green {
+            background-color: var(--color-green);
+            box-shadow: 0 0 5px var(--color-green);
+            animation: blinkGreen 2s infinite linear;
+        }
+        
+        .status-indicator.orange {
+            background-color: var(--color-orange);
+            box-shadow: 0 0 10px var(--color-orange);
+            animation: blinkOrange 2s infinite linear;
+        }
+        
+        .status-indicator.red {
+            background-color: var(--color-red);
+            box-shadow: 0 0 10px var(--color-red);
+            animation: blinkRed 2s infinite linear;
+        }
+
+        @keyframes blinkGreen {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 20px var(--color-green);
+            }
+            50% {
+                opacity: 0.75;
+                box-shadow: 0 0 10px var(--color-green);
+            }
+        }
+
+        @keyframes blinkOrange {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 20px var(--color-orange);
+            }
+            50% {
+                opacity: 0.75;
+                box-shadow: 0 0 10px var(--color-orange);
+            }
+        }
+
+        @keyframes blinkRed {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 20px var(--color-red);
+            }
+            50% {
+                opacity: 0.75;
+                box-shadow: 0 0 10px var(--color-red);
+            }
+        }
+
+        .services .service-box {
+            border: 1px solid var(--color-border);
+            border-radius: 0;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .services .service-box.first {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        .services .service-box.last {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .service-info {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            margin: 5px;
+        }
+        
+        .service-name {
+            font-weight: bold;
+        }
+        
+        .service-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .service-status.operational {
+            background-color: var(--color-green);
+        }
+        
+        .service-status.slow {
+            background-color: var(--color-orange);
+        }
+        
+        .service-status.defect {
+            background-color: var(--color-red);
+        }
+        
+        .service-downtime {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .service-downtime .day {
+            width: 4px;
+            height: 20px;
+            background-color: var(--color-green);
+            border-radius: 1.5px;
+        }
+        
+        .service-downtime .day.orange {
+            background-color: var(--color-orange);
+        }
+        
+        .service-downtime .day.red {
+            background-color: var(--color-red);
+        }
+        
+        .metrics .metric-graph {
+            text-align: center;
+        }
+        
+        .incidents .incident {
+            border-bottom: 1px solid var(--color-border);
+            padding: 10px 0;
+        }
+        
+        .incidents .incident:last-child {
+            border-bottom: none;
+        }
+        
+        .incident-date, .incident-title, .incident-description, .incident-services, .incident-time {
+            margin-bottom: 5px;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: var(--color-background-dark);
+                color: var(--color-text-dark);
+            }
+        }
+
+        @media (max-width: 950px) {
+            .service-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .service-status {
+                margin-bottom: 10px;
+                order: -1;
+            }
+
+            .service-percentage {
+                order: -1;
+            }
+
+            .service-name {
+                order: -1;
+            }
+
+            .service-downtime {
+                flex: none;
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .service-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        
+            .service-downtime {
+                margin-top: 10px;
+            }
+        
+            .metric-graph svg {
+                width: 100%;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="overall-status">
+            <h1>Overall Status</h1>
+            <div class="status">
+                <span class="status-indicator green" id="overall-status-indicator"></span>
+                <span class="status-text" id="overall-status-text">All Systems Operational</span>
+            </div>
+        </section>
+        
+        <section class="services">
+            <h2>Specific Services</h2>
+            <div class="service-box first">
+                <div class="service-name">API</div>
+                <div class="service-percentage">99.9%</div>
+                <div class="service-downtime">
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                    <div class="day green"></div>
+                </div>
+                <div class="service-status operational">Operational</div>
+            </div>
+            <div class="service-box">
+                <div class="service-info">
+                    <div class="service-name">Database</div>
+                    <div class="service-status slow">Slow</div>
+                </div>
+                <div class="service-downtime">
+                    <div class="day orange"></div>
+                </div>
+            </div>
+            <div class="service-box last">
+                <div class="service-info">
+                    <div class="service-name">Website</div>
+                    <div class="service-status defect">Defect</div>
+                </div>
+                <div class="service-downtime">
+                    <div class="day red"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="metrics">
+            <h2>System Metrics</h2>
+            <div class="metric-graph">
+                <!-- Simulated line chart for response time -->
+                <svg width="100%" height="200">
+                    <polyline points="0,150 20,130 40,140 60,100 80,120 100,90 120,110 140,70 160,80" fill="none" stroke="#00f" stroke-width="2"/>
+                </svg>
+            </div>
+        </section>
+        
+        <section class="incidents">
+            <h2>Incident List</h2>
+            <div class="incident">
+                <div class="incident-date">2024-07-01</div>
+                <div class="incident-title">API Downtime</div>
+                <div class="incident-description">The API experienced downtime due to a server issue.</div>
+                <div class="incident-services">Affected Services: API</div>
+                <div class="incident-time">Resolved in: 2 hours</div>
+            </div>
+            <div class="incident">
+                <div class="incident-date">2024-06-28</div>
+                <div class="incident-title">Database Latency</div>
+                <div class="incident-description">High latency observed in the database service.</div>
+                <div class="incident-services">Affected Services: Database</div>
+                <div class="incident-time">Resolved in: 3 hours</div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

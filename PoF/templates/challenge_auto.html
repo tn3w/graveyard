@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hold on for a moment...</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                background: #222;
+                color: #e5e5e5;
+            }
+
+            .main-container {
+                margin: 8rem auto;
+                padding-right: 1.5rem;
+                padding-left: 1.5rem;
+                width: 100%;
+                max-width: 60rem;
+                text-align: left;
+                background: #222;
+            }
+
+            @media (prefers-color-scheme: light) {
+                body {
+                    background: #f5f5f5;
+                    color: #333;
+                }
+
+                .main-container {
+                    background: #f5f5f5;
+                }
+
+                .site-title {
+                    color: #333 !important;
+                }
+
+                .instructions {
+                    color: #333 !important;
+                }
+
+                .footer-message {
+                    color: #333 !important;
+                }
+            }
+
+            .header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+
+            .favicon {
+                width: 36px;
+                height: 36px;
+                margin-right: 16px;
+                font-size: 28px;
+            }
+
+            .site-title {
+                max-width: 400px;
+                font-size: 36px;
+                font-weight: 600;
+                color: #e5e5e5;
+                direction: rtl;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .instructions {
+                font-size: 24px;
+                color: #e5e5e5;
+                margin-bottom: 30px;
+            }
+
+            .footer-message {
+                font-size: 20px;
+                color: #e5e5e5;
+                margin-top: 4rem;
+                line-height: 1.4;
+                max-width: 600px;
+            }
+
+            .flow-message {
+                position: fixed;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 12px;
+                color: #666;
+                text-align: center;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .error {
+                color: #ff6b6b;
+                background: #2a1a1a;
+                border: 1px solid #ff6b6b;
+                border-radius: 4px;
+                padding: 12px;
+                margin: 20px 0;
+                font-size: 18px;
+                text-align: center;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid #333;
+                border-top: 4px solid #0da;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @media (prefers-color-scheme: light) {
+                .spinner {
+                    border: 4px solid #ccc;
+                    border-top: 4px solid #0da;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-container">
+            <div class="content">
+                <div class="header">
+                    <img class="favicon" src="/favicon.ico" alt="🔒" />
+                    <div class="site-title">{{ request.host }}</div>
+                </div>
+
+                <div class="instructions">
+                    Complete the action below to verify you're a real person.
+                </div>
+
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
+
+                <div class="spinner"></div>
+
+                <div class="footer-message">
+                    Before proceeding, {{ request.host }} needs to verify your connection is secure.
+                </div>
+            </div>
+        </div>
+
+        <footer class="flow-message">
+            Flow ID: {{ flow_id }}
+        </footer>
+
+        <form id="powForm" method="{{ method }}" class="hidden">
+            <input type="hidden" name="challenge_data" value="{{ challenge_data }}" />
+            <input type="hidden" name="return_url" value="{{ return_url }}" />
+            <input type="hidden" name="nonce" id="nonceInput" />
+        </form>
+
+        <script>
+            // SHA256 implementation optimized for proof-of-work
+            function sha256(message) {
+                // Helper functions for SHA256 operations
+                function rotateRight(value, amount) {
+                    return (value << (32 - amount)) | (value >>> amount);
+                }
+
+                function choice(x, y, z) {
+                    return (x & y) ^ (~x & z);
+                }
+
+                function majority(x, y, z) {
+                    return (x & y) ^ (x & z) ^ (y & z);
+                }
+
+                function sigma0(x) {
+                    return rotateRight(x, 2) ^ rotateRight(x, 13) ^ rotateRight(x, 22);
+                }
+
+                function sigma1(x) {
+                    return rotateRight(x, 6) ^ rotateRight(x, 11) ^ rotateRight(x, 25);
+                }
+
+                function gamma0(x) {
+                    return rotateRight(x, 7) ^ rotateRight(x, 18) ^ (x >>> 3);
+                }
+
+                function gamma1(x) {
+                    return rotateRight(x, 17) ^ rotateRight(x, 19) ^ (x >>> 10);
+                }
+
+                // Initial hash values (first 32 bits of fractional parts of square roots of first 8 primes)
+                var hashValues = [
+                    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
+                    0x1f83d9ab, 0x5be0cd19,
+                ];
+
+                // Round constants (first 32 bits of fractional parts of cube roots of first 64 primes)
+                var roundConstants = [
+                    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+                    0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+                    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+                    0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+                    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+                    0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+                    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+                    0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+                    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+                    0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+                    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+                ];
+
+                // Convert string to UTF-8 bytes
+                var bytes = [];
+                var messageLength = message.length;
+
+                for (var i = 0; i < messageLength; i++) {
+                    var charCode = message.charCodeAt(i);
+                    if (charCode < 128) {
+                        bytes.push(charCode);
+                    } else if (charCode < 2048) {
+                        bytes.push(192 | (charCode >> 6), 128 | (charCode & 63));
+                    } else if (charCode < 55296 || charCode >= 57344) {
+                        bytes.push(
+                            224 | (charCode >> 12),
+                            128 | ((charCode >> 6) & 63),
+                            128 | (charCode & 63)
+                        );
+                    } else {
+                        charCode =
+                            65536 + (((charCode & 1023) << 10) | (message.charCodeAt(++i) & 1023));
+                        bytes.push(
+                            240 | (charCode >> 18),
+                            128 | ((charCode >> 12) & 63),
+                            128 | ((charCode >> 6) & 63),
+                            128 | (charCode & 63)
+                        );
+                    }
+                }
+
+                // Pre-processing: adding padding bits
+                var bitLength = bytes.length * 8;
+                bytes.push(128); // Append '1' bit followed by zeros
+
+                // Pad to 448 bits (56 bytes) mod 512
+                while (bytes.length % 64 !== 56) {
+                    bytes.push(0);
+                }
+
+                // Append original length as 64-bit big-endian integer
+                bytes.push(
+                    0,
+                    0,
+                    0,
+                    0,
+                    (bitLength >>> 24) & 255,
+                    (bitLength >>> 16) & 255,
+                    (bitLength >>> 8) & 255,
+                    bitLength & 255
+                );
+
+                // Process message in 512-bit chunks
+                for (var chunkStart = 0; chunkStart < bytes.length; chunkStart += 64) {
+                    var messageSchedule = [];
+
+                    // Break chunk into sixteen 32-bit big-endian words
+                    for (var wordIndex = 0; wordIndex < 16; wordIndex++) {
+                        var byteIndex = chunkStart + wordIndex * 4;
+                        messageSchedule[wordIndex] =
+                            (bytes[byteIndex] << 24) |
+                            (bytes[byteIndex + 1] << 16) |
+                            (bytes[byteIndex + 2] << 8) |
+                            bytes[byteIndex + 3];
+                    }
+
+                    // Extend the first 16 words into the remaining 48 words
+                    for (var scheduleIndex = 16; scheduleIndex < 64; scheduleIndex++) {
+                        messageSchedule[scheduleIndex] =
+                            (messageSchedule[scheduleIndex - 16] +
+                                gamma0(messageSchedule[scheduleIndex - 15]) +
+                                messageSchedule[scheduleIndex - 7] +
+                                gamma1(messageSchedule[scheduleIndex - 2])) |
+                            0;
+                    }
+
+                    // Initialize working variables
+                    var workingVarA = hashValues[0];
+                    var workingVarB = hashValues[1];
+                    var workingVarC = hashValues[2];
+                    var workingVarD = hashValues[3];
+                    var workingVarE = hashValues[4];
+                    var workingVarF = hashValues[5];
+                    var workingVarG = hashValues[6];
+                    var workingVarH = hashValues[7];
+
+                    // Main loop
+                    for (var roundIndex = 0; roundIndex < 64; roundIndex++) {
+                        var temp1 =
+                            (workingVarH +
+                                sigma1(workingVarE) +
+                                choice(workingVarE, workingVarF, workingVarG) +
+                                roundConstants[roundIndex] +
+                                messageSchedule[roundIndex]) |
+                            0;
+                        var temp2 =
+                            (sigma0(workingVarA) +
+                                majority(workingVarA, workingVarB, workingVarC)) |
+                            0;
+
+                        workingVarH = workingVarG;
+                        workingVarG = workingVarF;
+                        workingVarF = workingVarE;
+                        workingVarE = (workingVarD + temp1) | 0;
+                        workingVarD = workingVarC;
+                        workingVarC = workingVarB;
+                        workingVarB = workingVarA;
+                        workingVarA = (temp1 + temp2) | 0;
+                    }
+
+                    // Add this chunk's hash to result so far
+                    hashValues[0] = (hashValues[0] + workingVarA) | 0;
+                    hashValues[1] = (hashValues[1] + workingVarB) | 0;
+                    hashValues[2] = (hashValues[2] + workingVarC) | 0;
+                    hashValues[3] = (hashValues[3] + workingVarD) | 0;
+                    hashValues[4] = (hashValues[4] + workingVarE) | 0;
+                    hashValues[5] = (hashValues[5] + workingVarF) | 0;
+                    hashValues[6] = (hashValues[6] + workingVarG) | 0;
+                    hashValues[7] = (hashValues[7] + workingVarH) | 0;
+                }
+
+                // Produce the final hash value as a 256-bit number (hex string)
+                return hashValues
+                    .map((hashValue) => (hashValue >>> 0).toString(16).padStart(8, '0'))
+                    .join('');
+            }
+
+            // Proof of Work solver variables
+            let totalAttempts = 0;
+            let workerPool = [];
+            let isSolverRunning = false;
+
+            // Initialize multi-threaded worker solver
+            function initializeWorkerSolver(challengeString, difficulty) {
+                const workerCount = Math.min(navigator.hardwareConcurrency || 4, 8);
+                const targetPrefix = '0'.repeat(difficulty);
+
+                const workerScript = `
+                    self.onmessage = function(event) {
+                        var data = event.data;
+                        var challenge = data.challenge;
+                        var currentNonce = data.startNonce;
+                        var step = data.step;
+                        var target = data.target;
+                        var attemptCount = 0;
+                        
+                        while (true) {
+                            var hash = sha256(challenge + currentNonce);
+                            attemptCount++;
+                            
+                            if (hash.startsWith(target)) {
+                                self.postMessage({found: true, nonce: currentNonce, attempts: attemptCount});
+                                return;
+                            }
+                            
+                            currentNonce += step;
+                            
+                            // Report progress every 1000 attempts
+                            if (attemptCount % 1000 === 0) {
+                                self.postMessage({found: false, attempts: 1000});
+                                attemptCount = 0;
+                            }
+                        }
+                    };
+                    
+                    ${sha256.toString()};
+                `;
+
+                const workerBlob = new Blob([workerScript], { type: 'application/javascript' });
+                const workerUrl = URL.createObjectURL(workerBlob);
+
+                isSolverRunning = true;
+
+                // Create workers with different starting nonces
+                for (let workerIndex = 0; workerIndex < workerCount; workerIndex++) {
+                    try {
+                        const worker = new Worker(workerUrl);
+
+                        worker.onmessage = function (event) {
+                            if (!isSolverRunning) return;
+
+                            const result = event.data;
+                            if (result.found) {
+                                stopAllWorkers();
+                                document.getElementById('nonceInput').value = result.nonce;
+                                document.getElementById('powForm').submit();
+                            } else {
+                                totalAttempts += result.attempts;
+                            }
+                        };
+
+                        worker.postMessage({
+                            challenge: challengeString,
+                            startNonce: workerIndex,
+                            step: workerCount,
+                            target: targetPrefix,
+                        });
+
+                        workerPool.push(worker);
+                    } catch (error) {
+                        console.warn('Failed to create worker:', error);
+                    }
+                }
+
+                // Fallback to single-threaded if no workers created
+                if (workerPool.length === 0) {
+                    initializeFallbackSolver(challengeString, difficulty);
+                }
+
+                // Clean up worker URL after a delay
+                setTimeout(() => URL.revokeObjectURL(workerUrl), 1000);
+            }
+
+            // Single-threaded fallback solver
+            function initializeFallbackSolver(challengeString, difficulty) {
+                const targetPrefix = '0'.repeat(difficulty);
+                let currentNonce = 0;
+                isSolverRunning = true;
+
+                function solveNextBatch() {
+                    if (!isSolverRunning) return;
+
+                    // Process 1000 nonces per batch to avoid blocking UI
+                    for (let batchIndex = 0; batchIndex < 1000; batchIndex++) {
+                        const hash = sha256(challengeString + currentNonce);
+                        totalAttempts++;
+
+                        if (hash.startsWith(targetPrefix)) {
+                            document.getElementById('nonceInput').value = currentNonce;
+                            document.getElementById('powForm').submit();
+                            return;
+                        }
+
+                        currentNonce++;
+                    }
+
+                    // Schedule next batch
+                    setTimeout(solveNextBatch, 1);
+                }
+
+                solveNextBatch();
+            }
+
+            // Stop all workers and cleanup
+            function stopAllWorkers() {
+                isSolverRunning = false;
+                workerPool.forEach((worker) => {
+                    try {
+                        worker.terminate();
+                    } catch (error) {
+                        console.warn('Error terminating worker:', error);
+                    }
+                });
+                workerPool = [];
+            }
+
+            // Main verification flow
+            var challengeDataString = '{{ challenge_data|safe }}';
+            var challengeValue = challengeDataString.split(':')[0];
+            var difficultyLevel = parseInt('{{ difficulty }}');
+
+            // Override stopAllWorkers to handle UI updates
+            var originalStopAllWorkers = stopAllWorkers;
+            stopAllWorkers = function () {
+                originalStopAllWorkers();
+
+                setTimeout(function () {
+                    document.getElementById('powForm').submit();
+                }, 500);
+            };
+
+            if (typeof Worker !== 'undefined') {
+                initializeWorkerSolver(challengeValue, difficultyLevel);
+            } else {
+                initializeFallbackSolver(challengeValue, difficultyLevel);
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+        />
+        <title>404 - Page Not Found | IPApi</title>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <meta
+            name="description"
+            content="Page not found. Try our IP lookup tool to get detailed information about any IP address or domain."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="BASE_URL" />
+        <meta property="og:title" content="404 - Page Not Found | IPApi" />
+        <meta
+            property="og:description"
+            content="Page not found. Use our free IP geolocation service to find information about any IP address or domain."
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="BASE_URL" />
+        <meta name="twitter:title" content="404 - Page Not Found | IPApi" />
+        <meta
+            name="twitter:description"
+            content="Page not found. Try our IP lookup tool to get information about any IP address."
+        />
+        <link rel="canonical" href="BASE_URL" />
+        <link rel="stylesheet" href="styles/404.css" />
+    </head>
+    <body>
+        <main>
+            <div class="container">
+                <div class="logo">
+                    <h1>IPApi</h1>
+                </div>
+                <div class="error-container">
+                    <div class="error-code">404</div>
+                    <h2 class="error-title">DETAIL</h2>
+                    <p class="error-description">
+                        The page or resource you're looking for couldn't be found. It might have
+                        been moved, deleted, or never existed in the first place.
+                    </p>
+                    <a href="/" class="button">Return Home</a>
+                </div>
+                <div class="search-container">
+                    <form id="search-form" class="search-wrapper" action="/" method="post">
+                        <input
+                            id="search-input"
+                            name="ip"
+                            placeholder="Try another IP, IPv6 or Hostname"
+                            type="text"
+                        />
+                        <button id="search-button" class="hidden">
+                            <svg
+                                height="24"
+                                viewbox="0 0 24 24"
+                                width="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <noscript>
+            <style>
+                #search-button {
+                    opacity: 1 !important;
+                    pointer-events: auto !important;
+                }
+            </style>
+        </noscript>
+
+        <script src="scripts/404.js"></script>
+    </body>
+</html>

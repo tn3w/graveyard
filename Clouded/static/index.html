@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clouded - GitHub Deployment Platform</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+</head>
+<body>
+  <div class="auth-container" style="margin-top: 10vh;">
+    <div class="card">
+      <div class="logo">
+        <h1>Clouded</h1>
+        <p>Deploy GitHub repositories with auto-updates</p>
+      </div>
+
+      <div style="margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem;">
+        <a href="/login.html" style="text-decoration: none;">
+          <button class="btn btn-primary">Sign In</button>
+        </a>
+        
+        <div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-top: 2rem;">
+          <p style="margin-bottom: 1rem;">Enterprise-grade security</p>
+          <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 0.85rem;">Argon2id</div>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem;">TOTP 2FA</div>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem;">WebAuthn</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+        <div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">
+          <p>Automatic deployments from GitHub</p>
+          <p>Instant updates on every push</p>
+          <p>Custom domains & SSL included</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

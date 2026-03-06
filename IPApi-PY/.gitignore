@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.env/
+.venv/
+env/
+ENV/
+.python-version
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+
+# Datasets
+datasets/
+.ipapi_memory_server.lock
+.env
+
+# VSCode
+.vscode

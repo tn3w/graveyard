@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create account - Clouded</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
+  <script src="/iam-captcha.js" async defer></script>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="card">
+      <div class="logo" id="page-header">
+        <h1>Create account</h1>
+        <p>Set up your secure deployment account</p>
+      </div>
+
+      <div id="alert" class="alert hidden"></div>
+
+      <div id="step1">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Choose username" required autocomplete="username">
+            <small>3-32 characters, alphanumeric, underscore, hyphen</small>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Create password" required autocomplete="new-password">
+            <div class="password-strength" id="password-strength"></div>
+            <small>Min 12 chars, uppercase, lowercase, digit, special</small>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm password" required autocomplete="new-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submitBtn">Continue</button>
+        </form>
+
+        <div class="auth-footer">
+          <p class="text-muted">
+            Already have an account? <a href="/login.html" class="link">Sign in</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="step2" class="hidden">
+        <h3 style="margin-bottom: 0.75rem; font-size: 1.125rem; font-weight: 500;">Verify You're Human</h3>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+          Complete the challenge to continue
+        </p>
+
+        <div class="captcha-wrapper">
+          <div class="iam-captcha" id="reg-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-mode="inline"></div>
+        </div>
+
+        <button type="button" class="btn btn-secondary mt-3" onclick="document.getElementById('step2').classList.add('hidden'); document.getElementById('step1').classList.remove('hidden'); document.getElementById('page-header').classList.remove('hidden');">
+          ← Back
+        </button>
+      </div>
+
+      <div id="step3" class="hidden">
+        <div class="logo">
+          <h1>Set Up Authenticator</h1>
+          <p>Scan the QR code with your authenticator app</p>
+        </div>
+
+        <div class="qr-code" id="qrCode"></div>
+        
+        <div style="margin: 1rem 0;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 500;">Manual Entry Code:</label>
+          <div class="code-display" id="totpSecret"></div>
+        </div>
+
+        <form id="totpForm">
+          <div class="form-group">
+            <label for="totpCode">Enter 6-Digit Code</label>
+            <input 
+              type="text" 
+              id="totpCode" 
+              placeholder="000000" 
+              maxlength="6" 
+              pattern="[0-9]{6}"
+              required
+              autocomplete="one-time-code"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="verifyBtn">Verify & Continue</button>
+        </form>
+      </div>
+
+      <div id="step4" class="hidden">
+        <div class="logo">
+          <h1>Security Key (Optional)</h1>
+          <p>Add an extra layer of security</p>
+        </div>
+
+        <div style="text-align: center; padding: 2rem; margin: 1rem 0;">
+          <p style="color: var(--text-secondary); font-size: 0.9375rem;">Insert your security key and follow the prompts</p>
+        </div>
+
+        <button class="btn btn-primary" id="webauthnBtn">Register Security Key</button>
+        <button class="btn btn-secondary mt-2" id="skipBtn">Skip for Now</button>
+
+        <div style="margin-top: 1rem; text-align: center; font-size: 0.8125rem; color: var(--text-secondary);">
+          You can add security keys later in settings
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="totpUri" style="display: none;"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/register.js"></script>
+</body>
+</html>

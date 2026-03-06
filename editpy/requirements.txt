@@ -1,0 +1,2 @@
+pygments>=2.19.1
+windows-curses>=2.4.1; platform_system == "Windows"

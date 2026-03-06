@@ -1,0 +1,21 @@
+{
+    "name": "ipapi",
+    "version": "1.0.0",
+    "description": "IP address information and geolocation API",
+    "main": "app.py",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write \"**/*.{html,css,js,json,md}\"",
+        "format:check": "prettier --check \"**/*.{html,css,js,json}\""
+    },
+    "keywords": [
+        "ip",
+        "geolocation",
+        "api"
+    ],
+    "author": "TN3W",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "prettier": "^3"
+    }
+}

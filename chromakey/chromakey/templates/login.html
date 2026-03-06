@@ -1,0 +1,332 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Auth</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: system-ui;
+                background: #000;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .slots {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .hint {
+                font-size: 13px;
+                color: #666;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .shapes {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            .slot {
+                width: 80px;
+                height: 80px;
+                border-radius: 12px;
+                background: #1a1a1a;
+                border: 2px dashed #333;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+            .slot.filled {
+                border: 2px solid #444;
+            }
+            .slot.active {
+                border-color: #666;
+                box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            }
+            .slot svg {
+                width: 50px;
+                height: 50px;
+            }
+            .shapes {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+            }
+            .shape-btn {
+                width: 70px;
+                height: 70px;
+                border-radius: 10px;
+                background: #1a1a1a;
+                border: 2px solid #2a2a2a;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+            .shape-btn:hover {
+                background: #2a2a2a;
+                border-color: #3a3a3a;
+                transform: scale(1.05);
+            }
+            .shape-btn svg {
+                width: 45px;
+                height: 45px;
+                color: #666;
+            }
+            .colors {
+                display: flex;
+                gap: 12px;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s;
+            }
+            .colors.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+            .color-btn {
+                width: 60px;
+                height: 60px;
+                border-radius: 10px;
+                border: 3px solid transparent;
+                cursor: pointer;
+                transition: all 0.2s;
+                position: relative;
+            }
+            .color-btn:hover {
+                transform: scale(1.1);
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            .color-btn svg {
+                width: 35px;
+                height: 35px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="slots" id="slots"></div>
+            <div class="hint" id="hint">Select a shape</div>
+            <div class="shapes" id="shapes"></div>
+            <div class="colors" id="colors"></div>
+            <div
+                style="
+                    font-size: 11px;
+                    opacity: 0.3;
+                    text-align: center;
+                    margin-top: 10px;
+                    color: #ccc;
+                "
+            >
+                Secured with
+                <a href="https://github.com/tn3w/Chromakey" target="_blank" style="color: #ccc"
+                    >Chromakey</a
+                >
+            </div>
+        </div>
+        <script>
+            const nextUrl = {{ next_url | tojson }};
+
+            const shapes = {
+                circle: '<circle cx="25" cy="25" r="18" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+                square: '<rect x="7" y="7" width="36" height="36" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+                triangle: '<path d="M25 7 L43 43 L7 43 Z" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+                star: '<path d="M25 3 L29 18 L45 18 L33 27 L37 43 L25 34 L13 43 L17 27 L5 18 L21 18 Z" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+                heart: '<path d="M25 43 C25 43 7 30 7 18 C7 11 12 7 17 7 C21 7 25 11 25 11 C25 11 29 7 33 7 C38 7 43 11 43 18 C43 30 25 43 25 43 Z" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+                diamond: '<path d="M25 7 L43 25 L25 43 L7 25 Z" stroke="currentColor" stroke-width="3" fill="currentColor" fill-opacity="0.2"/>',
+            };
+
+            const colorMap = {
+                red: '#ef4444',
+                blue: '#3b82f6',
+                green: '#22c55e',
+                yellow: '#eab308',
+                purple: '#a855f7',
+            };
+
+            const shapeNames = ['circle', 'square', 'triangle', 'star', 'heart', 'diamond'];
+            const colorNames = ['red', 'blue', 'green', 'yellow', 'purple'];
+
+            let selections = [];
+            let currentSlot = 0;
+            let selectedShape = null;
+
+            function renderSlots() {
+                const html = Array(4).fill(0).map((_, index) => {
+                    const selection = selections[index];
+                    const active = index === currentSlot ? 'active' : '';
+                    const filled = selection?.shape && selection?.color;
+                    if (filled) {
+                        return `<div class="slot filled ${active}" style="background:${colorMap[selection.color]}"><svg viewBox="0 0 50 50">${shapes[selection.shape]}</svg></div>`;
+                    }
+                    return `<div class="slot ${active}"></div>`;
+                }).join('');
+                document.getElementById('slots').innerHTML = html;
+            }
+
+            function renderShapes() {
+                const html = shapeNames.map(shape =>
+                    `<button class="shape-btn" onclick="selectShape('${shape}')"><svg viewBox="0 0 50 50">${shapes[shape]}</svg></button>`
+                ).join('');
+                document.getElementById('shapes').innerHTML = html;
+            }
+
+            function renderColors() {
+                const html = colorNames.map(color =>
+                    `<button class="color-btn" style="background:${colorMap[color]}" onclick="selectColor('${color}')"><svg viewBox="0 0 50 50">${shapes[selectedShape]}</svg></button>`
+                ).join('');
+                document.getElementById('colors').innerHTML = html;
+            }
+
+            function selectShape(shape) {
+                if (currentSlot >= 4) return;
+                selectedShape = shape;
+                document.getElementById('hint').textContent = 'Select a color';
+                document.getElementById('colors').classList.add('show');
+                renderColors();
+            }
+
+            function selectColor(color) {
+                if (currentSlot >= 4) return;
+
+                selections[currentSlot] = { shape: selectedShape, color };
+                currentSlot++;
+                selectedShape = null;
+
+                document.getElementById('colors').classList.remove('show');
+
+                if (currentSlot >= 4) {
+                    document.getElementById('hint').textContent = 'Verifying...';
+                    renderSlots();
+                    setTimeout(verify, 300);
+                } else {
+                    document.getElementById('hint').textContent = 'Select a shape';
+                    renderSlots();
+                }
+            }
+
+            async function verify() {
+                const payload = { selection: selections };
+                if (nextUrl) {
+                    payload.next = nextUrl;
+                }
+
+                const response = await fetch('/chromakey/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await response.json();
+
+                if (data.authorized) {
+                    window.location.href = data.redirect || '/';
+                } else {
+                    document.getElementById('hint').textContent = 'Invalid - Try again';
+                    setTimeout(() => {
+                        selections = [];
+                        currentSlot = 0;
+                        document.getElementById('hint').textContent = 'Select a shape';
+                        renderSlots();
+                        location.reload();
+                    }, 1500);
+                }
+            }
+
+            const shapeCodeMap = {C:'circle',S:'square',T:'triangle',A:'star',H:'heart',D:'diamond'};
+            const colorCodeMap = {R:'red',B:'blue',G:'green',Y:'yellow',P:'purple'};
+
+            function parseCode(code) {
+                const pairs = [];
+                const cleaned = code.toUpperCase().replace(/\s/g, '');
+                for (let i = 0; i < cleaned.length - 1 && pairs.length < 4; i += 2) {
+                    const shape = shapeCodeMap[cleaned[i]];
+                    const color = colorCodeMap[cleaned[i + 1]];
+                    if (shape && color) pairs.push({shape, color});
+                }
+                return pairs;
+            }
+
+            function handlePaste(event) {
+                event.preventDefault();
+                const pairs = parseCode(event.clipboardData.getData('text'));
+                if (!pairs.length) return;
+
+                pairs.forEach(pair => {
+                    if (currentSlot < 4) selections[currentSlot++] = pair;
+                });
+
+                selectedShape = null;
+                document.getElementById('colors').classList.remove('show');
+                renderSlots();
+
+                if (currentSlot >= 4) {
+                    document.getElementById('hint').textContent = 'Verifying...';
+                    setTimeout(verify, 300);
+                } else {
+                    document.getElementById('hint').textContent = 'Select a shape';
+                }
+            }
+
+            function handleKeypress(event) {
+                const key = event.key.toUpperCase();
+                const shape = shapeCodeMap[key];
+                const color = colorCodeMap[key];
+
+                if (shape && !selectedShape) {
+                    selectShape(shape);
+                } else if (color && selectedShape) {
+                    selectColor(color);
+                }
+            }
+
+            function handleKeydown(event) {
+                if (event.key === 'Backspace') {
+                    event.preventDefault();
+
+                    if (selectedShape) {
+                        selectedShape = null;
+                        document.getElementById('colors').classList.remove('show');
+                        document.getElementById('hint').textContent = 'Select a shape';
+                        return;
+                    }
+
+                    if (currentSlot > 0) {
+                        currentSlot--;
+                        selections[currentSlot] = null;
+                        renderSlots();
+                        document.getElementById('hint').textContent = 'Select a shape';
+                    }
+                }
+            }
+
+            document.addEventListener('paste', handlePaste);
+            document.addEventListener('keydown', handleKeydown);
+            document.addEventListener('keypress', handleKeypress);
+
+            renderSlots();
+            renderShapes();
+        </script>
+    </body>
+</html>

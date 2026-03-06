@@ -1,0 +1,26 @@
+name: Publish to AUR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'PKGBUILD'
+      - '.SRCINFO'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        with:
+          pkgname: google-antigravity-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update to version ${{ github.event.head_commit.message }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519

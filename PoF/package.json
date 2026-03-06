@@ -1,0 +1,22 @@
+{
+    "name": "pof",
+    "version": "1.0.0",
+    "description": "Use PoF to protect your website",
+    "main": "pof/__init__.py",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write \"**/*.{html,css,js,json,md}\"",
+        "format:check": "prettier --check \"**/*.{html,css,js,json}\""
+    },
+    "keywords": [
+        "flask",
+        "pow",
+        "bot",
+        "ddos"
+    ],
+    "author": "TN3W",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "prettier": "^3"
+    }
+}

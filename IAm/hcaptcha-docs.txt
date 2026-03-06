@@ -1,0 +1,1666 @@
+Developer Guide
+
+hCaptcha helps to protect your sites and apps from bots, spam, and other automated abuse.
+
+Installing it is easy: add a few lines of code, or use one of the many tools that natively support hCaptcha.
+
+Plugins and examples are available for ReactJS, VueJS, WordPress, Angular, Node, Express and many more, including Mobile App SDKs.
+ReactJS
+VueJS
+WordPress
+Angular
+Node.js
+Switching from reCAPTCHA
+
+If you're already using Google's reCAPTCHA, you can use your existing code with only a few changes. hCaptcha methods are API-compatible with reCAPTCHA methods, for example render() and onload(). Custom data attributes like theme, size, and tab-index are also supported in the same way by hCaptcha.
+Quick Start
+
+    You embed the hCaptcha widget on your site. For example, on a login form.
+
+Frontend Code Example
+
+    The user starts an hCaptcha evaluation: they click the checkbox or submit button, or you trigger it programmatically.
+    The user gets a token from our server. This is embedded in your form or returned to your JS callback.
+    The user clicks Submit. The passcode is sent to your server in the form.
+    Your server sends the token to our API (api.hcaptcha.com/siteverify). hCaptcha says it is valid. Your server now knows the user is not a bot and lets them log in. Pretty simple!
+
+Backend Code Example
+
+Request Flow
+hCaptcha SiteverifyYour ServerhCaptcha Client APIYour Website or AppUserhCaptcha SiteverifyYour ServerhCaptcha Client APIYour Website or AppUserLoad Website or AppLoad hCaptcha JS or SDKPlease issue passcodeReturns challenge or passcodePasscode embedded in form or returned via JS/callbackForm or XHR with hCaptcha passcodeIs this passcode valid?Passcode is valid (success is true)Session authorized, proceed
+Content-Security-Policy Settings
+
+Content Security Policy (CSP) headers are an added layer of security that help to mitigate certain types of attacks, including Cross Site Scripting (XSS), clickjacking, and data injection attacks.
+
+If you use CSP headers, please add the following to your configuration:
+
+    script-src should include https://hcaptcha.com, https://*.hcaptcha.com
+    frame-src should include https://hcaptcha.com, https://*.hcaptcha.com
+    style-src should include https://hcaptcha.com, https://*.hcaptcha.com
+    connect-src should include https://hcaptcha.com, https://*.hcaptcha.com
+
+Please do not hard-code specific subdomains, like newassets.hcaptcha.com, into your CSP: asset subdomains used may vary over time or by region.
+
+If you are an enterprise customer and would like to enable additional verification to be performed, you can optionally choose the following CSP strategy:
+
+    unsafe-eval and unsafe-inline should include https://hcaptcha.com, https://*.hcaptcha.com
+
+Add the hCaptcha Widget to your Webpage
+
+hCaptcha requires two small pieces of client side code to render a widget on an HTML page. First, you must include the hCaptcha javascript resource somewhere in your HTML page. The <script> must be loaded via HTTPS and can be placed anywhere on the page. Inside the <head> tag or immediately after the .h-captcha container are both fine.
+
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
+Second, you must add an empty DOM container where the hCaptcha widget will be inserted automatically. The container is typically a <div> (but can be any element) and must have class h-captcha and a data-sitekey attribute set to your public sitekey.
+info
+
+The sitekey is our unique identifier for your site, app, or flow.
+
+You can set behavior and track statistics per-sitekey. This lets you choose the granularity you need, whether that is a single sitekey used across many sites or one sitekey per flow, e.g. one for signup and one for login.
+You can find your sitekey and create more in Sites.
+
+<div class="h-captcha" data-sitekey="your_site_key"></div>
+
+Typically, you'll want to include the empty .h-captcha container inside an HTML form. When a challenge is successfully passed, a hidden token will automatically be added to your form that you can then POST to your server for verification. You can retrieve it server side with POST parameter h-captcha-response.
+
+Here's a full example where hCaptcha is being used to protect a signup form from automated abuse. When the form is submitted, the h-captcha-response token will be included with the email and password POST data after the challenge is passed.
+
+<html>
+  <head>
+    <title>hCaptcha Demo</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  </head>
+  <body>
+    <form action="" method="POST">
+      <input type="text" name="email" placeholder="Email" />
+      <input type="password" name="password" placeholder="Password" />
+      <div class="h-captcha" data-sitekey="your_site_key"></div>
+      <br />
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>
+
+Verify the User Response Server Side
+
+By adding the client side code, you were able to render an hCaptcha widget that identified if users were real people or automated bots. When the challenge succeeded, the hCaptcha script inserted a unique token into your form data.
+
+To verify that the token is indeed real and valid, you must now verify it at the API endpoint:
+
+https://api.hcaptcha.com/siteverify
+
+The endpoint expects a POST request with two parameters: your account secret and the h-captcha-response token sent from your frontend HTML to your backend for verification. Do not send JSON data: the endpoint expects a standard URL-encoded form POST.
+
+Additionally, you should include the user's IP address for enhanced security. While not strictly required, providing the IP address helps improve verification accuracy. For Enterprise customers, this also enables risk scores.
+
+A simple test will look like this:
+
+curl https://api.hcaptcha.com/siteverify \
+  -X POST \
+  -d "secret=YOUR-SECRET&remoteip=CLIENT-IP&response=CLIENT-RESPONSE"
+
+    CLIENT-RESPONSE is the token returned by the hCaptcha SDK to the client.
+    YOUR-SECRET is your sitekey secret ("ES_...") that you generated in the dashboard.
+    CLIENT-IP is the client's IP address. While remoteip is not strictly required, providing it helps improve verification accuracy.
+
+The endpoint expects the application/x-www-form-urlencoded Content-Type. You can see exactly what is sent using
+
+curl -vv
+
+in the example above.
+
+Do not use a GET request to call /siteverify. Use a POST request, and pass the parameters in the form body, not the URL.
+
+While the endpoint may respond correctly to a GET request or to a POST request that uses URL parameters, this is not guaranteed. If the parameters you send to GET are too long, the request will fail and you will be unable to validate passcodes. Using a POST request ensures you will not have this problem.
+
+Please note that you must call /siteverify with your account secret in order to validate passcodes users send you are real and unexpired. You will also be unable to validate passcodes from a sitekey in one account if using a different account's secret.
+info
+You can find your secret key on your profile page.
+POST Parameter	Description
+secret	Required. Your account secret key.
+response	Required. The verification token you received when the user completed the challenge on your site.
+remoteip	Recommended. The user's IP address.
+sitekey	Optional. The sitekey you expect to see.
+
+Tokens can only be used once and must be verified within a short period of time after being issued. To retrieve the token on your server, use the h-captcha-response POST parameter submitted by your form.
+
+We recommend passing the sitekey parameter, as it will prevent tokens issued on one sitekey from being redeemed elsewhere. Depending on your difficulty settings this might have no security impact, but if you set a higher difficulty level and do not enforce sitekey matches an adversary could potentially solve an easier challenge on another sitekey, then redeem it on a harder one.
+
+# PSEUDO CODE
+
+SECRET_KEY = "your_secret_key"    # replace with your secret key
+VERIFY_URL = "https://api.hcaptcha.com/siteverify"
+
+# Retrieve token from post data with key 'h-captcha-response'.
+token = request.POST_DATA['h-captcha-response']
+
+# Build payload with secret key and token.
+data = { 'secret': SECRET_KEY, 'response': token }
+
+# Make POST request with data payload to hCaptcha API endpoint.
+response = http.post(url=VERIFY_URL, data=data)
+
+# Parse JSON from response. Check for success or error codes.
+response_json = JSON.parse(response.content)
+success = response_json['success']
+
+Your POST request will receive a JSON response. You should check the success field and only execute your normal business logic if success is true. Otherwise, check the error-codes field for a human-readable error code and return an appropriate error message to the end user, or a generic error message if no details are specified in error-codes.
+
+Here's what a JSON response from hCaptcha looks like:
+
+{
+   "success": true|false,     // is the passcode valid, and does it meet security criteria you specified, e.g. sitekey?
+   "challenge_ts": timestamp, // timestamp of the challenge (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
+   "hostname": string,        // the hostname of the site where the challenge was passed
+   "credit": true|false,      // optional: deprecated field
+   "error-codes": [...]       // optional: any error codes
+   "score": float,            // ENTERPRISE feature: a score denoting malicious activity.
+   "score_reason": [...]      // ENTERPRISE feature: reason(s) for score.
+}
+
+(See hCaptcha.com/enterprise for details on hCaptcha Enterprise features like bot scores, passive and nearly passive "No-CAPTCHA" modes, and more.)
+
+Please note that the credit field is not always included, and is scheduled for deprecation in Q3 2023.
+
+Please also note that the hostname field is derived from the user's browser, and should not be used for authentication of any kind; it is primarily useful as a statistical metric. Additionally, in the event that your site experiences unusually high challenge traffic, the hostname field may be returned as "not-provided" rather than the usual value; all other fields will return their normal values.
+Siteverify Error Codes Table
+
+These are the error codes that can be returned by the hCaptcha API:
+Error Code	Description
+missing-input-secret	Your secret key is missing.
+invalid-input-secret	Your secret key is invalid or malformed.
+missing-input-response	The response parameter (verification token) is missing.
+invalid-input-response	The response parameter (verification token) is invalid or malformed.
+expired-input-response	The response parameter (verification token) is expired. (120s default)
+already-seen-response	The response parameter (verification token) was already verified once.
+bad-request	The request is invalid or malformed.
+missing-remoteip	The remoteip parameter is missing.
+invalid-remoteip	The remoteip parameter is not a valid IP address or blinded value.
+not-using-dummy-passcode	You have used a testing sitekey but have not used its matching secret.
+sitekey-secret-mismatch	The sitekey is not registered with the provided secret.
+Rotating Your Siteverify Secret
+
+Your siteverify secret is solely for secure machine-to-machine authentication; it should never be exposed publicly.
+
+If your siteverify secret has been unintentionally exposed, you may receive an email warning from us.
+
+You can also rotate it yourself at any time by visiting the Dashboard, choosing your profile icon and Settings menu option, and then clicking Generate New Secret. Make sure to copy that value! We don't retain it, so you won't be able to see it again.
+
+You will receive an email confirmation within a few seconds of rotation.
+
+Note: Free users may rotate the secret once per day. Pro users may rotate secrets up to 3 times per day. Enterprise users have additional options to manage secrets.
+
+For example, Enterprise accounts can create multiple Sitekey Secrets with an optional expiry and assign secrets to one or many sitekeys to enable segmentation of secrets by environment, unique keys per team, and more. Please see the Enterprise docs for more details.
+Local Development
+
+If you are developing on your local machine there are a few things to keep in mind.
+
+Modern browsers have strict CORS and CORB rules, so opening a file://URI that loads hCaptcha will not work. Loading hCaptcha from http://localhost/ will encounter the same issue on some browsers. The hCaptcha API also prohibits localhost and 127.0.0.1 as supplied hostnames.
+
+The simplest way to circumvent these issues is to add a hosts entry. For example:
+
+127.0.0.1 test.mydomain.com
+
+Place this in /etc/hosts on Linux, /private/etc/hosts on Mac OS X, or C:\Windows\System32\Drivers\etc\hosts on Windows.
+
+You can then access your local server via http://test.mydomain.com, and everything will work as expected.
+TypeScript Types
+How to install
+
+You can install our typescript types @hcaptcha/types for the hcaptcha global variable using your preferred package manager:
+
+yarn add -D @hcaptcha/types
+
+or
+
+npm install -D @hcaptcha/types
+
+How to use
+Locally
+
+import '@hcaptcha/types';
+
+// `hcaptcha` now is defined on the global object
+hcaptcha.execute();
+
+or
+
+///<reference types="@hcaptcha/types"/>
+
+// `hcaptcha` now is defined on the global object
+hcaptcha.execute();
+
+Globally
+
+Add import or reference to your .d.ts:
+
+import "@hcaptcha/types";
+
+// or
+
+/// <reference types="@hcaptcha/types"/>
+
+Or add "node_modules/@hcaptcha" to the typeRoots in tsconfig.json
+
+{
+  "compilerOptions": {
+    // ...
+    "typeRoots": [
+      "node_modules/@hcaptcha"
+    ]
+    // ...
+  },
+  // ...
+}
+
+Integration Testing: Test Keys
+
+If you intend to run automated integration tests that access a live server, the simplest approach is to use the following test hCaptcha sitekeys that always generate a passcode without asking a question. Those passcodes can only be verified using the test secret.
+caution
+
+The test keys provide no anti-bot protection, so please double-check that you use them only in your test environment!
+Test Key Set: Publisher or Pro Account
+Test parameter	Value
+Sitekey	10000000-ffff-ffff-ffff-000000000001
+Secret Key	0x0000000000000000000000000000000000000000
+Response Token	10000000-aaaa-bbbb-cccc-000000000001
+
+This keypair will never challenge and always produce the same response token, which will return success: true when passed to the endpoint with this secret. The siteverify response will have the fields found in Publisher and Pro accounts.
+
+If you are an Enterprise customer, please instead use the test keypairs below to ensure you are consuming score and other Enterprise siteverify fields.
+Test Key Set: Enterprise Account (Safe End User)
+Test parameter	Value
+Sitekey	20000000-ffff-ffff-ffff-000000000002
+Secret Key	0x0000000000000000000000000000000000000000
+Response Token	20000000-aaaa-bbbb-cccc-000000000002
+Test Key Set: Enterprise Account (Bot Detected)
+Test parameter	Value
+Sitekey	30000000-ffff-ffff-ffff-000000000003
+Secret Key	0x0000000000000000000000000000000000000000
+Response Token	30000000-aaaa-bbbb-cccc-000000000003
+
+For hCaptcha Enterprise users, the two keypairs above will allow you to verify your application behavior in the most common score scenarios. Please contact your integration support engineers for guidance if you have additional questions.
+Frontend Testing: Force a Visual Challenge
+
+Sometimes you want to force a visual challenge to make sure everything looks they way you expect when a challenge modal is triggered.
+
+If you are an Enterprise customer, just add a "Challenge" rule targeting your IP or user agent.
+
+If you are using the Pro or free service, one option is to add a second sitekey set to "Always Challenge" mode. Note that "challenge" does not automatically mean "visual challenge" in our system, but if you rapidly reload several times you are likely to start seeing visual challenges.
+Backend Testing: Ensure Correct Handling of Rejected Tokens
+
+If the token the user sends to you is invalid or expired, the siteverify response will contain success: false. This means you can safely block the request.
+
+To test this, simply use a nonsense string like "FAKE-TOKEN" in your backend integration tests when you want to validate end-to-end failure behavior.
+What's next?
+
+Congrats! By following this guide, you now have a complete and working implementation of hCaptcha. By default, hCaptcha supports multiple widgets per page and automatic localization.
+
+If you're interested in a more advanced implementation that involves JavaScript callbacks, explicit rendering, alternative themes, or explicit localization, check out the next section on configuration.
+
+And if you have any issues getting hCaptcha to work on your site, or you'd like to start a pilot of our enterprise service to try out bot scores, No-CAPTCHA modes, and more, get in touch and we'll be happy to help.
+
+Configuration
+
+There are two ways to configure hCaptcha. The first is to pass query parameters when loading the hCaptcha javascript resource. Using query params, you can specify a custom callback function, defer rendering, or force a specific localization.
+Parameter	Value	Description
+onload	<function name>	Optional. The name of your custom callback function to be called once the hCaptcha API has loaded. Must be defined before the API loads.
+render	explicit | onload	Optional. Whether or not to render the widget automatically. Defaults to onload, which will automatically render widgets in hcaptcha div containers.
+hl	<language code>	Optional. Forces a specific localization. By default, hCaptcha auto-detects the user's locale. See language codes. Can also be used via render method.
+recaptchacompat	on | off	Optional. Whether or not to insert window.grecaptcha compatibility hook. Defaults to on.
+
+Query params are set as key=value pairs following a ? after the script name. For example, to explicitly render captchas in French, your script tag should look like this:
+
+<script src="https://js.hcaptcha.com/1/api.js?hl=fr" async defer></script>
+
+Multiple query params are separated by &.
+
+<script
+  src="https://js.hcaptcha.com/1/api.js?hl=es&onload=yourFunction&render=explicit"
+  async
+  defer
+></script>
+
+A note on the reCAPTCHA .ready() method
+
+Because hCaptcha does not fire the onload until setup is complete, it is not necessary to wait via a .ready() method. Simply trigger any code or state change you need via the onload, and when it fires hCaptcha will already be ready for further programmatic interaction.
+hCaptcha Container Configuration
+
+The second way to configure hCaptcha is to set custom attributes on the hCaptcha container <div>. You're already required to do this with data-sitekey, but there are a handful of other optional attributes that enable more customization.
+Attribute	Value	Description
+data-sitekey	<your sitekey>	Required. Your public API sitekey.
+data-theme	light | dark	Optional. Set the color theme of the widget. Defaults to light.
+data-size	normal | compact	Optional. Set the size of the widget. Defaults to normal.
+data-tabindex	<integer>	Optional. Set the tabindex of the widget and popup. When appropriate, can make navigation more intuitive on your site. Defaults to 0.
+data-callback	<function name>	Optional. Called when the user submits a successful response. The h-captcha-response token is passed to your callback.
+data-expired-callback	<function name>	Optional. Called when the passcode response expires and the user must re-verify.
+data-chalexpired-callback	<function name>	Optional. Called when the user display of a challenge times out with no answer.
+data-open-callback	<function name>	Optional. Called when the user display of a challenge starts.
+data-close-callback	<function name>	Optional. Called when the user dismisses a challenge.
+data-error-callback	<function name>	Optional. Called when hCaptcha encounters an error and cannot continue. If you specify an error callback, you must inform the user that they should retry. Please see the section below containing the possible error codes.
+data-orientation	portrait | landscape	Optional. Used to dictate the rotation of the hCaptcha challenge presented based on the device's orientation. Only officially supported for Enterprise.
+
+Besides the required data-sitekey, you can add as many or as few configuration attributes as you want.
+
+<div
+  class="h-captcha"
+  data-sitekey="your_site_key"
+  data-theme="dark"
+  data-error-callback="onError"
+></div>
+
+info
+
+All of these attributes can also be used as parameters when explicitly rendering with hcaptcha.render() as described below. The parameter name is the Attribute in the table above, but without the data prefix. For example, data-tabindex is tabindex when passed into .render().
+
+<script type="text/javascript">
+  hcaptcha.render('your_div_id', // string: ID of target div to render into
+  {
+    sitekey: 'your_site_key',
+    theme: 'dark', // (for example)
+    'error-callback': 'onError', // (for example) string: name of function
+  });
+</script>
+
+JavaScript API
+
+The hCaptcha API exposes the hcaptcha object that has methods you may find useful in customizing hCaptcha behavior.
+hcaptcha.render(container, params)
+
+Renders the hCaptcha widget inside the container DOM element. Returns a unique widgetID for the widget.
+
+    container The string ID of the container or the container DOM element.
+    params An object containing config parameters as key=value pairs. Ex:
+
+    {
+       "theme": "dark",
+       "size": "compact",
+       "sitekey": "your_site_key"
+    }
+
+hcaptcha.reset(widgetID)
+
+Resets the hCaptcha widget with widgetID.
+
+    widgetID Optional unique ID for a widget. Defaults to first widget created.
+
+hcaptcha.getResponse(widgetID)
+
+Gets the response for the hCaptcha widget with widgetID.
+
+    widgetID Optional unique ID for a widget. Defaults to first widget created.
+
+hcaptcha.getRespKey(widgetID)
+
+Gets the response ID for the hCaptcha widget with widgetID.
+
+    widgetID Optional unique ID for a widget. Defaults to first widget created.
+
+hcaptcha.execute(widgetID)
+
+Triggers the hCaptcha workflow programmatically. Generally used in invisible mode where the target container is a div rather than a button.
+
+    widgetID Optional unique ID for a widget. Defaults to first widget created.
+
+Asynchronous mode (Get a Promise)
+
+Optionally, you can pass { async: true } to hcaptcha.execute() in order to get a promise back.
+
+    Upon successful completion of the challenge, it will resolve with an object containing the token and the response key.
+    In case of an error, it will reject with an appropriate error code (see section below).
+    It will not inform you about expired tokens, as the promise will have already resolved with the token in this scenario.
+        To handle this case you will still need to specify the expired-callback callback.
+
+hcaptcha.execute(widgetID, { async: true })
+    .then(({ response, key }) => {
+        console.log(response, key);
+    })
+    .catch(err => {
+        console.error(err);
+    });
+
+Error Codes
+
+The following error codes are passed as a string argument to the error-callback function or as rejection data to the asynchronous execute.
+
+In other words, when you set an error callback:
+
+var onError  = function(err) {
+    console.log("error!", err);
+};
+
+hcaptcha.render('your_div_id', // string: ID of target div to render into
+{
+  sitekey: 'your_site_key',
+  theme: 'dark', // (for example)
+  'error-callback': 'onError', // string: name of function
+});
+
+Then the output of onError would be "error! invalid-data" or one of the other error codes listed below.
+
+Please note that asynchronous .execute() calls can reject the promise with extra error codes (e.g. challenge-closed) which are not passed to the error-callback as there are other callbacks (e.g. close-callback) defined for these scenarios.
+
+In the table below, each error code is listed, along with details to interpret it and any action suggested.
+
+If you are using hCaptcha in a fully programmatic pattern ("invisible" mode, i.e. no checkbox, with .execute() called by your functions and errors rendered in your code rather than relying on ours) then please ensure your code follows the expected behavior by described by the Action when interpreting an error.
+Error Code	Description	Action
+rate-limited	User has sent too many requests	-
+network-error	There are network connection issues (e.g. offline)	hCaptcha will automatically retry several times before closing.
+invalid-data	Invalid data is not accepted by endpoints	-
+challenge-error	Challenge encountered error on setup	User may need to select the checkbox or if invisible programmatically call execute to initiate the challenge again.
+challenge-closed*	User closed the challenge	-
+challenge-expired*	Time limit to answer challenge has expired	-
+missing-captcha*	No captcha was found	Verify hCaptcha was properly setup and a captcha was rendered.
+invalid-captcha-id*	Captcha does not exist for ID provided	Check to make sure the captcha rendered matches the ID stored. Each hCaptcha client rendered contains a new ID.
+internal-error	hCaptcha client encountered an internal error	User may need to select the checkbox or if invisible programmatically call execute to initiate the challenge again.
+script-error	hCaptcha JS SDK could not be loaded	User may be behind a firewall that blocks api.js. Note: only present when using hcaptcha-loader.
+
+    * are thrown only in case of async execute
+
+Explicitly Render hCaptcha
+
+In the default implementation, hCaptcha widgets will be automatically rendered and inserted into your webpage. However, you can also defer rendering by specifying a custom onload callback function in which you render the widget yourself.
+
+To specify a custom onload callback function, you must pass the function name as an onload query parameter in the hCaptcha javascript tag. In addition, you must set the render query parameter to explicit. Your hCaptcha script tag should look like this (replace yourFunction with the name of your function):
+
+<script
+  src="https://js.hcaptcha.com/1/api.js?onload=yourFunction&render=explicit"
+  async
+  defer
+></script>
+
+Your custom callback function must be defined before the hCaptcha script loads. You can then call hcaptcha.render with the container ID and your sitekey to explicitly render the widget.
+info
+
+api.js query parameters like recaptchacompat=off are parsed on Dom.ready. Do not call hcaptcha.render() right away if you are using render=explicit to avoid racing SDK setup. Instead, call render via the function you define in api.js?onload=yourFunc to ensure the SDK is fully initialized.
+
+<script type="text/javascript">
+  var yourFunction = function () {
+    console.log('hCaptcha is ready.');
+    var widgetID = hcaptcha.render('captcha-1', { sitekey: 'your_site_key' });
+  };
+</script>
+
+Themes
+
+You can apply a dark theme to the hCaptcha widget by setting the data-theme attribute of the hCaptcha container to dark.
+
+hCaptcha dark theme example.
+
+<div class="h-captcha" data-sitekey="your_site_key" data-theme="dark"></div>
+
+There's also a compact option to give the widget a smaller footprint. Set the data-size attribute of the hCaptcha container to compact.
+
+hCaptcha compact theme example.
+
+<div class="h-captcha" data-sitekey="your_site_key" data-size="compact"></div>
+
+Custom Themes
+note
+
+This feature is enabled for all new sitekeys on Pro and Enterprise accounts. If your sitekey does not accept custom themes, please contact support for assistance.
+
+This document describes the custom theming feature, how to enable it, and the accepted schema that controls theme options.
+Built-in Themes vs. Custom Themes
+
+hCaptcha offers several pre-defined color schemes ("themes"), which you can choose by simply setting the theme property to one of those strings.
+
+Custom Themes instead let you customize any color in the hCaptcha UI to match your brand requirements by passing a JS object at render time, as described below.
+How to enable Custom Themes
+
+First, the query parameter custom=true must be added to the https://js.hcaptcha.com/1/api.js script tag to let the hCaptcha client know it should load themes. Note that this will be ignored if the feature has not been enabled for your account. When using custom themes, the current theme configuration method takes a JSON string or Javascript object matching the theme schema outlined below.
+Example Setup
+
+  <script src="https://js.hcaptcha.com/1/api.js?render=explicit&onload=onLoad&custom=true" async defer></script>
+
+  <script type="text/javascript">
+
+    var onLoad = function() {
+      hcaptcha.render("h-captcha", {
+        "sitekey": "<sitekey>",
+        "theme"  : {
+          palette: {
+            primary: {
+              main: "#00FF00"
+            },
+            text: {
+              heading: "#454545",
+              body   : "#8C8C8C"
+            }
+          }
+        }
+      });
+    };
+
+  </script>
+
+Custom Theme Configurator
+info
+
+The Custom Theme Configurator serves as an example of how to build your own Custom Themes and is a resource for building your own schema, but it does not represent all the customizable values between the palette and component properties.
+Color Configuration
+Palette Customization
+Our overall style guide and color system used to style internal components.
+Grey:
+palette.grey.100
+palette.grey.200
+palette.grey.300
+palette.grey.400
+palette.grey.500
+palette.grey.600
+palette.grey.700
+palette.grey.800
+palette.grey.900
+palette.grey.1000
+Primary:
+palette.primary.main
+Warn:
+palette.warn.main
+Text:
+palette.text.heading
+palette.text.body
+Component Customization
+Style individual UI elements beyond the general palette.
+Checkbox:
+Main
+component.checkbox.main.fill
+component.checkbox.main.border
+Hover
+component.checkbox.hover.fill
+Modal:
+Main
+component.modal.main.fill
+Hover
+component.modal.hover.fill
+Focus
+component.modal.focus.outline
+Challenge:
+Main
+component.challenge.main.fill
+component.challenge.main.border
+Hover
+component.challenge.hover.fill
+Breadcrumb:
+Main
+component.breadcrumb.main.fill
+Active
+component.breadcrumb.active.fill
+Button:
+Main
+component.button.main.fill
+component.button.main.icon
+component.button.main.text
+Hover
+component.button.hover.fill
+Focus
+component.button.focus.icon
+component.button.focus.text
+component.button.focus.outline
+Active
+component.button.active.fill
+component.button.active.icon
+component.button.active.text
+Link:
+Focus
+component.link.focus.outline
+List:
+Main
+component.list.main.fill
+component.list.main.border
+ListItem:
+Main
+component.listItem.main.fill
+component.listItem.main.line
+component.listItem.main.text
+Hover
+component.listItem.hover.fill
+Selected
+component.listItem.selected.fill
+Focus
+component.listItem.focus.outline
+Input:
+Main
+component.input.main.fill
+component.input.main.border
+Focus
+component.input.focus.fill
+component.input.focus.border
+component.input.focus.outline
+Radio:
+Main
+component.radio.main.fill
+component.radio.main.border
+component.radio.main.check
+Selected
+component.radio.selected.check
+Focus
+component.radio.focus.outline
+Task:
+Main
+component.task.main.fill
+Selected
+component.task.selected.badge
+component.task.selected.outline
+Report
+component.task.report.badge
+component.task.report.outline
+Focus
+component.task.focus.badge
+component.task.focus.outline
+Prompt:
+Main
+component.prompt.main.fill
+component.prompt.main.border
+component.prompt.main.text
+Report
+component.prompt.report.fill
+component.prompt.report.border
+component.prompt.report.text
+SkipButton:
+Main
+component.skipButton.main.fill
+component.skipButton.main.border
+component.skipButton.main.text
+Hover
+component.skipButton.hover.fill
+component.skipButton.hover.border
+component.skipButton.hover.text
+Focus
+component.skipButton.focus.outline
+VerifyButton:
+Main
+component.verifyButton.main.fill
+component.verifyButton.main.border
+component.verifyButton.main.text
+Hover
+component.verifyButton.hover.fill
+component.verifyButton.hover.border
+component.verifyButton.hover.text
+Focus
+component.verifyButton.focus.outline
+Slider:
+Main
+component.slider.main.bar
+component.slider.main.handle
+Focus
+component.slider.focus.handle
+Textarea:
+Main
+component.textarea.main.fill
+component.textarea.main.border
+Focus
+component.textarea.focus.fill
+component.textarea.focus.outline
+Disabled
+component.textarea.disabled.fill
+Live Preview
+I am human
+Privacy
+-
+Terms
+Please select all the images containing an animal with a beak.
+If there are none, click Skip.
+bird
+captcha 0
+captcha 1
+captcha 2
+captcha 3
+captcha 4
+captcha 5
+captcha 6
+captcha 7
+captcha 8
+EN
+Please Try Again
+Configurator Schema Output
+
+var theme = {
+  "palette": {
+    "mode": "light",
+    "grey": {
+      "100": "#FAFAFA",
+      "200": "#F5F5F5",
+      "300": "#E0E0E0",
+      "400": "#D7D7D7",
+      "500": "#BFBFBF",
+      "600": "#919191",
+      "700": "#555555",
+      "800": "#333333",
+      "900": "#222222",
+      "1000": "#14191F"
+    },
+    "primary": {
+      "main": "#00838F"
+    },
+    "warn": {
+      "main": "#EB5757"
+    },
+    "text": {
+      "heading": "#555555",
+      "body": "#555555"
+    }
+  },
+  "component": {
+    "checkbox": {
+      "main": {
+        "fill": "#FAFAFA",
+        "border": "#E0E0E0"
+      },
+      "hover": {
+        "fill": "#F5F5F5"
+      }
+    },
+    "modal": {
+      "main": {
+        "fill": "#FFFFFF"
+      },
+      "hover": {
+        "fill": "#F5F5F5"
+      },
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "challenge": {
+      "main": {
+        "fill": "#FAFAFA",
+        "border": "#E0E0E0"
+      },
+      "hover": {
+        "fill": "#FAFAFA"
+      }
+    },
+    "breadcrumb": {
+      "main": {
+        "fill": "#F5F5F5"
+      },
+      "active": {
+        "fill": "#00838F"
+      }
+    },
+    "button": {
+      "main": {
+        "fill": "#FFFFFF",
+        "icon": "#555555",
+        "text": "#555555"
+      },
+      "hover": {
+        "fill": "#F5F5F5"
+      },
+      "focus": {
+        "icon": "#00838F",
+        "text": "#00838F",
+        "outline": "#0074BF"
+      },
+      "active": {
+        "fill": "#F5F5F5",
+        "icon": "#555555",
+        "text": "#555555"
+      }
+    },
+    "link": {
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "list": {
+      "main": {
+        "fill": "#FFFFFF",
+        "border": "#D7D7D7"
+      }
+    },
+    "listItem": {
+      "main": {
+        "fill": "#FFFFFF",
+        "line": "#F5F5F5",
+        "text": "#555555"
+      },
+      "hover": {
+        "fill": "#F5F5F5"
+      },
+      "selected": {
+        "fill": "#E0E0E0"
+      },
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "input": {
+      "main": {
+        "fill": "#FAFAFA",
+        "border": "#919191"
+      },
+      "focus": {
+        "fill": "#F5F5F5",
+        "border": "#333333",
+        "outline": "#0074BF"
+      }
+    },
+    "radio": {
+      "main": {
+        "fill": "#F5F5F5",
+        "border": "#919191",
+        "check": "#F5F5F5"
+      },
+      "selected": {
+        "check": "#00838F"
+      },
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "task": {
+      "main": {
+        "fill": "#F5F5F5"
+      },
+      "selected": {
+        "badge": "#00838F",
+        "outline": "#00838F"
+      },
+      "report": {
+        "badge": "#EB5757",
+        "outline": "#EB5757"
+      },
+      "focus": {
+        "badge": "#00838F",
+        "outline": "#00838F"
+      }
+    },
+    "prompt": {
+      "main": {
+        "fill": "#00838F",
+        "border": "#00838F",
+        "text": "#FFFFFF"
+      },
+      "report": {
+        "fill": "#EB5757",
+        "border": "#EB5757",
+        "text": "#FFFFFF"
+      }
+    },
+    "skipButton": {
+      "main": {
+        "fill": "#919191",
+        "border": "#919191",
+        "text": "#FFFFFF"
+      },
+      "hover": {
+        "fill": "#555555",
+        "border": "#919191",
+        "text": "#FFFFFF"
+      },
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "verifyButton": {
+      "main": {
+        "fill": "#00838F",
+        "border": "#00838F",
+        "text": "#FFFFFF"
+      },
+      "hover": {
+        "fill": "#00838F",
+        "border": "#00838F",
+        "text": "#FFFFFF"
+      },
+      "focus": {
+        "outline": "#0074BF"
+      }
+    },
+    "slider": {
+      "main": {
+        "bar": "#C4C4C4",
+        "handle": "#0F8390"
+      },
+      "focus": {
+        "handle": "#0F8390"
+      }
+    },
+    "textarea": {
+      "main": {
+        "fill": "#C4C4C4",
+        "border": "#919191"
+      },
+      "focus": {
+        "fill": "#C4C4C4",
+        "outline": "#0074BF"
+      },
+      "disabled": {
+        "fill": "#919191"
+      }
+    }
+  }
+};
+
+Schema
+
+We've divided our theming into two pieces: palette and component. Palette is our overall style guide and color system to use when applying styles to our components internally. Component provide customization at a granular level, in the event you want to style parts of the UI beyond simply updating greys or our primary color.
+
+Finally we have a mode attached to palette that generally dictates how we look up a color. For example if the mode is set to light then text will be a dark grey variant, specifically Grey 700. However when dark is set, the text would use Grey 100 as the base color. In short, the grey values looked up are flipped based on mode set.
+
+Below is an outline of the entire schema that can be provided. A subset or even a single property change can be provided and the rest will be merged based on the default styles set by either mode.
+
+var theme = {
+  palette: {
+    mode: "light",
+    grey: {
+      100 : "#FAFAFA",
+      200 : "#F5F5F5",
+      300 : "#E0E0E0",
+      400 : "#D7D7D7",
+      500 : "#BFBFBF",
+      600 : "#919191",
+      700 : "#555555",
+      800 : "#333333",
+      900 : "#222222",
+      1000: "#14191F"
+    },
+    primary: {
+      main: "#00838F"
+    },
+    warn: {
+      main: "#EB5757"
+    },
+    text: {
+      heading: "#555555",
+      body   : "#555555"
+    }
+  },
+  component: {
+    checkbox: {
+      main: {
+        fill  : "#FAFAFA",
+        border: "#E0E0E0"
+      },
+      hover: {
+        fill: "#F5F5F5"
+      }
+    },
+    challenge: {
+      main: {
+        fill  : "#FAFAFA",
+        border: "#E0E0E0"
+      },
+      hover: {
+        fill: "#FAFAFA"
+      }
+    },
+    modal: {
+      main: {
+        fill  : "#FFFFFF"
+      },
+      hover: {
+        fill: "#F5F5F5"
+      },
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    breadcrumb: {
+      main: {
+        fill: "#F5F5F5"
+      },
+      active: {
+        fill: "#00838F"
+      }
+    },
+    button: {
+      main: {
+        fill: "#FFFFFF",
+        icon: "#555555",
+        text: "#555555"
+      },
+      hover: {
+        fill: "#F5F5F5"
+      },
+      focus: {
+        icon   : "#00838F",
+        text   : "#00838F",
+        outline: "#0074BF"
+      },
+      active: {
+        fill: "#F5F5F5",
+        icon: "#555555",
+        text: "#555555"
+      }
+    },
+    link: {
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    list: {
+      main: {
+        fill  : "#FFFFFF",
+        border: "#D7D7D7"
+      }
+    },
+    listItem: {
+      main: {
+        fill: "#FFFFFF",
+        line: "#F5F5F5",
+        text: "#555555"
+      },
+      hover: {
+        fill: "#F5F5F5"
+      },
+      selected: {
+        fill: "#E0E0E0"
+      },
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    input: {
+      main: {
+        fill  : "#FAFAFA",
+        border: "#919191"
+      },
+      focus: {
+        fill   : "#F5F5F5",
+        border : "#333333",
+        outline: "#0074BF"
+      }
+    },
+    field: {
+      label: "#222222",
+      input: {
+        main: {
+          border: "#D7D7D7",
+          fill: "#FFFFFF",
+          text: "#14191F"
+        },
+        focus: {
+          outline: "#00838F",
+          fill: "#F5F5F5"
+        },
+        error: {
+          border: "#BF1722",
+          text: "#BF1722"
+        }
+      }
+    },
+    radio: {
+      main: {
+        file  : "#F5F5F5",
+        border: "#919191",
+        check : "#F5F5F5"
+      },
+      selected: {
+        check: "#00838F"
+      },
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    task: {
+      // Image shown in challenge to be answered
+      main: {
+        fill: "#F5F5F5"
+      },
+      selected: {
+        badge: "#00838F",
+        outline: "#00838F"
+      },
+      report: {
+        badge: "#EB5757",
+        outline: "#EB5757"
+      },
+      details: {
+        heading: '#222222',
+        text: '#222222',
+      },
+      focus: {
+        badge: "#00838F",
+        outline: "#00838F"
+      }
+    },
+    prompt: {
+      main: {
+        fill  : "#00838F",
+        border: "#00838F",
+        text  : "#FFFFFF"
+      },
+      report: {
+        fill  : "#EB5757",
+        border: "#EB5757",
+        text  : "#FFFFFF"
+      }
+    },
+    skipButton: {
+      main: {
+        fill  : "#919191",
+        border: "#919191",
+        text  : "#FFFFFF"
+      },
+      hover: {
+        fill  : "#555555",
+        border: "#919191",
+        text  : "#FFFFFF"
+      },
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    verifyButton: {
+      main: {
+        fill  : "#00838F",
+        border: "#00838F",
+        text  : "#FFFFFF"
+      },
+      hover: {
+        fill  : "#00838F",
+        border: "#00838F",
+        text  : "#FFFFFF"
+      },
+      focus: {
+        outline: "#0074BF"
+      },
+      disabled: {
+        fill  : "#919191",
+        border: "#919191",
+        text  : "#FFFFFF"
+      },
+    },
+    mfaButton: {
+      main: {
+        fill  : "#00838F",
+        border: "#00838F",
+        text  : "#FFFFFF"
+      },
+      hover: {
+        fill  : "#00838F",
+        border: "#00838F",
+        text  : "#FFFFFF"
+      },
+      focus: {
+        outline: "#0074BF"
+      }
+    },
+    slider: {
+      main: {
+        bar   : "#C4C4C4",
+        handle: "#0F8390"
+      },
+      focus: {
+        handle: "#0F8390"
+      }
+    },
+    textarea: {
+      main: {
+        fill  : "#C4C4C4",
+        border: "#919191"
+      },
+      focus: {
+        fill   : "#C4C4C4",
+        outline: "#0074BF"
+      },
+      disabled: {
+        fill: "#919191"
+      }
+    }
+  }
+};
+
+Schema Visual Walkthrough
+Palette
+
+Palette.grey values are used if no component colors are used directly. If you create a new theme with purely the palette property, these values will be used throughout the checkbox widget and challenge.
+
+Palette.primary is the color of the underline beneath the heading of the menu modal.
+challenge menu modal
+
+Palette.warn is the "Please Try Again" text if a challenge isn't passed.
+hCaptcha challenge warning message
+
+Palette.text includes .heading, the heading of the menu's modal pop-ups, and .body, the "I am human" text beside the widget's checkbox.
+challenge menu modal text heading hCaptcha widget text
+Component
+
+The checkbox values style the checkbox widget.
+
+    .main.fill is the background color, and .main.border is the border color of the hCaptcha widget.
+
+    .hover.fill is the background color of the hCaptcha widget when hovering.
+
+hCaptcha Checkbox Widget
+
+The modal values style the modal pop-ups when clicking a ListItem within the challenge's menu (vertical ellipsis).
+
+    .main.fill is the background color of the modal.
+
+    .hover.fill is the modal's background color when hovering.
+
+    .focus.outline is the modal's outline color when focused.
+
+hCaptcha Information Modal
+
+The challenge values style the challenge pop-up users must solve to complete the hCaptcha.
+
+    .main.fill is the background color, and .main.border is the border color of the challenge.
+
+    .hover.fill is the background color of the challenge when hovering.
+
+hCaptcha challenge component
+
+The breadcrumb values style the horizontal ellipsis beneath the challenge images.
+
+    .main.fill are the inactive dots shown.
+
+    .main.active is the active dot shown.
+
+challenge breadcrumb component
+
+The button values style the interface icon buttons in the bottom-left of the challenge.
+
+    .main.fill is the button's background color, .main.icon is the icon's color, and .main.text is the color of the abbreviated language text.
+
+    .hover.fill is the button's background color when hovering.
+
+    .focus.icon is the color of the icon when hovering, .focus.text is not live, and focus.outline is the button's outline color when focused.
+
+    .active properties are not live.
+
+challenge menu buttons
+
+The link.focus.outline value is the outline color surrounding the "Privacy" and "Terms" links when focused.
+checkbox widget links
+
+The list values style the modals with list items that open when clicking the icon buttons in the bottom-left of the challenge.
+
+    .main.fill is the background color (behind ListItem), and .main.border is the modal's border color.
+
+challenge menu pop-up
+
+The listItem values style the clickable rows within the language list and menu modals.
+
+    .main.fill is the background color, main.line is the horizontal line separating rows, and main.text is the text color of a ListItem.
+
+    .hover.fill is the background color of the ListItem when hovering.
+
+    .selected.fill is the background color of the ListItem selected from the list.
+
+    .focus.outline is not live.
+
+challenge menu and language list items
+
+The input values style the clickable checkbox within the widget that renders the check upon completion of the hCaptcha.
+
+    .main.fill is the background color, and main.border is the border color of the square checkbox.
+
+    focus.border is the border color when hovering and focus.outline is the outline color when focused. .focus.fill is not live.
+
+checkbox of the hCaptcha widget
+
+The radio values style the checkboxes when reporting an issue within the menu modal.
+
+    .main.fill is the checkbox's background color and main.border is the border color. main.check is not live.
+
+    .selected.check is the colored area within the checkbox indicating the selected item.
+
+    .focus.outline is the outline color of the checkbox when focused.
+
+bug report radio elements
+
+The task values style the images and badge used in the hCaptcha challenge.
+
+    .main.fill is the background color behind the challenge image.
+
+    .selected.badge is the color of the checkmark circle, and .selected.outline is the color of the outline indicating a selected image within the challenge.
+
+    .report.badge is the color of the checkmark circle and .selected.outline is the color of the outline when selecting an image to report within the challenge.
+
+    .focus.badge and .focus.outline are not live.
+
+hCaptcha challenge images
+
+The prompt values style the header area that provides instructions for the challenge.
+
+    .main.fill is the background color, .main.border is the border color, and main.text is the text color of the header area of the challenge.
+
+    .report properties are not live.
+
+hCaptcha challenge header with prompt
+
+The skipButton values style the "Skip" button in the bottom-right of the challenge.
+
+    .main.fill is the background color, main.border is the border color, and main.text is the text color of the Skip button.
+
+    .hover.fill is the background color, hover.border is the border color, and hover.text is the text color of the Skip button when hovering.
+
+    .focus.outline is the outline color of the Skip button when focused.
+
+challenge skip button
+
+The verifyButton values style the "Verify" button in the bottom-right of the challenge.
+
+    .main.fill is the background color, main.border is the border color, and main.text is the text color of the Verify button.
+
+    .hover.fill is the background color, hover.border is the border color, and hover.text is the text color of the Verify button when hovering.
+
+    .focus.outline is the outline color of the Verify button when focused.
+
+challenge verify button
+
+The slider values style the slider used in text free entry challenges.
+
+    .main.bar is the slider's bar color and .main.handle is the controller color for the slider.
+
+    .focus.handle is the slider's controller color when focused.
+
+Text Free Entry Challenge component
+
+The textarea values style the text area when reporting a bug and the text area in the text free entry challenge.
+
+    .main.fill is the background color, and .main.border is the border color of the "Other" text area when reporting a bug.
+
+other bug report text area
+
+    .focus.fill is the text area's background color and .focus.outline is the outline color in the text free entry challenge when focused.
+
+    .disabled.fill is the text area's background color in the text free entry challenge when disabled.
+
+Text Free Entry Challenge component
+Try It Live
+
+Test custom themes on a live hCaptcha widget:
+Examples
+
+Example using just palette customization:
+
+var vibrantTheme = {
+  palette: {
+    mode: "light",
+    grey: { 100: "#FAFAFA", 200: "#F5F5F5", 300: "#E0E0E0", 400: "#D7D7D7", 500: "#BFBFBF", 600: "#919191", 700: "#555555", 800: "#333333", 900: "#222222", 1000: "#14191F" },
+    primary: { main: "#FF5722" },
+    warn: { main: "#F44336" },
+    text: { heading: "#212121", body: "#212121" }
+  },
+};
+
+Example using both palette and component customization:
+
+var subtleDarkTheme = {
+  palette: {
+    mode: "dark",
+    grey: {
+      100: "#FAFAFA",
+      200: "#F5F5F5",
+      300: "#E0E0E0",
+      400: "#D7D7D7",
+      500: "#BFBFBF",
+      600: "#919191",
+      700: "#787878",
+      800: "#5E5E5E",
+      900: "#444444",
+      1000: "#2A2A2A"
+    },
+    primary: { 
+      main: "#607D8B" 
+    },
+    warn: { 
+      main: "#FF5722" 
+    },
+    text: { 
+      heading: "#F5F5F5", 
+      body: "#E0E0E0" 
+    }
+  },
+  component: {
+    checkbox: {
+      main: { 
+        fill: "#424242",
+        border: "#616161"
+      },
+    },
+    input: {
+      main: { 
+        fill: "#424242",
+        border: "#616161"
+      },
+      focus: { 
+        fill: "#555555",
+        border: "#6A6A6A",
+        outline: "#607D8B"
+      }
+    },
+    challenge: {
+      main: { 
+        fill: "#303030",
+        border: "#424242"
+      },
+      hover: { 
+        fill: "#383838"
+      }
+    },
+    button: {
+      main: { 
+        fill: "#424242",
+        icon: "#F5F5F5",
+        text: "#F5F5F5"
+      },
+      hover: { 
+        fill: "#555555"
+      },
+      focus: { 
+        icon: "#607D8B",
+        text: "#607D8B",
+        outline: "#607D8B"
+      },
+      active: { 
+        fill: "#555555",
+        icon: "#F5F5F5",
+        text: "#F5F5F5"
+      }
+    },
+    modal: {
+      main: { 
+        fill: "#222222"
+      },
+      hover: { 
+        fill: "#303030"
+      },
+      focus: { 
+        outline: "#607D8B"
+      }
+    }
+  }
+};
+
+Language Codes
+
+By default, hCaptcha will automatically detect the user's locale and localize widgets accordingly. However, if you'd like to force a particular localization, use one of the language codes below with the hl query parameter. (More detailed configuration instructions here.)
+Language	Code
+Afrikaans	af
+Albanian	sq
+Amharic	am
+Arabic	ar
+Armenian	hy
+Azerbaijani	az
+Basque	eu
+Belarusian	be
+Bengali	bn
+Bulgarian	bg
+Bosnian	bs
+Burmese	my
+Catalan	ca
+Cebuano	ceb
+Chinese	zh
+Chinese Simplified	zh-CN
+Chinese Traditional	zh-TW
+Corsican	co
+Croatian	hr
+Czech	cs
+Danish	da
+Dutch	nl
+English	en
+Esperanto	eo
+Estonian	et
+Farsi	fa
+ish	fi
+French	fr
+Frisian	fy
+Gaelic	gd
+Galacian	gl
+Georgian	ka
+German	de
+Greek	el
+Gujurati	gu
+Haitian	ht
+Hausa	ha
+Hawaiian	haw
+Hebrew	he
+Hindi	hi
+Hmong	hmn
+Hungarian	hu
+Icelandic	is
+Igbo	ig
+Indonesian	id
+Irish	ga
+Italian	it
+Japanese	ja
+Javanese	jw
+Kannada	kn
+Kazakh	kk
+Khmer	km
+Kinyarwanda	rw
+Kirghiz	ky
+Korean	ko
+Kurdish	ku
+Lao	lo
+Latin	la
+Latvian	lv
+Lithuanian	lt
+Luxembourgish	lb
+Macedonian	mk
+Malagasy	mg
+Malay	ms
+Malayalam	ml
+Maltese	mt
+Maori	mi
+Marathi	mr
+Mongolian	mn
+Montenegrin (as Bosnian)	me
+Nepali	ne
+Norwegian	no
+Nyanja	ny
+Oriya	or
+Persian	fa
+Polish	pl
+Portuguese	pt
+Pashto	ps
+Punjabi	pa
+Romanian	ro
+Russian	ru
+Samoan	sm
+Shona	sn
+Sindhi	sd
+Sinhalese	si
+Serbian	sr
+Slovak	sk
+Slovenian	sl
+Somali	so
+Southern Sotho	st
+Spanish	es
+Sundanese	su
+Swahili	sw
+Swedish	sv
+Tagalog	tl
+Tajik	tg
+Tamil	ta
+Tatar	tt
+Teluga	te
+Thai	th
+Turkish	tr
+Turkmen	tk
+Uyghur	ug
+Ukrainian	uk
+Urdu	ur
+Uzbek	uz
+Vietnamese	vi
+Welsh	cy
+Xhosa	xh
+Yiddish	yi
+Yoruba	yo
+Zulu	zu
+
+ What is hCaptcha?
+
+Understanding the Usage of hCaptcha's API Script with onLoad Parameter
+
+In today's digital landscape, securing your website from bots and spam is crucial. One popular tool for this is hCaptcha, a privacy-focused alternative to reCAPTCHA. In this blog post, we'll explore the usage of the hCaptcha API script, specifically the URL:
+
+https://js.hcaptcha.com/1/api.js?onload=onLoad
+
+This script is essential for integrating hCaptcha into your website to verify human users while enhancing security.
+What is hCaptcha?
+
+hCaptcha is a CAPTCHA (Completely Automated Public Turing test to tell Computers and Humans Apart) service designed to prevent automated bots from accessing forms, sign-up pages, and other sensitive areas on websites. Unlike reCAPTCHA, hCaptcha emphasizes privacy and does not track users across the web.
+Understanding the hCaptcha API Script
+
+The script URL:
+
+https://js.hcaptcha.com/1/api.js?onload=onLoad
+
+serves two primary purposes:
+
+    Loads hCaptcha’s JavaScript API: This enables rendering of the CAPTCHA widget and handling user responses.
+    Executes a Custom Callback Function (onLoad): The onload parameter allows you to define a function that runs once hCaptcha is fully loaded.
+
+How to Use hCaptcha with onLoad Parameter
+
+To integrate hCaptcha into your website, follow these steps:
+1. Basic HTML Integration
+
+Here’s a simple example of embedding hCaptcha in a form:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hCaptcha Example</title>
+    <script>
+        function onLoad() {
+            console.log("hCaptcha script has loaded successfully!");
+        }
+    </script>
+    <script src="https://js.hcaptcha.com/1/api.js?onload=onLoad" async defer></script>
+</head>
+<body>
+    <form action="/submit" method="POST">
+        <div class="h-captcha" data-sitekey="your-site-key"></div>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+
+In this example:
+
+    The <div class="h-captcha" data-sitekey="your-site-key"></div> element loads the hCaptcha widget.
+    The script is loaded asynchronously, and once it's ready, the onLoad function is triggered, logging a message.
+
+2. Dynamically Rendering hCaptcha
+
+If you need to load hCaptcha dynamically (e.g., inside a modal or after user interaction), you can manually render it using JavaScript:
+
+function onLoad() {
+    hcaptcha.render('captcha-container', {
+        sitekey: 'your-site-key'
+    });
+}
+
+Ensure your HTML has a placeholder for the CAPTCHA:
+
+<div id="captcha-container"></div>
+
+This method ensures that the CAPTCHA only loads when needed, improving page performance.
+Final Thoughts
+
+The hCaptcha API script with the onLoad parameter provides developers with greater control over CAPTCHA rendering and execution. Whether you're embedding it directly in forms or loading it dynamically, this approach enhances security while optimizing the user experience.
+
+By leveraging hCaptcha, you not only protect your site from bots but also maintain user privacy. Implement it today to enhance security on your website!
+
+Have Questions?
+Let us know in the comments below or explore hCaptcha’s official documentation for more details!

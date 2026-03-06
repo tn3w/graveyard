@@ -1,0 +1,49 @@
+[package]
+name = "clouded"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "clouded"
+path = "src/lib.rs"
+
+[[bin]]
+name = "clouded"
+path = "src/main.rs"
+
+[[bench]]
+name = "captcha_bench"
+harness = false
+
+[dependencies]
+actix-web = "4.9"
+actix-files = "0.6"
+actix-cors = "0.7"
+tokio = { version = "1.41", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"] }
+argon2 = "0.5"
+jsonwebtoken = "9.3"
+totp-rs = { version = "5.6", features = ["otpauth"] }
+base32 = "0.5"
+rand = { version = "0.8", features = ["small_rng"] }
+uuid = { version = "1.11", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+webauthn-rs = "0.5"
+url = "2.5"
+aes-gcm = "0.10"
+hmac = "0.12"
+sha2 = "0.10"
+base64 = "0.22"
+image = "0.25"
+imageproc = "0.25"
+resvg = "0.44"
+regex-lite = "0.1"
+rayon = "1.10"
+bincode = "1.3"
+toml = "0.8"
+reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
+
+[dev-dependencies]
+proptest = "1.5"

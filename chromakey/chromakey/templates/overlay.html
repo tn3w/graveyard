@@ -1,0 +1,324 @@
+{% if fullscreen %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Auth Code</title>
+    </head>
+    <body style="margin: 0; padding: 0">
+        {% endif %} {% if not fullscreen %}
+        <div
+            id="auth-overlay"
+            style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                border-radius: 10px;
+                padding: 12px;
+                color: #fff;
+                font-family: system-ui;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            "
+        >
+            <div style="display: flex; flex-direction: column; gap: 8px">
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+                    "
+                >
+                    <div style="display: flex; align-items: center; gap: 8px">
+                        <div
+                            style="
+                                font-size: 10px;
+                                opacity: 0.5;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                            "
+                        >
+                            Auth Code
+                        </div>
+                        <svg
+                            onclick="logout()"
+                            style="width: 14px; height: 14px; cursor: pointer; opacity: 0.5"
+                            onmouseover="this.style.opacity = '1'"
+                            onmouseout="this.style.opacity = '0.5'"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+                            />
+                        </svg>
+                        <svg
+                            onclick="toggleFullscreen()"
+                            style="width: 14px; height: 14px; cursor: pointer; opacity: 0.5"
+                            onmouseover="this.style.opacity = '1'"
+                            onmouseout="this.style.opacity = '0.5'"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+                            />
+                        </svg>
+                    </div>
+                    <div id="auth-timer" style="font-size: 12px; font-weight: bold"></div>
+                </div>
+                <div
+                    id="auth-shapes"
+                    style="display: flex; gap: 6px; cursor: pointer"
+                    onclick="copyCode()"
+                ></div>
+                <div style="font-size: 8px; opacity: 0.3; text-align: center; color: #ccc">
+                    Secured with
+                    <a href="https://github.com/tn3w/Chromakey" target="_blank" style="color: #ccc">
+                        Chromakey
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div
+            id="fullscreen-overlay"
+            style="
+        display: {% if fullscreen %}flex{% else %}none{% endif %};
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 40px;
+        font-family: system-ui;
+    "
+        >
+            <div
+                id="qrcode-container"
+                style="
+                    background: white;
+                    padding: 12px;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+            ></div>
+            <div style="display: flex; align-items: center; gap: 20px; position: relative">
+                <div
+                    style="
+                        font-size: 24px;
+                        color: #666;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                    "
+                >
+                    Auth Code
+                </div>
+                <div
+                    id="fullscreen-timer"
+                    style="font-size: 32px; font-weight: bold; color: #fff"
+                ></div>
+                {% if not fullscreen %}
+                <svg
+                    onclick="toggleFullscreen()"
+                    style="
+                        width: 28px;
+                        height: 28px;
+                        cursor: pointer;
+                        opacity: 0.5;
+                        position: absolute;
+                        right: -60px;
+                    "
+                    onmouseover="this.style.opacity = '1'"
+                    onmouseout="this.style.opacity = '0.5'"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="2"
+                >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+                {% endif %}
+            </div>
+            <div
+                id="fullscreen-shapes"
+                style="display: flex; gap: 30px; cursor: pointer"
+                onclick="copyCode()"
+            ></div>
+            <div
+                style="
+                    width: 600px;
+                    height: 6px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 3px;
+                    overflow: hidden;
+                "
+            >
+                <div
+                    id="fullscreen-progress"
+                    style="height: 100%; background: rgba(255, 255, 255, 0.5)"
+                ></div>
+            </div>
+            <div style="font-size: 11px; opacity: 0.3; color: #ccc">
+                Secured with
+                <a href="https://github.com/tn3w/Chromakey" target="_blank" style="color: #ccc">
+                    Chromakey
+                </a>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+        <script>
+            const isFullscreenMode = {{ 'true' if fullscreen else 'false' }};
+            const currentPath = {{ request.path | tojson }};
+
+            const shapes = {
+                circle: '<circle cx="20" cy="20" r="12" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+                square: '<rect x="8" y="8" width="24" height="24" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+                triangle: '<path d="M20 8 L32 32 L8 32 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+                star: '<path d="M20 5 L23 15 L33 15 L25 21 L28 32 L20 25 L12 32 L15 21 L7 15 L17 15 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+                heart: '<path d="M20 32 C20 32 8 22 8 15 C8 10 11 8 14 8 C17 8 20 11 20 11 C20 11 23 8 26 8 C29 8 32 10 32 15 C32 22 20 32 20 32 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+                diamond: '<path d="M20 8 L32 20 L20 32 L8 20 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>',
+            };
+
+            const colors = {
+                red: '#ef4444',
+                blue: '#3b82f6',
+                green: '#22c55e',
+                yellow: '#eab308',
+                purple: '#a855f7',
+            };
+
+            let challenge = [];
+            let expiresAt = 0;
+
+            async function fetchChallenge() {
+                try {
+                    const response = await fetch('/chromakey/challenge');
+                    if (response.status === 401) {
+                        window.location.href = '/chromakey/login';
+                        return;
+                    }
+                    const data = await response.json();
+                    challenge = data.challenge;
+                    expiresAt = data.expires_at;
+                    updateShapes();
+                    const timeUntilExpiry = (expiresAt - Date.now() / 1000) * 1000;
+                    setTimeout(fetchChallenge, Math.max(timeUntilExpiry + 100, 1000));
+                } catch (error) {
+                    setTimeout(fetchChallenge, 5000);
+                }
+            }
+
+            function renderShape(item, size) {
+                const shadow = size > 50 ? ';box-shadow:0 10px 40px rgba(0,0,0,0.5)' : '';
+                return `<div style="width:${size}px;height:${size}px;border-radius:${size/6}px;background:${colors[item.color]};display:flex;align-items:center;justify-content:center${shadow}"><svg viewBox="0 0 40 40" style="width:${size*0.8}px;height:${size*0.8}px;pointer-events:none">${shapes[item.shape]}</svg></div>`;
+            }
+
+            function updateShapes() {
+                const authShapes = document.getElementById('auth-shapes');
+                if (authShapes) authShapes.innerHTML = challenge.map(item => renderShape(item, 32)).join('');
+                const fullscreen = document.getElementById('fullscreen-overlay');
+                if (fullscreen?.style.display === 'flex') {
+                    document.getElementById('fullscreen-shapes').innerHTML = challenge.map(item => renderShape(item, 120)).join('');
+                    updateQRCode();
+                }
+            }
+
+            function updateQRCode() {
+                const code = challenge.map(item => shapeCodes[item.shape] + colorCodes[item.color]).join('');
+                const host = window.location.origin;
+                let url = `${host}/chromakey/challenge/${code}`;
+                if (!isFullscreenMode && currentPath) {
+                    url += `?next=${encodeURIComponent(currentPath)}`;
+                }
+                const container = document.getElementById('qrcode-container');
+                if (container) {
+                    container.innerHTML = '';
+                    new QRCode(container, {
+                        text: url,
+                        width: 160,
+                        height: 160,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+                }
+            }
+
+            const shapeCodes = {circle:'C',square:'S',triangle:'T',star:'A',heart:'H',diamond:'D'};
+            const colorCodes = {red:'R',blue:'B',green:'G',yellow:'Y',purple:'P'};
+
+            function copyCode() {
+                const code = challenge.map(item => shapeCodes[item.shape] + colorCodes[item.color]).join('');
+                navigator.clipboard.writeText(code).then(() => {
+                    showCopyFeedback(document.getElementById('fullscreen-overlay').style.display === 'flex');
+                });
+            }
+
+            function showCopyFeedback(isFullscreen) {
+                if (!isFullscreen) {
+                    const element = document.getElementById('auth-shapes');
+                    element.style.transition = 'opacity 0.1s';
+                    element.style.opacity = '0.3';
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        setTimeout(() => element.style.transition = '', 100);
+                    }, 100);
+                    return;
+                }
+                const feedback = document.createElement('div');
+                feedback.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:24px;height:24px"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied</span>';
+                feedback.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);color:white;padding:20px 28px;border-radius:12px;font-family:system-ui;font-size:16px;font-weight:500;z-index:10001;box-shadow:0 8px 32px rgba(0,0,0,0.6);display:flex;align-items:center;gap:12px;animation:fadeInOut 1.2s ease-in-out forwards;pointer-events:none';
+                const style = document.createElement('style');
+                style.textContent = '@keyframes fadeInOut{0%{opacity:0;transform:translate(-50%,-60%)}15%{opacity:1;transform:translate(-50%,-50%)}85%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-40%)}}';
+                document.head.appendChild(style);
+                document.body.appendChild(feedback);
+                setTimeout(() => {feedback.remove();style.remove();}, 1200);
+            }
+
+            function updateTimer() {
+                const timeLeft = Math.max(0, Math.ceil(expiresAt - Date.now() / 1000));
+                const timer = document.getElementById('auth-timer');
+                if (timer) timer.textContent = timeLeft + 's';
+                const fullscreen = document.getElementById('fullscreen-overlay');
+                if (fullscreen?.style.display === 'flex') {
+                    document.getElementById('fullscreen-timer').textContent = timeLeft + 's';
+                    document.getElementById('fullscreen-progress').style.width = (timeLeft/30)*100 + '%';
+                }
+            }
+
+            fetchChallenge();
+            updateTimer();
+            setInterval(updateTimer, 1000);
+
+            function logout() {
+                fetch('/chromakey/logout', { method: 'POST' })
+                    .then(() => window.location.href = '/chromakey/login')
+                    .catch(() => window.location.href = '/chromakey/login');
+            }
+
+            function toggleFullscreen() {
+                const fullscreen = document.getElementById('fullscreen-overlay');
+                const auth = document.getElementById('auth-overlay');
+                const isFullscreen = fullscreen.style.display === 'flex';
+                fullscreen.style.display = isFullscreen ? 'none' : 'flex';
+                if (auth) auth.style.display = isFullscreen ? 'block' : 'none';
+                if (!isFullscreen) updateShapes();
+            }
+        </script>
+        {% if fullscreen %}
+    </body>
+</html>
+{% endif %}

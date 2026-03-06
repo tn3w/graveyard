@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure Auth</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/login.css">
+    <script src="/iam-passive.js" async></script>
+    <script src="/iam-captcha.js" async defer></script>
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <!-- Login View -->
+        <div id="view-login" class="view">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account</p>
+            </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <div class="captcha-wrapper">
+                    <div class="iam-captcha" id="login-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark" data-passive-mode="true"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="#" onclick="showView('register')">Create Account</a></p>
+                <a href="/" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+
+        <!-- Register View -->
+        <div id="view-register" class="view hidden">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Get started with a new account</p>
+            </div>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" placeholder="Choose a username" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_]+">
+                    <small>3-32 characters, alphanumeric and underscores only</small>
+                </div>
+                <div class="captcha-wrapper">
+                    <div class="iam-captcha" id="register-captcha" data-sitekey="HtFBvvSKHpWEIh1JmOHnwQ4l5hTsGcvu" data-theme="dark"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="#" onclick="showView('login')">Sign In</a></p>
+                <a href="/" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+
+        <!-- Credentials View -->
+        <div id="view-credentials" class="view hidden">
+            <div class="auth-header">
+                <h1>⚠️ Save Your Credentials</h1>
+                <p>Store these securely before continuing</p>
+            </div>
+            <div class="credentials-card">
+                <div class="credential-row">
+                    <span class="credential-label">Username</span>
+                    <span class="credential-value" id="cred-username"></span>
+                </div>
+                <div class="credential-row">
+                    <span class="credential-label">Password</span>
+                    <code class="credential-value" id="cred-password"></code>
+                </div>
+            </div>
+            <div class="warning-box">
+                <span class="warning-icon">⚠️</span>
+                <p>This password cannot be recovered. Save it in a secure location before proceeding.</p>
+            </div>
+            <button class="btn btn-primary" onclick="showView('login')">Proceed to Login</button>
+        </div>
+
+        <!-- MFA Setup Prompt View -->
+        <div id="view-mfa-prompt" class="view hidden">
+            <div class="auth-header">
+                <h1>🔐 Enhance Your Security</h1>
+                <p>Add multi-factor authentication to protect your account</p>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="showView('mfa-setup')">Setup MFA Now</button>
+                <button class="btn btn-secondary" onclick="skipMfa()">Skip for Now</button>
+                <button class="btn-link" onclick="dismissMfa()">Never Ask Again</button>
+            </div>
+        </div>
+
+        <!-- MFA Setup View -->
+        <div id="view-mfa-setup" class="view hidden">
+            <div class="auth-header">
+                <h1>🔐 Setup MFA</h1>
+                <p>Choose your preferred authentication method</p>
+            </div>
+            <div class="mfa-section">
+                <div class="mfa-option-card">
+                    <h2>📱 Authenticator App (TOTP)</h2>
+                    <p>Use Google Authenticator, Authy, or similar apps</p>
+                    <button id="btn-setup-totp" class="btn btn-primary">Setup TOTP</button>
+                    <div id="totp-setup" class="totp-setup hidden">
+                        <div class="qr-container" id="qr-code"></div>
+                        <div class="secret-code">
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px;">Manual entry code:</p>
+                            <code id="totp-secret"></code>
+                        </div>
+                        <form id="totpEnableForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="totp-code">Enter 6-digit code</label>
+                                <input type="text" id="totp-code" placeholder="000000" pattern="[0-9]{6}" maxlength="6" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Verify & Enable</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="mfa-option-card">
+                    <h2>🔑 Security Key (WebAuthn)</h2>
+                    <p>Use a hardware key like YubiKey</p>
+                    <button id="btn-setup-webauthn" class="btn btn-secondary">Register Security Key</button>
+                </div>
+            </div>
+            <div class="auth-footer">
+                <a href="#" onclick="goToDashboard()">Skip for now →</a>
+            </div>
+        </div>
+
+        <!-- MFA Verify View -->
+        <div id="view-mfa-verify" class="view hidden">
+            <div class="auth-header">
+                <h1>🔐 Verify Identity</h1>
+                <p>Complete authentication with your second factor</p>
+            </div>
+            <div class="mfa-section">
+                <div class="mfa-option-card" id="totp-verify-section">
+                    <h2>📱 Authenticator Code</h2>
+                    <form id="totpVerifyForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="verify-totp-code">Enter 6-digit code</label>
+                            <input type="text" id="verify-totp-code" placeholder="000000" pattern="[0-9]{6}" maxlength="6" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Verify</button>
+                    </form>
+                </div>
+                <div class="mfa-option-card" id="webauthn-verify-section">
+                    <h2>🔑 Security Key</h2>
+                    <p>Insert and activate your security key</p>
+                    <button id="btn-verify-webauthn" class="btn btn-secondary">Use Security Key</button>
+                </div>
+            </div>
+            <div class="auth-footer">
+                <a href="#" onclick="logout()">← Back to Login</a>
+            </div>
+        </div>
+
+        <div id="error" class="error-message hidden"></div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

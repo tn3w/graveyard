@@ -1,0 +1,16 @@
+setuptools
+pillow
+flask
+ipaddress
+cryptography
+requests
+bs4
+jinja2
+python-magic
+python-magic-bin==0.4.14
+googletrans==3.1.0a0
+captcha
+pyotp
+qrcode
+werkzeug>=3.0.3 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability

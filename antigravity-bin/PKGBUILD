@@ -1,0 +1,37 @@
+pkgname=google-antigravity-bin
+pkgver=1.14.2
+pkgrel=1
+pkgdesc="Google Antigravity IDE - AI-powered development platform"
+arch=('x86_64')
+url="https://antigravity.google/"
+license=('custom')
+provides=('antigravity' 'google-antigravity')
+conflicts=('antigravity' 'google-antigravity')
+depends=('alsa-lib' 'dbus' 'gtk3' 'libnotify' 'libsecret' 'libxkbfile'
+         'libxss' 'nss' 'xdg-utils' 'ripgrep' 'fd')
+makedepends=('tar')
+options=('!strip')
+source=("antigravity-${pkgver}.deb::https://us-central1-apt.pkg.dev/\
+projects/antigravity-auto-updater-dev/pool/antigravity-debian/\
+antigravity_${pkgver}-1768287740_amd64_5527204873323b09e7e6bc003cf22f91.deb")
+sha256sums=('770f440b025afba6d140a0791e91f16e957456f501c766948710c939eff09206')
+
+build() {
+    tar -xf data.tar.xz
+    
+    if [ -d usr/share/appdata ]; then
+        mkdir -p usr/share/metainfo
+        mv usr/share/appdata/* usr/share/metainfo/
+        rmdir usr/share/appdata
+    fi
+    
+    chmod 4755 usr/share/antigravity/chrome-sandbox
+}
+
+package() {
+    cp -r usr "${pkgdir}/"
+    
+    install -dm755 "${pkgdir}/usr/bin"
+    ln -s /usr/share/antigravity/antigravity "${pkgdir}/usr/bin/antigravity"
+    ln -s /usr/bin/antigravity "${pkgdir}/usr/bin/google-antigravity"
+}
