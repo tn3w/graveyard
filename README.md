@@ -25,5 +25,6 @@ Below is a quick overview of each directory contained in this repository. The or
 - **statussentinel/** – Rust service monitoring tool with PostgreSQL backend for web and Minecraft servers.
 - **SillyPython/** – CLI that surrounds Python scripts with junk code to obscure them.
 - **Tunnels/** – HTML/CSS design mockup for a peer‑to‑peer tunnelling interface.
+- **cltunnel/** – Python prototype client implementing a Cloudflare Argo-style tunnel (QUIC).
 
 > 🗂️ _Many of these projects are proofs-of-concept or abandoned; they remain here for historical reference and potential reuse._
