@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>JSVM Challenge</title>
+        <style>
+            body {
+                font-family: system-ui;
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 0 1rem;
+            }
+            pre {
+                background: #111;
+                color: #0f0;
+                padding: 1rem;
+                border-radius: 4px;
+                overflow-x: auto;
+                font-size: 13px;
+            }
+            button {
+                padding: 0.5rem 1.5rem;
+                font-size: 1rem;
+                cursor: pointer;
+            }
+            .ok {
+                color: #0c0;
+            }
+            .fail {
+                color: #f44;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Bytecode VM Signal Collection</h2>
+        <button id="run">Run Challenge</button>
+        <pre id="log">Ready.</pre>
+
+        <script src="vm.js"></script>
+        <script type="module">
+            import { solve } from './loader.js';
+
+            const log = document.getElementById('log');
+            const btn = document.getElementById('run');
+
+            function print(msg, cls) {
+                const line = document.createElement('div');
+                line.textContent = msg;
+                if (cls) line.className = cls;
+                log.appendChild(line);
+            }
+
+            btn.addEventListener('click', async () => {
+                log.textContent = '';
+                print('Running challenge...');
+
+                try {
+                    const result = await solve();
+
+                    if (result.ok) {
+                        print('Challenge passed', 'ok');
+                    } else {
+                        print('Challenge failed', 'fail');
+                    }
+                } catch {
+                    print('Challenge error', 'fail');
+                }
+            });
+        </script>
+    </body>
+</html>

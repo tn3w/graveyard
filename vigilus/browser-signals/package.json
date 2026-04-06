@@ -1,0 +1,13 @@
+{
+    "name": "browser-signals",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Anti-replay browser signal verification with polymorphic nonce hiding",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.0"
+    }
+}

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Browser Signals — Test</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    sans-serif;
+                background: #0a0a0a;
+                color: #e0e0e0;
+                padding: 2rem;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+                color: #fff;
+            }
+            .subtitle {
+                color: #888;
+                margin-bottom: 2rem;
+                font-size: 0.9rem;
+            }
+            .card {
+                background: #161616;
+                border: 1px solid #2a2a2a;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            .card h2 {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                color: #aaa;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            button {
+                background: #2563eb;
+                color: #fff;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.95rem;
+                transition: background 0.15s;
+            }
+            button:hover {
+                background: #1d4ed8;
+            }
+            button:disabled {
+                background: #333;
+                cursor: not-allowed;
+            }
+            .status {
+                margin-top: 1rem;
+                padding: 0.75rem;
+                border-radius: 6px;
+                font-family: monospace;
+                font-size: 0.85rem;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+            .status.info {
+                background: #1a1a2e;
+                border: 1px solid #2a2a4e;
+            }
+            .status.success {
+                background: #0a2e1a;
+                border: 1px solid #1a4e2a;
+                color: #4ade80;
+            }
+            .status.error {
+                background: #2e0a0a;
+                border: 1px solid #4e1a1a;
+                color: #f87171;
+            }
+            .status.warn {
+                background: #2e2a0a;
+                border: 1px solid #4e3a1a;
+                color: #fbbf24;
+            }
+            .score-bar {
+                height: 8px;
+                border-radius: 4px;
+                background: #222;
+                margin-top: 0.5rem;
+                overflow: hidden;
+            }
+            .score-fill {
+                height: 100%;
+                border-radius: 4px;
+                transition: width 0.5s ease;
+            }
+            .flags {
+                margin-top: 0.75rem;
+            }
+            .flag {
+                display: inline-block;
+                background: #2a1a1a;
+                border: 1px solid #4a2a2a;
+                color: #f87171;
+                padding: 0.2rem 0.5rem;
+                border-radius: 4px;
+                margin: 0.15rem;
+                font-size: 0.75rem;
+                font-family: monospace;
+            }
+            .steps {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .step {
+                flex: 1;
+                padding: 0.5rem;
+                text-align: center;
+                border-radius: 6px;
+                background: #1a1a1a;
+                border: 1px solid #2a2a2a;
+                font-size: 0.8rem;
+                color: #666;
+            }
+            .step.active {
+                border-color: #2563eb;
+                color: #60a5fa;
+            }
+            .step.done {
+                border-color: #166534;
+                color: #4ade80;
+            }
+            #token-display {
+                margin-top: 1rem;
+            }
+            #token-display code {
+                display: block;
+                background: #111;
+                padding: 0.75rem;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                overflow-x: auto;
+            }
+            .test-section {
+                margin-top: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Browser Signals</h1>
+            <p class="subtitle">
+                Anti-replay browser signal verification with polymorphic nonce hiding
+            </p>
+
+            <div class="card">
+                <h2>Challenge Flow</h2>
+                <div class="steps">
+                    <div class="step" id="step-init">1. Init</div>
+                    <div class="step" id="step-exec">2. Collect</div>
+                    <div class="step" id="step-verify">3. Verify</div>
+                </div>
+                <button id="btn-verify" onclick="runVerification()">Run Verification</button>
+                <div id="status" class="status info" style="display: none"></div>
+                <div id="score-section" style="display: none">
+                    <div class="score-bar"><div class="score-fill" id="score-fill"></div></div>
+                    <div class="flags" id="flags"></div>
+                </div>
+                <div id="token-display" style="display: none">
+                    <strong>Clearance Token:</strong>
+                    <code id="token-value"></code>
+                </div>
+            </div>
+
+            <div class="card test-section" id="protected-section" style="display: none">
+                <h2>Test Protected Endpoint</h2>
+                <button onclick="testProtected()">Access /protected</button>
+                <div id="protected-result" class="status info" style="display: none"></div>
+            </div>
+        </div>
+
+        <script>
+            let clearanceToken = null;
+
+            function setStep(step, state) {
+                document.getElementById(`step-${step}`).className = `step ${state}`;
+            }
+
+            function showStatus(msg, type = 'info') {
+                const el = document.getElementById('status');
+                el.style.display = 'block';
+                el.className = `status ${type}`;
+                el.textContent = msg;
+            }
+
+            async function runVerification() {
+                const btn = document.getElementById('btn-verify');
+                btn.disabled = true;
+                clearanceToken = null;
+                document.getElementById('token-display').style.display = 'none';
+                document.getElementById('score-section').style.display = 'none';
+                document.getElementById('protected-section').style.display = 'none';
+                setStep('init', '');
+                setStep('exec', '');
+                setStep('verify', '');
+
+                try {
+                    // Phase 1: Init
+                    setStep('init', 'active');
+                    showStatus('Initializing challenge...');
+                    const initRes = await fetch('/signals/init', { method: 'POST' });
+                    if (!initRes.ok) throw new Error('Init failed');
+                    const { challengeId, scriptUrl } = await initRes.json();
+                    setStep('init', 'done');
+
+                    // Phase 2: Execute payload
+                    setStep('exec', 'active');
+                    showStatus(`Collecting signals (challenge: ${challengeId.slice(0, 8)}...)...`);
+
+                    // Set up callback to know when submission completes
+                    const resultPromise = new Promise((resolve, reject) => {
+                        window.__signals_cb = resolve;
+                        setTimeout(() => reject(new Error('Timeout (30s)')), 30000);
+                    });
+
+                    // Load and execute the polymorphic script
+                    const script = document.createElement('script');
+                    script.src = scriptUrl;
+                    script.onerror = () => {
+                        throw new Error('Failed to load payload script');
+                    };
+                    document.head.appendChild(script);
+
+                    setStep('exec', 'done');
+                    setStep('verify', 'active');
+                    showStatus('Verifying signals...');
+
+                    // Wait for the script to complete verification
+                    const result = await resultPromise;
+                    setStep('verify', 'done');
+
+                    // Display result
+                    if (result.cleared) {
+                        clearanceToken = result.token;
+                        showStatus(`Cleared! Score: ${result.score}`, 'success');
+                        document.getElementById('token-display').style.display = 'block';
+                        document.getElementById('token-value').textContent = result.token;
+                        document.getElementById('protected-section').style.display = 'block';
+                    } else {
+                        showStatus(`Rejected. Score: ${result.score}`, 'error');
+                    }
+
+                    // Score bar
+                    const scoreSection = document.getElementById('score-section');
+                    scoreSection.style.display = 'block';
+                    const fill = document.getElementById('score-fill');
+                    const pct = Math.round(result.score * 100);
+                    fill.style.width = pct + '%';
+                    fill.style.background =
+                        result.score > 0.7 ? '#4ade80' : result.score > 0.4 ? '#fbbf24' : '#f87171';
+
+                    // Flags
+                    const flagsEl = document.getElementById('flags');
+                    flagsEl.innerHTML = '';
+                    if (result.flags?.length > 0) {
+                        result.flags.forEach((f) => {
+                            const span = document.createElement('span');
+                            span.className = 'flag';
+                            span.textContent = f;
+                            flagsEl.appendChild(span);
+                        });
+                    }
+
+                    // Cleanup
+                    script.remove();
+                    delete window.__signals_cb;
+                    delete window.__signals_result;
+                } catch (err) {
+                    showStatus(`Error: ${err.message}`, 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+
+            async function testProtected() {
+                const el = document.getElementById('protected-result');
+                el.style.display = 'block';
+                if (!clearanceToken) {
+                    el.className = 'status error';
+                    el.textContent = 'No clearance token — run verification first';
+                    return;
+                }
+                try {
+                    const res = await fetch('/protected', {
+                        headers: { Authorization: `Bearer ${clearanceToken}` },
+                    });
+                    const data = await res.json();
+                    el.className = res.ok ? 'status success' : 'status error';
+                    el.textContent = JSON.stringify(data, null, 2);
+                } catch (err) {
+                    el.className = 'status error';
+                    el.textContent = err.message;
+                }
+            }
+        </script>
+    </body>
+</html>

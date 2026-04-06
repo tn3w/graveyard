@@ -26,5 +26,6 @@ Below is a quick overview of each directory contained in this repository. The or
 - **SillyPython/** – CLI that surrounds Python scripts with junk code to obscure them.
 - **Tunnels/** – HTML/CSS design mockup for a peer‑to‑peer tunnelling interface.
 - **cltunnel/** – Python prototype client implementing a Cloudflare Argo-style tunnel (QUIC).
+- **vigilus/** - Collection of browser side anti bot measures.
 
 > 🗂️ _Many of these projects are proofs-of-concept or abandoned; they remain here for historical reference and potential reuse._

@@ -1,0 +1,12 @@
+{
+    "name": "vigilus",
+    "version": "1.0.0",
+    "description": "Browser integrity challenge system",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.0"
+    }
+}

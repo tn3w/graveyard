@@ -1,0 +1,12 @@
+{
+    "name": "pow-challenge",
+    "version": "1.0.0",
+    "description": "Multi-worker SHA-256 Proof of Work challenge",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.0"
+    }
+}

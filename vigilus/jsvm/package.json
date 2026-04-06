@@ -1,0 +1,14 @@
+{
+    "name": "jsvm",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "build": "make",
+        "start": "node server.js",
+        "compile": "node scripts/compile.js"
+    },
+    "dependencies": {
+        "express": "^4.21.0"
+    }
+}

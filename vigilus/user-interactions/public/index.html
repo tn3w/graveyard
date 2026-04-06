@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>User Interactions - Verification Test</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+                background: #0a0a0f;
+                color: #c8ccd0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .card {
+                background: #12131a;
+                border: 1px solid #1e2028;
+                border-radius: 12px;
+                padding: 32px;
+                max-width: 600px;
+                width: 100%;
+            }
+            h1 {
+                font-size: 1.4em;
+                color: #e0e4e8;
+                margin-bottom: 4px;
+            }
+            .sub {
+                color: #6b7280;
+                font-size: 0.85em;
+                margin-bottom: 24px;
+            }
+            .steps {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 24px;
+            }
+            .step {
+                flex: 1;
+                padding: 8px;
+                border-radius: 6px;
+                text-align: center;
+                font-size: 0.8em;
+                background: #1a1b24;
+                color: #6b7280;
+                border: 1px solid #1e2028;
+                transition: all 0.3s;
+            }
+            .step.active {
+                background: #1a2332;
+                color: #60a5fa;
+                border-color: #2563eb;
+            }
+            .step.done {
+                background: #132217;
+                color: #4ade80;
+                border-color: #166534;
+            }
+            .step.fail {
+                background: #2a1215;
+                color: #f87171;
+                border-color: #991b1b;
+            }
+            button {
+                background: #2563eb;
+                color: #fff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.9em;
+                transition: background 0.2s;
+            }
+            button:hover {
+                background: #1d4ed8;
+            }
+            button:disabled {
+                background: #374151;
+                cursor: not-allowed;
+            }
+            .log {
+                margin-top: 16px;
+                background: #0d0e14;
+                border: 1px solid #1e2028;
+                border-radius: 6px;
+                padding: 12px;
+                max-height: 300px;
+                overflow-y: auto;
+                font-size: 0.78em;
+                line-height: 1.6;
+            }
+            .log-entry {
+                border-bottom: 1px solid #1a1b24;
+                padding: 2px 0;
+            }
+            .log-entry:last-child {
+                border: none;
+            }
+            .info {
+                color: #60a5fa;
+            }
+            .ok {
+                color: #4ade80;
+            }
+            .warn {
+                color: #fbbf24;
+            }
+            .err {
+                color: #f87171;
+            }
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin: 16px 0;
+            }
+            .stat {
+                background: #1a1b24;
+                padding: 8px;
+                border-radius: 4px;
+                text-align: center;
+            }
+            .stat .val {
+                font-size: 1.2em;
+                color: #e0e4e8;
+                font-weight: 600;
+            }
+            .stat .lbl {
+                font-size: 0.7em;
+                color: #6b7280;
+                margin-top: 2px;
+            }
+            .score-bar {
+                height: 8px;
+                background: #1a1b24;
+                border-radius: 4px;
+                margin: 12px 0;
+                overflow: hidden;
+            }
+            .score-fill {
+                height: 100%;
+                border-radius: 4px;
+                transition: width 0.5s;
+            }
+            .interact-zone {
+                background: #1a1b24;
+                border: 1px dashed #2563eb;
+                border-radius: 8px;
+                padding: 24px;
+                margin: 16px 0;
+                text-align: center;
+                color: #6b7280;
+                font-size: 0.85em;
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+            .interact-zone input {
+                background: #0d0e14;
+                border: 1px solid #1e2028;
+                color: #c8ccd0;
+                padding: 6px 10px;
+                border-radius: 4px;
+                width: 80%;
+                font-size: 0.9em;
+            }
+            .interact-zone .btn-row {
+                display: flex;
+                gap: 8px;
+                margin-top: 8px;
+            }
+            .interact-zone button {
+                font-size: 0.8em;
+                padding: 6px 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>User Interactions Verifier</h1>
+            <p class="sub">
+                Behavioral biometrics analysis &middot; Move, click, type, and scroll naturally
+            </p>
+
+            <div class="steps">
+                <div class="step" id="s1">1. Init</div>
+                <div class="step" id="s2">2. Collect</div>
+                <div class="step" id="s3">3. Verify</div>
+            </div>
+
+            <button id="startBtn" onclick="start()">Start Verification</button>
+
+            <div class="interact-zone" id="zone" style="display: none">
+                <p>
+                    Interact naturally below &mdash; move your mouse, click buttons, type, and
+                    scroll.
+                </p>
+                <input type="text" id="typeBox" placeholder="Type something here..." />
+                <div class="btn-row">
+                    <button onclick="void 0">Button A</button>
+                    <button onclick="void 0">Button B</button>
+                    <button onclick="void 0">Button C</button>
+                </div>
+                <p style="margin-top: 40px; font-size: 0.75em; color: #374151">
+                    Scroll down for more content...
+                </p>
+                <div style="height: 200px"></div>
+            </div>
+
+            <div class="stats" id="stats" style="display: none">
+                <div class="stat">
+                    <div class="val" id="sMouse">0</div>
+                    <div class="lbl">Mouse</div>
+                </div>
+                <div class="stat">
+                    <div class="val" id="sClicks">0</div>
+                    <div class="lbl">Clicks</div>
+                </div>
+                <div class="stat">
+                    <div class="val" id="sKeys">0</div>
+                    <div class="lbl">Keys</div>
+                </div>
+                <div class="stat">
+                    <div class="val" id="sScroll">0</div>
+                    <div class="lbl">Scroll</div>
+                </div>
+                <div class="stat">
+                    <div class="val" id="sTouch">0</div>
+                    <div class="lbl">Touch</div>
+                </div>
+                <div class="stat">
+                    <div class="val" id="sTime">0s</div>
+                    <div class="lbl">Time</div>
+                </div>
+            </div>
+
+            <div class="score-bar" id="scoreBar" style="display: none">
+                <div class="score-fill" id="scoreFill"></div>
+            </div>
+
+            <div class="log" id="log"></div>
+
+            <div style="margin-top: 16px">
+                <button id="verifyBtn" style="display: none" onclick="manualVerify()">
+                    Verify Now
+                </button>
+                <button id="protectedBtn" style="display: none" onclick="testProtected()">
+                    Test Protected Endpoint
+                </button>
+            </div>
+        </div>
+
+        <script>
+            var token = null;
+            var statsInterval = null;
+
+            function log(msg, cls) {
+                var el = document.getElementById('log');
+                var entry = document.createElement('div');
+                entry.className = 'log-entry ' + (cls || 'info');
+                entry.textContent = msg;
+                el.appendChild(entry);
+                el.scrollTop = el.scrollHeight;
+            }
+
+            function setStep(n, state) {
+                document.getElementById('s' + n).className = 'step ' + state;
+            }
+
+            async function start() {
+                document.getElementById('startBtn').disabled = true;
+                setStep(1, 'active');
+                log('Initializing challenge...');
+
+                try {
+                    var res = await fetch('/interactions/init', { method: 'POST' });
+                    var data = await res.json();
+                    log('Challenge: ' + data.challengeId.slice(0, 8) + '...', 'ok');
+                    setStep(1, 'done');
+                    setStep(2, 'active');
+
+                    // Load collector script
+                    log('Loading interaction probe...');
+                    var script = document.createElement('script');
+                    script.src = data.scriptUrl;
+                    script.onload = function () {
+                        log('Probe active. Interact with the page naturally.', 'ok');
+                        document.getElementById('zone').style.display = 'flex';
+                        document.getElementById('stats').style.display = 'grid';
+                        document.getElementById('verifyBtn').style.display = 'inline-block';
+
+                        // Listen for auto-submit result
+                        window.__interactionResult = function (result) {
+                            handleResult(result);
+                        };
+
+                        // Update stats display
+                        statsInterval = setInterval(updateStats, 250);
+                    };
+                    script.onerror = function () {
+                        log('Failed to load probe script', 'err');
+                        setStep(2, 'fail');
+                    };
+                    document.head.appendChild(script);
+                } catch (e) {
+                    log('Init failed: ' + e.message, 'err');
+                    setStep(1, 'fail');
+                }
+            }
+
+            function updateStats() {
+                if (!window.__interactionProbe) return;
+                var s = window.__interactionProbe.stats();
+                document.getElementById('sMouse').textContent = s.mouse;
+                document.getElementById('sClicks').textContent = s.clicks;
+                document.getElementById('sKeys').textContent = s.keys;
+                document.getElementById('sScroll').textContent = s.scroll;
+                document.getElementById('sTouch').textContent = s.touch;
+                document.getElementById('sTime').textContent = (s.elapsed / 1000).toFixed(1) + 's';
+            }
+
+            async function manualVerify() {
+                if (!window.__interactionProbe) return;
+                document.getElementById('verifyBtn').disabled = true;
+                log('Submitting interaction data...');
+                try {
+                    var result = await window.__interactionProbe.verify();
+                    handleResult(result);
+                } catch (e) {
+                    log('Verify failed: ' + e.message, 'err');
+                    setStep(3, 'fail');
+                }
+            }
+
+            function handleResult(result) {
+                if (statsInterval) clearInterval(statsInterval);
+                updateStats();
+                setStep(2, 'done');
+
+                if (result.cleared) {
+                    setStep(3, 'done');
+                    token = result.token;
+                    log('CLEARED - Score: ' + result.score.toFixed(3) + ' (human)', 'ok');
+                    document.getElementById('protectedBtn').style.display = 'inline-block';
+                } else {
+                    setStep(3, 'fail');
+                    log('BLOCKED - Score: ' + result.score.toFixed(3) + ' (suspicious)', 'err');
+                }
+
+                // Show score bar
+                var bar = document.getElementById('scoreBar');
+                var fill = document.getElementById('scoreFill');
+                bar.style.display = 'block';
+                fill.style.width = result.score * 100 + '%';
+                fill.style.background =
+                    result.score >= 0.5 ? '#4ade80' : result.score >= 0.3 ? '#fbbf24' : '#f87171';
+
+                // Show flags
+                if (result.flags && result.flags.length > 0) {
+                    log('Flags:', 'warn');
+                    result.flags.forEach(function (f) {
+                        log('  ' + f, 'warn');
+                    });
+                } else {
+                    log('No flags raised', 'ok');
+                }
+
+                document.getElementById('verifyBtn').style.display = 'none';
+                document.getElementById('zone').style.display = 'none';
+            }
+
+            async function testProtected() {
+                if (!token) return;
+                log('Testing protected endpoint...');
+                try {
+                    var res = await fetch('/protected', {
+                        headers: { Authorization: 'Bearer ' + token },
+                    });
+                    var data = await res.json();
+                    if (res.ok) {
+                        log('Protected: ' + data.message + ' (score=' + data.score + ')', 'ok');
+                    } else {
+                        log('Protected: ' + data.error, 'err');
+                    }
+                } catch (e) {
+                    log('Error: ' + e.message, 'err');
+                }
+            }
+        </script>
+    </body>
+</html>

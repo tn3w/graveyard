@@ -1,0 +1,13 @@
+{
+    "name": "vigilus-captcha",
+    "version": "1.0.0",
+    "description": "Rotation captcha generator with 3D reference and gaussian splat challenge images",
+    "type": "module",
+    "scripts": {
+        "generate": "node generate.js",
+        "start": "node generate.js"
+    },
+    "dependencies": {
+        "canvas": "^2.11.2"
+    }
+}
