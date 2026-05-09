@@ -29,5 +29,6 @@ Below is a quick overview of each directory contained in this repository. The or
 - **vigilus/** - Collection of browser side anti bot measures.
 - **crua/** - Fast crawler detection and browser parsing for Python.
 - **ipblocklist-api/** - Minimal Rust API that loads [IPBlocklist](https://github.com/tn3w/IPBlocklist).
+- **robots-radar/** - Tracks which crawlers the web's top sites block.
 
 > 🗂️ _Many of these projects are proofs-of-concept or abandoned; they remain here for historical reference and potential reuse._
