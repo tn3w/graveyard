@@ -1,0 +1,293 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - 'Cargo.toml'
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Check if version changed
+        id: check
+        run: |
+          git diff HEAD~1 HEAD -- Cargo.toml | grep -q '^+version' && echo "changed=true" >> $GITHUB_OUTPUT || echo "changed=false" >> $GITHUB_OUTPUT
+
+  build-windows:
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target: [x86_64-pc-windows-msvc, i686-pc-windows-msvc]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.target == 'x86_64-pc-windows-msvc' && 'x64' || 'x86' }}
+      - name: Install NSIS
+        run: choco install nsis -y
+      - name: Setup icon resource
+        run: |
+          echo '1 ICON "assets/icon.ico"' > assets/icon.rc
+          rc /fo assets/icon.res assets/icon.rc
+        shell: cmd
+      - name: Build
+        env:
+          RUSTFLAGS: -Clink-arg=assets/icon.res
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Package
+        run: |
+          $arch = if ("${{ matrix.target }}" -match "x86_64") { "x64" } else { "x86" }
+          mkdir dist
+          cp target/${{ matrix.target }}/release/lyrics_prompter.exe dist/lyrics_prompter-windows-$arch.exe
+      - name: Create NSIS installer
+        run: |
+          $arch = if ("${{ matrix.target }}" -match "x86_64") { "x64" } else { "x86" }
+          $version = "${{ needs.check-version.outputs.version }}"
+          @"
+          !include "MUI2.nsh"
+          
+          Name "Lyrics Prompter"
+          OutFile "dist\lyrics_prompter-windows-$arch-setup.exe"
+          InstallDir "`$PROGRAMFILES\Lyrics Prompter"
+          RequestExecutionLevel admin
+          
+          !define MUI_ICON "assets\icon.ico"
+          !define MUI_UNICON "assets\icon.ico"
+          
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+          
+          !insertmacro MUI_LANGUAGE "English"
+          
+          Section "Install"
+            SetOutPath "`$INSTDIR"
+            File "target\${{ matrix.target }}\release\lyrics_prompter.exe"
+            File "assets\icon.ico"
+            
+            CreateDirectory "`$SMPROGRAMS\Lyrics Prompter"
+            CreateShortcut "`$SMPROGRAMS\Lyrics Prompter\Lyrics Prompter.lnk" "`$INSTDIR\lyrics_prompter.exe" "" "`$INSTDIR\icon.ico"
+            CreateShortcut "`$SMPROGRAMS\Lyrics Prompter\Uninstall.lnk" "`$INSTDIR\uninstall.exe"
+            CreateShortcut "`$DESKTOP\Lyrics Prompter.lnk" "`$INSTDIR\lyrics_prompter.exe" "" "`$INSTDIR\icon.ico"
+            
+            WriteUninstaller "`$INSTDIR\uninstall.exe"
+            
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter" "DisplayName" "Lyrics Prompter"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter" "UninstallString" "`$INSTDIR\uninstall.exe"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter" "DisplayIcon" "`$INSTDIR\icon.ico"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter" "DisplayVersion" "$version"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter" "Publisher" "tn3w"
+          SectionEnd
+          
+          Section "Uninstall"
+            Delete "`$INSTDIR\lyrics_prompter.exe"
+            Delete "`$INSTDIR\icon.ico"
+            Delete "`$INSTDIR\uninstall.exe"
+            RMDir "`$INSTDIR"
+            
+            Delete "`$SMPROGRAMS\Lyrics Prompter\Lyrics Prompter.lnk"
+            Delete "`$SMPROGRAMS\Lyrics Prompter\Uninstall.lnk"
+            RMDir "`$SMPROGRAMS\Lyrics Prompter"
+            Delete "`$DESKTOP\Lyrics Prompter.lnk"
+            
+            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\LyricsPrompter"
+          SectionEnd
+          "@ | Out-File -Encoding UTF8 installer.nsi
+          & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" installer.nsi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.target }}
+          path: dist/*
+
+  build-linux:
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libgtk-3-dev rpm
+      - name: Build
+        run: cargo build --release
+      - name: Create AppImage
+        run: |
+          VERSION=${{ needs.check-version.outputs.version }}
+          mkdir -p AppDir/usr/bin AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps
+          cp target/release/lyrics_prompter AppDir/usr/bin/
+          cp assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/lyrics_prompter.png
+          cat > AppDir/usr/share/applications/lyrics_prompter.desktop << EOF
+          [Desktop Entry]
+          Name=Lyrics Prompter
+          Exec=lyrics_prompter
+          Icon=lyrics_prompter
+          Type=Application
+          Categories=AudioVideo;Audio;
+          Comment=Display synchronized lyrics for karaoke-style prompting
+          EOF
+          cp AppDir/usr/share/applications/lyrics_prompter.desktop AppDir/
+          ln -s usr/share/icons/hicolor/256x256/apps/lyrics_prompter.png AppDir/lyrics_prompter.png
+          cat > AppDir/AppRun << 'APPRUN'
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          exec "${HERE}/usr/bin/lyrics_prompter" "$@"
+          APPRUN
+          chmod +x AppDir/AppRun
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool-x86_64.AppImage AppDir lyrics_prompter-x86_64.AppImage
+      - name: Create deb package
+        run: |
+          VERSION=${{ needs.check-version.outputs.version }}
+          mkdir -p deb/DEBIAN deb/usr/bin deb/usr/share/applications deb/usr/share/icons/hicolor/256x256/apps
+          cp target/release/lyrics_prompter deb/usr/bin/
+          cp assets/icon.png deb/usr/share/icons/hicolor/256x256/apps/lyrics_prompter.png
+          cat > deb/DEBIAN/control << EOF
+          Package: lyrics-prompter
+          Version: ${VERSION}
+          Section: sound
+          Priority: optional
+          Architecture: amd64
+          Maintainer: tn3w <tn3w@protonmail.com>
+          Homepage: https://github.com/tn3w/lyrics-prompter
+          Description: Lyrics prompter application
+           A lightweight desktop application for displaying synchronized lyrics,
+           designed for karaoke-style prompting during performances or practice sessions.
+           Supports LRC files and optional audio playback (MP3, WAV, OGG, FLAC).
+          EOF
+          cat > deb/usr/share/applications/lyrics_prompter.desktop << EOF
+          [Desktop Entry]
+          Name=Lyrics Prompter
+          Exec=lyrics_prompter
+          Icon=lyrics_prompter
+          Type=Application
+          Categories=AudioVideo;Audio;
+          Comment=Display synchronized lyrics for karaoke-style prompting
+          EOF
+          dpkg-deb --build deb lyrics_prompter-amd64.deb
+      - name: Create RPM package
+        run: |
+          VERSION=${{ needs.check-version.outputs.version }}
+          mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cp target/release/lyrics_prompter rpmbuild/SOURCES/
+          cp assets/icon.png rpmbuild/SOURCES/lyrics_prompter.png
+          cat > rpmbuild/SOURCES/lyrics_prompter.desktop << EOF
+          [Desktop Entry]
+          Name=Lyrics Prompter
+          Exec=lyrics_prompter
+          Icon=lyrics_prompter
+          Type=Application
+          Categories=AudioVideo;Audio;
+          Comment=Display synchronized lyrics for karaoke-style prompting
+          EOF
+          cat > rpmbuild/SPECS/lyrics-prompter.spec << EOF
+          Name: lyrics-prompter
+          Version: ${VERSION}
+          Release: 1
+          Summary: Lyrics prompter application
+          License: Apache-2.0
+          URL: https://github.com/tn3w/lyrics-prompter
+          
+          %description
+          A lightweight desktop application for displaying synchronized lyrics,
+          designed for karaoke-style prompting during performances or practice sessions.
+          
+          %install
+          mkdir -p %{buildroot}/usr/bin
+          mkdir -p %{buildroot}/usr/share/applications
+          mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
+          install -m 755 %{_topdir}/SOURCES/lyrics_prompter %{buildroot}/usr/bin/
+          install -m 644 %{_topdir}/SOURCES/lyrics_prompter.desktop %{buildroot}/usr/share/applications/
+          install -m 644 %{_topdir}/SOURCES/lyrics_prompter.png %{buildroot}/usr/share/icons/hicolor/256x256/apps/
+          
+          %files
+          /usr/bin/lyrics_prompter
+          /usr/share/applications/lyrics_prompter.desktop
+          /usr/share/icons/hicolor/256x256/apps/lyrics_prompter.png
+          EOF
+          rpmbuild --define "_topdir $(pwd)/rpmbuild" -bb rpmbuild/SPECS/lyrics-prompter.spec
+          cp rpmbuild/RPMS/x86_64/*.rpm lyrics_prompter-x86_64.rpm
+      - name: Create Arch package
+        run: |
+          VERSION=${{ needs.check-version.outputs.version }}
+          mkdir -p arch-pkg/usr/bin arch-pkg/usr/share/applications arch-pkg/usr/share/icons/hicolor/256x256/apps
+          cp target/release/lyrics_prompter arch-pkg/usr/bin/
+          ln -s lyrics_prompter arch-pkg/usr/bin/lyrics-prompter
+          cp assets/icon.png arch-pkg/usr/share/icons/hicolor/256x256/apps/lyrics_prompter.png
+          cat > arch-pkg/usr/share/applications/lyrics_prompter.desktop << EOF
+          [Desktop Entry]
+          Name=Lyrics Prompter
+          Exec=lyrics_prompter
+          Icon=lyrics_prompter
+          Type=Application
+          Categories=AudioVideo;Audio;
+          Comment=Display synchronized lyrics for karaoke-style prompting
+          EOF
+          cat > arch-pkg/.PKGINFO << EOF
+          pkgname = lyrics-prompter
+          pkgver = ${VERSION}-1
+          pkgdesc = A lightweight desktop application for displaying synchronized lyrics
+          url = https://github.com/tn3w/lyrics-prompter
+          builddate = $(date +%s)
+          packager = GitHub Actions
+          size = $(stat -c%s target/release/lyrics_prompter)
+          arch = x86_64
+          license = Apache-2.0
+          depend = alsa-lib
+          depend = gtk3
+          EOF
+          cd arch-pkg && tar -czvf ../lyrics-prompter-x86_64.pkg.tar.gz .PKGINFO usr
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            lyrics_prompter-x86_64.AppImage
+            *.deb
+            *.rpm
+            *.pkg.tar.gz
+
+  release:
+    needs: [check-version, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          files: |
+            artifacts/**/*
+          generate_release_notes: true

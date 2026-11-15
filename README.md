@@ -30,5 +30,16 @@ Below is a quick overview of each directory contained in this repository. The or
 - **crua/** - Fast crawler detection and browser parsing for Python.
 - **ipblocklist-api/** - Minimal Rust API that loads [IPBlocklist](https://github.com/tn3w/IPBlocklist).
 - **robots-radar/** - Tracks which crawlers the web's top sites block.
+- **Passugar/** - Browser extension for simple password management.
+- **py_ntru/** - Python wrapper around the Rust NTRU library for post-quantum cryptography.
+- **tn3w_utils/** - Python package bundling earlier utility tools.
+- **youtube_music_unbound/** - Lightweight native YouTube Music client built with Flutter.
+- **highlight-it/** - Syntax highlighting library with themes, line numbers and copy button.
+- **html-build-tool/** - Minifies and inlines HTML templates with Subresource Integrity.
+- **prtfm/** - Runs Prettier on a project without adding it to the project config.
+- **wurl/** - Minimal HTTP/HTTPS client in Rust.
+- **novi/** - Open-source Android music player in Kotlin.
+- **lyrics-prompter/** - Desktop app showing synchronized lyrics for karaoke-style prompting.
+- **pathreg/** - Python library to persistently add or remove directories from PATH.
 
 > 🗂️ _Many of these projects are proofs-of-concept or abandoned; they remain here for historical reference and potential reuse._

@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en" class="highlightit-theme-auto">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Highlight-It — Syntax Highlighting Reimagined</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/highlight-it@latest/dist/highlight-it-min.js"></script>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="grain"></div>
+
+        <header class="hero">
+            <div class="hero-content">
+                <div class="badge">Syntax Highlighting</div>
+                <h1 class="hero-title">
+                    <span class="title-line">Highlight</span>
+                    <span class="title-line accent">Everything</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Zero-config syntax highlighting that adapts to your design system. Stream code
+                    in real-time. Share with precision.
+                </p>
+                <div class="hero-actions">
+                    <a href="https://github.com/tn3w/highlight-it" class="btn btn-primary">
+                        <span>View on GitHub</span>
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M7 17L17 7M17 7H7M17 7V17" />
+                        </svg>
+                    </a>
+                    <button class="btn btn-secondary" id="themeToggle">
+                        <span id="themeLabel">Auto Theme</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <section class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Zero Config</h3>
+                    <p>Auto-detects languages. Works instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Theme Aware</h3>
+                    <p>Respects system preferences automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>Live Updates</h3>
+                    <p>Stream code with real-time highlighting.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Share Lines</h3>
+                    <p>Link to specific code sections.</p>
+                </div>
+            </section>
+
+            <section class="install-section">
+                <h2 class="section-title">Installation</h2>
+
+                <div class="install-step">
+                    <h3>1. Add the Script</h3>
+                    <p>Include Highlight-It from CDN in your HTML:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="html" data-with-lines>
+&lt;script src="https://cdn.jsdelivr.net/npm/highlight-it@latest/dist/highlight-it-min.js"&gt;&lt;/script&gt;
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>2. Initialize</h3>
+                    <p>Initialize Highlight-It when the page loads:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="javascript" data-with-lines>
+document.addEventListener('DOMContentLoaded', () => {
+  HighlightIt.init({
+    theme: 'auto',
+    debounceTime: 40
+  });
+});
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>3. Add Code Blocks</h3>
+                    <p>Use the <code>highlight-it</code> class on your code elements:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="html" data-with-lines>
+&lt;pre class="highlight-it" data-language="javascript"&gt;
+function hello() {
+  console.log('Hello, World!');
+}
+&lt;/pre&gt;
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>Complete Example</h3>
+                    <p>Put it all together:</p>
+                    <div class="demo-card">
+                        <pre
+                            class="highlight-it"
+                            data-language="html"
+                            data-with-lines
+                            data-filename="index.html"
+                        >
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;My Site&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/highlight-it@latest/dist/highlight-it-min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;pre class="highlight-it" data-language="python"&gt;
+def greet(name):
+    return f"Hello, {name}!"
+  &lt;/pre&gt;
+
+  &lt;script&gt;
+    document.addEventListener('DOMContentLoaded', () => {
+      HighlightIt.init();
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>NPM Installation</h3>
+                    <p>Install via npm for build tools:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="bash" data-with-lines>
+npm install highlight-it
+          </pre
+                        >
+                    </div>
+                    <p style="margin-top: 1rem">Then import in your JavaScript:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="javascript" data-with-lines>
+import HighlightIt from 'highlight-it';
+
+HighlightIt.init({
+  theme: 'auto',
+  debounceTime: 40
+});
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>Custom Styles</h3>
+                    <p>Apply custom highlight.js themes by loading additional CSS:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="html" data-with-lines>
+&lt;!-- Add a custom style after the main script --&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight-it@latest/dist/styles/monokai.min.css"&gt;
+          </pre
+                        >
+                    </div>
+                    <p style="margin-top: 1rem">Available styles include:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="text" data-no-header>
+github.min.css
+vs2015.min.css
+intellij-light.min.css
+atom-one.min.css
+stackoverflow.min.css
+monokai.min.css
+nord.min.css
+a11y.min.css
+night-owl.min.css
+          </pre
+                        >
+                    </div>
+                </div>
+
+                <div class="install-step">
+                    <h3>Theme Control</h3>
+                    <p>
+                        Control light/dark themes by adding a class to the
+                        <code>html</code> element:
+                    </p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="html" data-with-lines>
+&lt;!-- Auto theme (follows system preference) --&gt;
+&lt;html class="highlightit-theme-auto"&gt;
+
+&lt;!-- Force light theme --&gt;
+&lt;html class="highlightit-theme-light"&gt;
+
+&lt;!-- Force dark theme --&gt;
+&lt;html class="highlightit-theme-dark"&gt;
+          </pre
+                        >
+                    </div>
+                    <p style="margin-top: 1rem">Or set it programmatically:</p>
+                    <div class="demo-card">
+                        <pre class="highlight-it" data-language="javascript" data-with-lines>
+document.documentElement.classList.add('highlightit-theme-dark');
+          </pre
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Basic Usage</h2>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="javascript">
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+const sequence = Array.from({ length: 10 }, (_, i) => fibonacci(i));
+console.log(sequence);
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">With Line Numbers</h2>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="python" data-with-lines>
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Live Streaming</h2>
+                <div class="demo-controls">
+                    <button class="btn btn-small" id="streamStart">Start</button>
+                    <button class="btn btn-small" id="streamPause" disabled>Pause</button>
+                    <button class="btn btn-small" id="streamReset">Reset</button>
+                    <div class="stream-progress">
+                        <div class="stream-bar" id="streamBar"></div>
+                    </div>
+                </div>
+                <div class="demo-card">
+                    <pre
+                        class="highlight-it"
+                        data-language="rust"
+                        data-with-reload
+                        data-with-lines
+                        id="streamCode"
+                    >
+// Code will stream here
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Minimal Mode</h2>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="css" data-no-header>
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">With Filename</h2>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-filename="server.go" data-with-lines>
+package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    http.ListenAndServe(":8080", nil)
+}
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Custom Line Start</h2>
+                <p>Start line numbering from any number, positive or negative.</p>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="python" data-line-start="100">
+def calculate_area(radius):
+    return 3.14159 * radius ** 2
+
+area = calculate_area(5)
+print(f"Area: {area}")
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Share & Download</h2>
+                <p>Enable sharing and downloading of code blocks.</p>
+                <div class="demo-card">
+                    <pre
+                        class="highlight-it"
+                        data-language="javascript"
+                        data-with-share
+                        data-with-download
+                        data-with-lines
+                    >
+function fibonacci(n) {
+  const sequence = [0, 1];
+  for (let i = 2; i < n; i++) {
+    sequence.push(sequence[i - 1] + sequence[i - 2]);
+  }
+  return sequence;
+}
+
+console.log(fibonacci(10));
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">No Copy Button</h2>
+                <p>Display-only code without copy functionality.</p>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="bash" data-no-copy>
+$ sudo rm -rf /
+# Don't copy this command!
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Per-Element Theme</h2>
+                <p>Override global theme for specific code blocks.</p>
+                <div class="demo-card">
+                    <pre class="highlight-it" data-language="css" data-theme="light">
+.light-mode {
+  background: #ffffff;
+  color: #000000;
+}
+        </pre
+                    >
+                </div>
+                <div class="demo-card" style="margin-top: 1rem">
+                    <pre class="highlight-it" data-language="css" data-theme="dark">
+.dark-mode {
+  background: #000000;
+  color: #ffffff;
+}
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Combined Attributes</h2>
+                <p>Mix multiple features together.</p>
+                <div class="demo-card">
+                    <pre
+                        class="highlight-it"
+                        data-filename="quicksort.py"
+                        data-with-lines
+                        data-no-header
+                    >
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+sorted_numbers = quicksort(numbers)
+print(sorted_numbers)
+        </pre
+                    >
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2 class="section-title">Dynamic Highlighting</h2>
+                <p>Add code blocks programmatically with JavaScript.</p>
+                <div class="demo-controls">
+                    <button class="btn btn-small" id="addDynamic">Add Code Block</button>
+                    <button class="btn btn-small" id="clearDynamic">Clear All</button>
+                </div>
+                <div id="dynamicContainer"></div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Built with Highlight-It</p>
+            <a href="https://github.com/tn3w/highlight-it">GitHub</a>
+        </footer>
+
+        <script src="script.js"></script>
+    </body>
+</html>

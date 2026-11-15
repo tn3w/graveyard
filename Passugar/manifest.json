@@ -1,0 +1,30 @@
+{
+	"manifest_version": 2,
+	"name": "Passugar",
+	"version": "1.0",
+	"description": "Suggests and fills strong passwords for forms",
+	"icons": {
+		"48": "icons/passugar-48.png",
+		"96": "icons/passugar-96.png"
+	},
+	"permissions": ["activeTab", "storage"],
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["content.js"],
+			"css": ["overlay.css"]
+		}
+	],
+	"web_accessible_resources": ["icons/passugar-19.png", "icons/passugar-38.png"],
+	"browser_action": {
+		"default_icon": {
+			"19": "icons/passugar-19.png",
+			"38": "icons/passugar-38.png"
+		},
+		"default_title": "Passugar",
+		"default_popup": "popup/popup.html"
+	}
+}

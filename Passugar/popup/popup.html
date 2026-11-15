@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="popup.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<img src="../icons/passugar-48.png" alt="Passugar" class="app-icon" />
+				<h1>Passugar</h1>
+
+				<div class="header-actions">
+					<button
+						id="theme-toggle"
+						class="theme-toggle"
+						aria-label="Toggle theme"
+						title="Toggle dark/light mode"
+					>
+						<svg
+							class="sun-icon"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="white"
+							stroke="white"
+						>
+							<path
+								d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z"
+							/>
+							<path
+								d="M12 1V3M12 21V23M1 12H3M21 12H23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M18.36 5.64L19.78 4.22M4.22 19.78L5.64 18.36"
+								stroke-linecap="round"
+							/>
+						</svg>
+						<svg
+							class="moon-icon"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="black"
+							stroke="black"
+						>
+							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+						</svg>
+					</button>
+
+					<a
+						href="https://github.com/tn3w/passugar"
+						class="github-link"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<svg
+							class="github-icon"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+							/>
+						</svg>
+						<span>GitHub</span>
+					</a>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="description">
+					<p>Generate strong, secure passwords for your online accounts.</p>
+				</div>
+
+				<div class="generator">
+					<button id="generate-btn">Generate Password</button>
+					<div class="password-container">
+						<div class="password-display" id="password-display"></div>
+						<button
+							id="toggle-visibility"
+							class="visibility-toggle"
+							aria-label="Toggle password visibility"
+						>
+							<svg
+								class="eye-icon"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								width="24"
+								height="24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+								<circle cx="12" cy="12" r="3"></circle>
+							</svg>
+							<svg
+								class="eye-off-icon"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								width="24"
+								height="24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path
+									d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+								></path>
+								<line x1="1" y1="1" x2="23" y2="23"></line>
+							</svg>
+						</button>
+					</div>
+					<button id="copy-btn" class="copy-btn" disabled>Copy to Clipboard</button>
+				</div>
+			</div>
+
+			<div class="card settings-card">
+				<div class="settings-header">
+					<h2>Password Settings</h2>
+					<button
+						id="toggle-settings"
+						class="toggle-settings"
+						aria-label="Toggle settings"
+					>
+						<svg viewBox="0 0 24 24" width="16" height="16">
+							<path d="M7 10l5 5 5-5z" fill="currentColor" />
+						</svg>
+					</button>
+				</div>
+
+				<div class="settings-content" id="settings-content">
+					<div class="settings-section">
+						<div class="settings-option">
+							<input type="checkbox" id="use-passphrase" name="use-passphrase" />
+							<label for="use-passphrase">Use Passphrase</label>
+						</div>
+
+						<div id="password-options">
+							<div class="slider-container">
+								<label for="password-length"
+									>Length: <span id="password-length-value">32</span></label
+								>
+								<input
+									type="range"
+									id="password-length"
+									min="8"
+									max="128"
+									value="32"
+									class="slider"
+								/>
+							</div>
+
+							<div class="character-sets">
+								<div class="settings-option">
+									<input
+										type="checkbox"
+										id="uppercase"
+										name="uppercase"
+										checked
+									/>
+									<label for="uppercase">A-Z</label>
+								</div>
+
+								<div class="settings-option">
+									<input
+										type="checkbox"
+										id="lowercase"
+										name="lowercase"
+										checked
+									/>
+									<label for="lowercase">a-z</label>
+								</div>
+
+								<div class="settings-option">
+									<input type="checkbox" id="numbers" name="numbers" checked />
+									<label for="numbers">0-9</label>
+								</div>
+
+								<div class="settings-option">
+									<input type="checkbox" id="special" name="special" checked />
+									<label for="special">/ * + & ...</label>
+								</div>
+
+								<div class="settings-option">
+									<input type="checkbox" id="extended" name="extended" />
+									<label for="extended">Extended ASCII</label>
+								</div>
+							</div>
+						</div>
+
+						<div id="passphrase-options" class="hidden">
+							<div class="slider-container">
+								<label for="passphrase-length"
+									>Words: <span id="passphrase-length-value">7</span></label
+								>
+								<input
+									type="range"
+									id="passphrase-length"
+									min="3"
+									max="16"
+									value="7"
+									class="slider"
+								/>
+							</div>
+							<div class="passphrase-info">
+								<p>
+									Generates random English words connected with special characters
+									and 3 numbers at the end.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="footer">
+				<p>
+					Secure passwords with your preferred settings. Double-click any password field
+					to toggle visibility.
+				</p>
+			</div>
+		</div>
+		<script src="popup.js"></script>
+	</body>
+</html>

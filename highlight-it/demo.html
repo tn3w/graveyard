@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>HighlightIt Demo</title>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+        <script src="dist/highlight-it.slim.js"></script>
+        <script>
+            window.addEventListener('load', () => {
+                HighlightIt.init();
+            });
+        </script>
+    </head>
+    <body>
+        <h1>HighlightIt Demo</h1>
+        <p>This is a demo of the HighlightIt library without highlight.js included.</p>
+        <code class="highlight-it">
+            def greet(name): """Return a personalized greeting.""" return f"Hello, {name}!" #
+            Example usage if __name__ == "__main__": print(greet("World"))
+        </code>
+    </body>
+</html>

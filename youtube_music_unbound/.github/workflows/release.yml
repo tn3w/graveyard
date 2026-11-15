@@ -1,0 +1,262 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.38.3'
+  APP_NAME: youtube_music_unbound
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Build APK
+        run: flutter build apk --release --split-debug-info=build/symbols --obfuscate
+      
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/${{ env.APP_NAME }}-${{ github.ref_name }}.apk
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/${{ env.APP_NAME }}-${{ github.ref_name }}.apk
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      
+      - name: Build Windows
+        run: flutter build windows --release --split-debug-info=build/symbols --obfuscate
+      
+      - name: Create portable ZIP
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath ${{ env.APP_NAME }}-${{ github.ref_name }}-windows-portable.zip
+
+      - name: Create NSIS installer
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+') { $version = "1.0.0" }
+          
+          @"
+          !include "MUI2.nsh"
+          
+          Name "YouTube Music Unbound"
+          OutFile "${{ env.APP_NAME }}-${{ github.ref_name }}-windows-setup.exe"
+          InstallDir "`$PROGRAMFILES64\${{ env.APP_NAME }}"
+          RequestExecutionLevel admin
+          
+          !define MUI_ICON "assets\icons\icon.ico"
+          !define MUI_UNICON "assets\icons\icon.ico"
+          !define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH FitControl
+          !define MUI_ABORTWARNING
+          
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+          
+          !insertmacro MUI_LANGUAGE "English"
+          
+          Section "Install"
+            SetOutPath "`$INSTDIR"
+            File /r "build\windows\x64\runner\Release\*.*"
+            File "assets\icons\icon.ico"
+            
+            WriteUninstaller "`$INSTDIR\uninstall.exe"
+            
+            CreateDirectory "`$SMPROGRAMS\YouTube Music Unbound"
+            CreateShortcut "`$SMPROGRAMS\YouTube Music Unbound\YouTube Music Unbound.lnk" "`$INSTDIR\${{ env.APP_NAME }}.exe" "" "`$INSTDIR\icon.ico" 0 SW_SHOWNORMAL "`$INSTDIR"
+            CreateShortcut "`$SMPROGRAMS\YouTube Music Unbound\Uninstall.lnk" "`$INSTDIR\uninstall.exe"
+            CreateShortcut "`$DESKTOP\YouTube Music Unbound.lnk" "`$INSTDIR\${{ env.APP_NAME }}.exe" "" "`$INSTDIR\icon.ico" 0 SW_SHOWNORMAL "`$INSTDIR"
+            
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}" "DisplayName" "YouTube Music Unbound"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}" "UninstallString" "`$INSTDIR\uninstall.exe"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}" "DisplayIcon" "`$INSTDIR\icon.ico"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}" "DisplayVersion" "$version"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}" "Publisher" "YouTube Music Unbound"
+          SectionEnd
+          
+          Section "Uninstall"
+            RMDir /r "`$INSTDIR"
+            RMDir /r "`$SMPROGRAMS\YouTube Music Unbound"
+            Delete "`$DESKTOP\YouTube Music Unbound.lnk"
+            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${{ env.APP_NAME }}"
+          SectionEnd
+          "@ | Out-File -FilePath installer.nsi -Encoding UTF8
+          
+          choco install nsis -y
+          & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" installer.nsi
+      
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-builds
+          path: |
+            ${{ env.APP_NAME }}-${{ github.ref_name }}-windows-portable.zip
+            ${{ env.APP_NAME }}-${{ github.ref_name }}-windows-setup.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libmpv-dev dpkg-dev fuse libfuse2 imagemagick libayatana-appindicator3-dev
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      
+      - name: Build Linux
+        run: flutter build linux --release --split-debug-info=build/symbols --obfuscate
+      
+      - name: Get version
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+      
+      - name: Create tar.gz
+        run: |
+          cd build/linux/x64/release/bundle
+          tar -czvf ../../../../../${{ env.APP_NAME }}-${{ github.ref_name }}-linux.tar.gz *
+      
+      - name: Create .deb package
+        run: |
+          mkdir -p deb/DEBIAN
+          mkdir -p deb/usr/bin
+          mkdir -p deb/usr/lib/${{ env.APP_NAME }}
+          mkdir -p deb/usr/share/applications
+          
+          # Create multiple icon sizes for Linux
+          for size in 16 32 48 64 128 256 512; do
+            mkdir -p deb/usr/share/icons/hicolor/${size}x${size}/apps
+            convert assets/icons/icon.png -resize ${size}x${size} deb/usr/share/icons/hicolor/${size}x${size}/apps/${{ env.APP_NAME }}.png
+          done
+          
+          cp -r build/linux/x64/release/bundle/* deb/usr/lib/${{ env.APP_NAME }}/
+          
+          cat > deb/usr/bin/${{ env.APP_NAME }} << 'EOF'
+          #!/bin/bash
+          exec /usr/lib/${{ env.APP_NAME }}/${{ env.APP_NAME }} "$@"
+          EOF
+          chmod +x deb/usr/bin/${{ env.APP_NAME }}
+          
+          cat > deb/usr/share/applications/${{ env.APP_NAME }}.desktop << EOF
+          [Desktop Entry]
+          Name=YouTube Music Unbound
+          Comment=YouTube Music desktop client
+          Exec=${{ env.APP_NAME }}
+          Icon=${{ env.APP_NAME }}
+          Type=Application
+          Categories=Audio;Music;Player;AudioVideo;
+          EOF
+          
+          DEB_PACKAGE_NAME=$(echo "${{ env.APP_NAME }}" | tr '_' '-')
+          cat > deb/DEBIAN/control << EOF
+          Package: ${DEB_PACKAGE_NAME}
+          Version: ${{ steps.version.outputs.VERSION }}
+          Section: sound
+          Priority: optional
+          Architecture: amd64
+          Maintainer: YouTube Music Unbound
+          Description: YouTube Music desktop client
+           A Flutter-based YouTube Music desktop application.
+          EOF
+          
+          dpkg-deb --build deb ${{ env.APP_NAME }}-${{ github.ref_name }}-linux.deb
+
+      - name: Create AppImage
+        run: |
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib
+          
+          # Create multiple icon sizes for AppImage
+          for size in 16 32 48 64 128 256; do
+            mkdir -p AppDir/usr/share/icons/hicolor/${size}x${size}/apps
+            convert assets/icons/icon.png -resize ${size}x${size} AppDir/usr/share/icons/hicolor/${size}x${size}/apps/${{ env.APP_NAME }}.png
+          done
+          
+          cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+          convert assets/icons/icon.png -resize 256x256 AppDir/${{ env.APP_NAME }}.png
+          
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export PATH="${HERE}/usr/bin:${PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/bin/lib:${LD_LIBRARY_PATH}"
+          exec "${HERE}/usr/bin/${{ env.APP_NAME }}" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          
+          cat > AppDir/${{ env.APP_NAME }}.desktop << EOF
+          [Desktop Entry]
+          Name=YouTube Music Unbound
+          Comment=YouTube Music desktop client
+          Exec=${{ env.APP_NAME }}
+          Icon=${{ env.APP_NAME }}
+          Type=Application
+          Categories=Audio;Music;Player;AudioVideo;
+          EOF
+          
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir ${{ env.APP_NAME }}-${{ github.ref_name }}-linux.AppImage
+      
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-builds
+          path: |
+            ${{ env.APP_NAME }}-${{ github.ref_name }}-linux.tar.gz
+            ${{ env.APP_NAME }}-${{ github.ref_name }}-linux.deb
+            ${{ env.APP_NAME }}-${{ github.ref_name }}-linux.AppImage
+
+  release:
+    needs: [build-android, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

@@ -1,0 +1,35 @@
+name: youtube_music_unbound
+description: A lightweight native YouTube Music client built with Flutter.
+publish_to: 'none'
+version: 1.0.0+1
+
+homepage: https://github.com/tn3w/youtube_music_unbound
+repository: https://github.com/tn3w/youtube_music_unbound
+issue_tracker: https://github.com/tn3w/youtube_music_unbound/issues
+
+maintainer: tn3w <tn3w@protonmail.com>
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_inappwebview: ^6.1.5
+  audio_service: ^0.18.15
+  dart_discord_rpc: ^0.0.2
+  system_tray: ^2.0.3
+  window_manager: ^0.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/scripts/
+    - assets/icons/

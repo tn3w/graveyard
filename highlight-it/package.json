@@ -1,0 +1,65 @@
+{
+	"name": "highlight-it",
+	"version": "0.2.7",
+	"description": "A lightweight syntax highlighting library with themes, line numbers, and copy functionality",
+	"main": "dist/highlight-it.js",
+	"jsdelivr": "dist/highlight-it.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tn3w/highlight-it.git"
+	},
+	"homepage": "https://github.com/tn3w/highlight-it",
+	"bugs": {
+		"url": "https://github.com/tn3w/highlight-it/issues"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "node build.js",
+		"format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\" \"!demo.html\"",
+		"lint": "eslint . --ext .js,.jsx,.ts,.tsx && stylelint --config .stylelintrc.mjs \"**/*.css\"",
+		"lint:js": "eslint . --ext .js,.jsx,.ts,.tsx",
+		"lint:css": "stylelint --config .stylelintrc.mjs \"**/*.css\""
+	},
+	"keywords": [
+		"syntax-highlighting",
+		"code-editor",
+		"source-code",
+		"programming",
+		"developer-tools",
+		"code-formatting",
+		"text-editor",
+		"markup",
+		"parser",
+		"web-development",
+		"themes",
+		"dark-mode",
+		"light-mode",
+		"auto-theme",
+		"line-numbers",
+		"copy-button",
+		"syntax-highlighter",
+		"code-presentation"
+	],
+	"author": "tn3w",
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^28.0.3",
+		"@rollup/plugin-node-resolve": "^16.0.1",
+		"@typescript-eslint/eslint-plugin": "^8.26.1",
+		"@typescript-eslint/parser": "^8.26.1",
+		"cssnano": "^7.0.6",
+		"eslint": "^9.21.0",
+		"globals": "^13.24.0",
+		"postcss": "^8.5.3",
+		"prettier": "^3.5.2",
+		"rollup": "^4.35.0",
+		"stylelint": "^16.2.1",
+		"stylelint-config-standard": "^36.0.0",
+		"typescript-eslint": "^8.26.1",
+		"uglify-js": "^3.19.3"
+	}
+}

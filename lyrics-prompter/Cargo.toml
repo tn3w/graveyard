@@ -1,0 +1,24 @@
+[package]
+name = "lyrics_prompter"
+version = "1.0.4"
+edition = "2021"
+authors = ["tn3w <tn3w@protonmail.com>"]
+license = "Apache-2.0"
+description = "A lightweight desktop application for displaying synchronized lyrics"
+repository = "https://github.com/tn3w/lyrics-prompter"
+homepage = "https://github.com/tn3w/lyrics-prompter"
+keywords = ["lyrics", "karaoke", "prompter", "lrc", "music"]
+categories = ["multimedia::audio"]
+
+[dependencies]
+minifb = { version = "0.28.0", features = ["x11"] }
+rodio = "0.21.1"
+rfd = "0.16.0"
+rusttype = "0.9.3"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"
+codegen-units = 1

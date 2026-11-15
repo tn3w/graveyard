@@ -1,0 +1,53 @@
+[project]
+name = "pathreg"
+version = "1.0.8"
+description = "A lightweight Python library to persistently add or remove directories from PATH."
+readme = "README.md"
+authors = [
+    {name = "TN3W", email = "tn3w@protonmail.com"}
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+keywords = ["path", "environment", "shell", "cli"]
+
+[project.scripts]
+pathreg = "pathreg:main"
+
+[project.optional-dependencies]
+dev = [
+    "black>=25.1.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/tn3w/pathreg"
+Repository = "https://github.com/tn3w/pathreg.git"
+Issues = "https://github.com/tn3w/pathreg/issues"
+
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pathreg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=pathreg --cov-report=term-missing -v"
