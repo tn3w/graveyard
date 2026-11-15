@@ -1,0 +1,71 @@
+name: Deploy Demo Page
+
+on:
+  workflow_run:
+    workflows: [Release crawlers.json]
+    types: [completed]
+  push:
+    branches: [master]
+    paths:
+      - docs/**
+      - tools/build_pages.py
+      - .github/workflows/deploy-pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name != 'workflow_run'
+      || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Stage data
+        run: |
+          mkdir -p docs/data
+          cp crawlers.json docs/data/crawlers.json
+          curl -fsSL \
+            https://github.com/tn3w/Crawlerdex/releases/latest/download/crawler-block-percentages.json \
+            -o docs/data/crawler-block-percentages.json
+
+      - name: Build per-crawler SEO pages, robots.txt, sitemap.xml
+        run: python3 tools/build_pages.py
+
+      - name: Minify HTML
+        run: |
+          npm install --no-save --silent html-minifier-terser
+          export PATH="$PWD/node_modules/.bin:$PATH"
+          find dist -name '*.html' -print0 | \
+            xargs -0 -n1 -P"$(nproc)" \
+              bash -c '
+                html-minifier-terser \
+                  --collapse-whitespace --remove-comments \
+                  --minify-css true --minify-js true \
+                  -o "$0" "$0"
+              '
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

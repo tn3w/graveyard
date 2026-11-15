@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{TITLE}}</title>
+    <meta name="description" content="{{SEO_DESC}}" />
+    <meta name="keywords" content="{{KEYWORDS}}" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="{{CANONICAL}}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{TITLE}}" />
+    <meta property="og:description" content="{{SEO_DESC}}" />
+    <meta property="og:url" content="{{CANONICAL}}" />
+    <meta property="og:site_name" content="Crawlerdex" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{TITLE}}" />
+    <meta name="twitter:description" content="{{SEO_DESC}}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://icons.duckduckgo.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+      onload="this.rel = 'stylesheet'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script type="application/ld+json">
+      {{JSON_LD}}
+    </script>
+    <style>
+      :root {
+        --ink: #0d0c0a;
+        --paper: #f3ecd8;
+        --paper-2: #ebe1c6;
+        --accent: #ff5b1f;
+        --shadow: 6px 6px 0 var(--ink);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Fraunces', serif;
+      }
+      body {
+        background-image:
+          radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.18) 1px, transparent 0),
+          linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+        background-size:
+          22px 22px,
+          100% 100%;
+        min-height: 100vh;
+      }
+      a {
+        color: inherit;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 28px 24px 80px;
+      }
+      header.top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+      }
+      .logo {
+        font-weight: 900;
+        font-size: 22px;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo .blip {
+        width: 12px;
+        height: 12px;
+        background: var(--accent);
+        border: 2px solid var(--ink);
+        border-radius: 50%;
+        box-shadow: 2px 2px 0 var(--ink);
+      }
+      header.top nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      nav a {
+        text-decoration: none;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--ink);
+      }
+      nav a.gh {
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.15s;
+      }
+      nav a.gh:hover {
+        color: var(--accent);
+      }
+      nav a.gh svg {
+        display: block;
+      }
+      .crumbs {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        opacity: 0.6;
+        margin-bottom: 14px;
+      }
+      .crumbs a {
+        text-decoration: underline;
+      }
+      .head-row {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .ico {
+        width: 64px;
+        height: 64px;
+        border: 3px solid var(--ink);
+        background: var(--paper-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 24px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .ico img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      h1 {
+        font-size: clamp(40px, 8vw, 84px);
+        line-height: 0.9;
+        margin: 0;
+        font-weight: 900;
+        letter-spacing: -2px;
+        font-variation-settings:
+          'opsz' 144,
+          'SOFT' 100;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 18px 0;
+      }
+      .tag-mini {
+        border: 1px solid var(--ink);
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .pat {
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 4px 10px;
+        font-size: 13px;
+      }
+      .lede {
+        font-size: 20px;
+        line-height: 1.5;
+        margin: 14px 0 0;
+      }
+      h2 {
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 36px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--ink);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 8px 18px;
+        font-size: 15px;
+      }
+      .grid dt {
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        opacity: 0.6;
+        padding-top: 4px;
+      }
+      .grid dd {
+        margin: 0;
+        word-break: break-all;
+      }
+      .instance {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        background: #fffaee;
+        border: 1px solid var(--ink);
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        word-break: break-all;
+        line-height: 1.4;
+        white-space: pre-wrap;
+      }
+      .chart {
+        border: 2px solid var(--ink);
+        background: #fffaee;
+        padding: 16px;
+        margin-top: 8px;
+      }
+      .chart .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .chart .big {
+        font-size: 40px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+      .chart .big small {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.6;
+      }
+      .chart .meta-r {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        opacity: 0.6;
+        text-align: right;
+      }
+      .chart svg {
+        width: 100%;
+        height: 160px;
+        display: block;
+      }
+      .chart .axis {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        fill: var(--ink);
+        opacity: 0.6;
+      }
+      .chart .area {
+        fill: var(--accent);
+        opacity: 0.18;
+      }
+      .chart .line {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 2.5;
+      }
+      .chart .dot {
+        fill: var(--accent);
+        stroke: var(--ink);
+        stroke-width: 1.5;
+      }
+      .chart .latest {
+        fill: var(--ink);
+      }
+      .chart .grid-l {
+        stroke: var(--ink);
+        stroke-dasharray: 2 4;
+        stroke-width: 1;
+        opacity: 0.25;
+      }
+      .nodata {
+        font-style: italic;
+        opacity: 0.6;
+        padding: 14px;
+        border: 2px dashed var(--ink);
+      }
+      .more {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-top: 8px;
+      }
+      .back {
+        display: inline-block;
+        margin-top: 32px;
+        padding: 10px 18px;
+        border: 2px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+        text-decoration: none;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        letter-spacing: 1px;
+        transition: transform 0.12s;
+      }
+      .back:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 var(--accent);
+      }
+      footer {
+        margin-top: 60px;
+        padding-top: 24px;
+        border-top: 2px solid var(--ink);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <a class="logo" href="/" aria-label="Crawlerdex home"
+          ><span class="blip"></span> Crawlerdex</a
+        >
+        <nav aria-label="Primary">
+          <a href="/" aria-label="Browse all crawlers">All crawlers</a>
+          <a
+            class="gh"
+            href="https://github.com/tn3w/Crawlerdex"
+            rel="noopener"
+            aria-label="Crawlerdex on GitHub"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.18c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.06.78 2.15v3.18c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"
+              />
+            </svg>
+          </a>
+        </nav>
+      </header>
+
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/" aria-label="Bestiary index">bestiary</a> / {{NAME}}
+      </nav>
+
+      <div class="head-row">
+        <div class="ico">{{ICON}}</div>
+        <h1><em>{{NAME}}</em></h1>
+      </div>
+
+      <div class="meta">
+        {{TAGS_HTML}}
+        <span class="pat">{{PATTERN}}</span>
+      </div>
+
+      <p class="lede">{{DESCRIPTION}}</p>
+
+      <h2>About this crawler</h2>
+      <p style="font-size: 16px; line-height: 1.6">
+        <strong>{{NAME}}</strong> is a web crawler identified by the regular-expression pattern
+        <code class="pat">{{PATTERN}}</code> in the <code>User-Agent</code> request header. It is
+        categorised as <em>{{TAGS_TEXT}}</em>. Use the regex above to detect, log, allow, or block
+        <strong>{{NAME}}</strong> traffic in your web server, CDN edge rules, or
+        <code>robots.txt</code>.
+      </p>
+
+      <h2>Block-rate · top 25k sites</h2>
+      {{CHART_SECTION}}
+
+      <h2>Technical details</h2>
+      <dl class="grid">
+        <dt>Name</dt>
+        <dd>{{NAME}}</dd>
+        <dt>Pattern</dt>
+        <dd><code class="pat">{{PATTERN}}</code></dd>
+        <dt>Tags</dt>
+        <dd>{{TAGS_TEXT}}</dd>
+        {{REF_ROW}} {{ADDED_ROW}} {{RDNS_ROW}}
+        <dt>Instances</dt>
+        <dd>{{INSTANCE_COUNT}} known sample(s)</dd>
+      </dl>
+
+      {{RDNS_SECTION}}
+
+      <h2>Sample User-Agent strings</h2>
+      {{INSTANCES_HTML}} {{EXTRA_INSTANCES}}
+
+      <h2>Block this crawler</h2>
+      <p style="font-size: 15px; line-height: 1.6">
+        <strong>robots.txt</strong> — disallow <strong>{{NAME}}</strong>:
+      </p>
+      <div class="instance">User-agent: {{NAME}}&#10;Disallow: /</div>
+
+      <p style="font-size: 15px; line-height: 1.6; margin-top: 18px">
+        <strong>Apache</strong> <code>.htaccess</code> — return 403:
+      </p>
+      <div class="instance">
+        RewriteEngine On&#10;RewriteCond %{HTTP_USER_AGENT} {{HTACCESS_PATTERN}}
+        [NC]&#10;RewriteRule .* - [F,L]
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.6; margin-top: 18px">
+        <strong>Nginx</strong> — return 403 inside a <code>server</code> block:
+      </p>
+      <div class="instance">
+        if ($http_user_agent ~* "{{NGINX_PATTERN}}") {&#10; return 403;&#10;}
+      </div>
+
+      <a class="back" href="/" aria-label="Back to crawler bestiary index">
+        ← back to all crawlers
+      </a>
+
+      <footer>
+        <span>© Crawlerdex · Apache 2.0</span>
+        <span
+          >data:
+          <a
+            href="https://github.com/tn3w/Crawlerdex"
+            rel="noopener"
+            aria-label="Crawlerdex data source on GitHub"
+            >Crawlerdex</a
+          ></span
+        >
+        <span>
+          <a href="/sitemap.xml">sitemap</a> ·
+          <a
+            href="https://github.com/tn3w/Crawlerdex"
+            rel="noopener"
+            aria-label="Crawlerdex GitHub repository"
+            >GitHub</a
+          >
+        </span>
+      </footer>
+    </main>
+  </body>
+</html>

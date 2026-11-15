@@ -1,0 +1,87 @@
+name: Release crawlers.json
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - crawlers.json
+      - tools/radar.py
+      - .github/workflows/release-crawlers.yml
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: release-crawlers
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install httpx
+
+      - name: Build minified crawlers.json
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          src = json.loads(Path("crawlers.json").read_text())
+          minimal = [
+              {k: v for k, v in e.items() if k not in ("instances", "addition_date")}
+              for e in src
+          ]
+          Path("crawlers.min.json").write_text(
+              json.dumps(minimal, separators=(",", ":"), ensure_ascii=False)
+          )
+          PY
+
+      - name: Build crawler block stats
+        run: python3 tools/radar.py
+
+      - name: Compute tag
+        id: tag
+        run: |
+          echo "tag=v$(date -u +%Y%m%d-%H%M%S)" >> "$GITHUB_OUTPUT"
+          echo "ts=$(date -u +'%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            crawlers.json crawlers.min.json \
+            crawler-stats.json crawler-block-percentages.json \
+            domain-crawler-blocks.json \
+            --title "Crawlerdex - ${{ steps.tag.outputs.ts }}" \
+            --notes "Automated release from \`${GITHUB_SHA:0:7}\`.
+
+          - \`crawlers.json\`: full crawler database
+          - \`crawlers.min.json\`: minified, no instances or addition_date
+          - \`crawler-stats.json\`: per-crawler aggregated block-rate stats
+          - \`crawler-block-percentages.json\`: block-rate time series
+          - \`domain-crawler-blocks.json\`: per-domain crawler allow/block map"
+
+      - name: Prune old releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          KEEP=5
+          gh release list --limit 100 --json tagName,isLatest \
+            --jq '.[] | select(.isLatest | not) | .tagName' \
+            | tail -n +$((KEEP + 1)) \
+            | while read -r tag; do
+                echo "Deleting $tag"
+                gh release delete "$tag" --yes --cleanup-tag
+              done

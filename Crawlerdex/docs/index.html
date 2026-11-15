@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Crawlerdex — the bestiary of 1600+ web crawler user agents</title>
+    <meta
+      name="description"
+      content="Searchable database of 1600+ web crawler user agents — Googlebot, GPTBot, Bingbot, ClaudeBot and more. Detection regex, real User-Agent strings, and live block-rate across the top 25 000 sites."
+    />
+    <meta
+      name="keywords"
+      content="web crawler database, user agent list, bot detection, GPTBot, Googlebot, Bingbot, ClaudeBot, robots.txt, AI crawler, SEO bot, scraper detection, user-agent regex"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://crawlerdex.tn3w.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Crawlerdex — the bestiary of 1600+ web crawlers" />
+    <meta
+      property="og:description"
+      content="Search 1600+ web crawler user-agents. Paste a User-Agent, get the bot. Live block-rate across top 25k sites."
+    />
+    <meta property="og:url" content="https://crawlerdex.tn3w.dev/" />
+    <meta property="og:site_name" content="Crawlerdex" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Crawlerdex — the bestiary of bots" />
+    <meta
+      name="twitter:description"
+      content="1600+ crawler user-agents, live block-rate, instant UA lookup."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Crawlerdex",
+        "url": "https://crawlerdex.tn3w.dev/",
+        "description": "Searchable database of 1600+ web crawler user agents with live block-rate telemetry.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://crawlerdex.tn3w.dev/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://icons.duckduckgo.com" crossorigin />
+    <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+      onload="this.rel = 'stylesheet'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <style>
+      :root {
+        --ink: #0d0c0a;
+        --paper: #f3ecd8;
+        --paper-2: #ebe1c6;
+        --line: #1a1814;
+        --accent: #ff5b1f;
+        --accent-2: #1f6feb;
+        --good: #2f7d3a;
+        --bad: #c4341f;
+        --shadow: 6px 6px 0 var(--ink);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Fraunces', serif;
+        font-variation-settings:
+          'opsz' 14,
+          'SOFT' 30;
+      }
+      body {
+        background-image:
+          radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.18) 1px, transparent 0),
+          linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+        background-size:
+          22px 22px,
+          100% 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .float {
+        position: fixed;
+        pointer-events: none;
+        font-size: 32px;
+        opacity: 0.55;
+        animation: drift 24s linear infinite;
+        z-index: 0;
+        filter: saturate(1.1);
+      }
+      @keyframes drift {
+        0% {
+          transform: translate(0, 0) rotate(0);
+        }
+        25% {
+          transform: translate(30px, -40px) rotate(15deg);
+        }
+        50% {
+          transform: translate(-20px, -80px) rotate(-10deg);
+        }
+        75% {
+          transform: translate(-40px, -30px) rotate(20deg);
+        }
+        100% {
+          transform: translate(0, 0) rotate(0);
+        }
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 24px 80px;
+        position: relative;
+        z-index: 1;
+      }
+
+      header.top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 48px;
+      }
+      .logo {
+        font-weight: 900;
+        font-size: 24px;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo .blip {
+        width: 14px;
+        height: 14px;
+        background: var(--accent);
+        border: 2px solid var(--ink);
+        border-radius: 50%;
+        box-shadow: 2px 2px 0 var(--ink);
+        animation: pulse 1.6s infinite ease-in-out;
+      }
+      @keyframes pulse {
+        50% {
+          transform: scale(1.25);
+        }
+      }
+      header.top nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      nav a {
+        text-decoration: none;
+        font-weight: 600;
+        border-bottom: 2px solid transparent;
+        padding-bottom: 2px;
+        transition: border-color 0.15s;
+      }
+      nav a:hover {
+        border-color: var(--accent);
+      }
+      nav a.gh {
+        display: inline-flex;
+        align-items: center;
+        border-bottom: 0;
+        padding: 0;
+        color: var(--ink);
+        transition: color 0.15s;
+      }
+      nav a.gh:hover {
+        color: var(--accent);
+      }
+      nav a.gh svg {
+        display: block;
+      }
+
+      .hero {
+        position: relative;
+        padding: 48px 0 36px;
+      }
+      .hero h1 {
+        font-size: clamp(56px, 11vw, 148px);
+        line-height: 0.88;
+        margin: 0 0 16px;
+        font-weight: 900;
+        letter-spacing: -3px;
+        font-variation-settings:
+          'opsz' 144,
+          'SOFT' 100;
+      }
+      .hero h1 em {
+        font-style: italic;
+        color: var(--accent);
+        font-variation-settings:
+          'opsz' 144,
+          'SOFT' 0;
+      }
+      .hero p.lede {
+        font-size: 22px;
+        max-width: 680px;
+        margin: 0 0 28px;
+        line-height: 1.4;
+        font-weight: 400;
+      }
+      .hero p.lede b {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 0 6px;
+      }
+
+      .searchbox {
+        position: relative;
+        border: 3px solid var(--ink);
+        background: #fffaee;
+        box-shadow: var(--shadow);
+        transition: transform 0.12s;
+      }
+      .searchbox:focus-within {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 var(--ink);
+      }
+      .searchbox input {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        outline: none;
+        padding: 22px 24px 22px 64px;
+        font-size: 22px;
+        font-family: inherit;
+        color: var(--ink);
+      }
+      .searchbox::before {
+        content: '';
+        position: absolute;
+        left: 22px;
+        top: 50%;
+        width: 22px;
+        height: 22px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        transform: translateY(-50%);
+      }
+      .searchbox::after {
+        content: '';
+        position: absolute;
+        left: 42px;
+        top: calc(50% + 8px);
+        width: 10px;
+        height: 3px;
+        background: var(--ink);
+        transform: rotate(45deg);
+      }
+      .hint {
+        font-size: 13px;
+        margin-top: 10px;
+        opacity: 0.7;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 22px 0 0;
+      }
+      .chip {
+        border: 2px solid var(--ink);
+        background: var(--paper);
+        padding: 6px 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 999px;
+        transition: all 0.12s;
+        user-select: none;
+      }
+      .chip:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 2px 2px 0 var(--ink);
+      }
+      .chip.on {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .chip .n {
+        opacity: 0.5;
+        margin-left: 6px;
+      }
+      .chip.on .n {
+        opacity: 0.7;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin: 36px 0 28px;
+      }
+      .stat {
+        border: 2px solid var(--ink);
+        background: #fffaee;
+        padding: 14px 16px;
+      }
+      .stat .k {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+      .stat .v {
+        font-size: 36px;
+        font-weight: 900;
+        line-height: 1;
+        margin-top: 6px;
+        letter-spacing: -1px;
+      }
+      .stat .v small {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.6;
+        margin-left: 4px;
+      }
+
+      .results {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        border: 2px solid var(--ink);
+        background: #fffaee;
+        padding: 16px;
+        cursor: pointer;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s;
+        position: relative;
+        overflow: hidden;
+        content-visibility: auto;
+        contain-intrinsic-size: 280px 150px;
+      }
+      .card:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 5px 5px 0 var(--ink);
+      }
+      .card .head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .card .ico {
+        width: 44px;
+        height: 44px;
+        border: 2px solid var(--ink);
+        background: var(--paper-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 18px;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .card .ico img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .card .nm {
+        font-weight: 800;
+        font-size: 18px;
+        line-height: 1.1;
+        letter-spacing: -0.3px;
+        word-break: break-word;
+      }
+      .card .desc {
+        font-size: 14px;
+        line-height: 1.4;
+        opacity: 0.85;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .card .foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+      }
+      .tag-mini {
+        border: 1px solid var(--ink);
+        padding: 2px 6px;
+        border-radius: 999px;
+      }
+      .block-pill {
+        font-weight: 700;
+        padding: 3px 8px;
+        border: 1.5px solid var(--ink);
+      }
+      .block-pill.lo {
+        background: #cfe8d3;
+      }
+      .block-pill.md {
+        background: #f6e2a8;
+      }
+      .block-pill.hi {
+        background: #f3b9aa;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 60px 20px;
+        opacity: 0.7;
+      }
+      .empty h3 {
+        font-size: 32px;
+        margin: 0 0 10px;
+        font-style: italic;
+      }
+
+      /* detail panel (modal) */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(13, 12, 10, 0.72);
+        z-index: 50;
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 40px 20px;
+        overflow-y: auto;
+      }
+      .modal.show {
+        display: flex;
+      }
+      .sheet {
+        background: var(--paper);
+        border: 3px solid var(--ink);
+        box-shadow: var(--shadow);
+        max-width: 920px;
+        width: 100%;
+        padding: 32px;
+        position: relative;
+        animation: pop 0.2s ease;
+      }
+      @keyframes pop {
+        from {
+          transform: translateY(20px) scale(0.97);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      .close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: var(--ink);
+        color: var(--paper);
+        border: 0;
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .sheet h2 {
+        font-size: 48px;
+        line-height: 1;
+        margin: 0 0 6px;
+        letter-spacing: -1.5px;
+        font-weight: 900;
+        word-break: break-word;
+      }
+      .sheet h2 em {
+        color: var(--accent);
+        font-style: italic;
+      }
+      .sheet .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 14px 0;
+      }
+      .sheet .pat {
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 4px 10px;
+        font-size: 13px;
+        display: inline-block;
+      }
+      .sheet .grid {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 6px 18px;
+        margin-top: 14px;
+        font-size: 15px;
+      }
+      .sheet .grid dt {
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        opacity: 0.6;
+        padding-top: 4px;
+      }
+      .sheet .grid dd {
+        margin: 0;
+      }
+      .sheet h3 {
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 28px 0 10px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--ink);
+      }
+      .instance {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        background: #fffaee;
+        border: 1px solid var(--ink);
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        word-break: break-all;
+        line-height: 1.4;
+      }
+
+      .chart {
+        border: 2px solid var(--ink);
+        background: #fffaee;
+        padding: 16px;
+        margin-top: 8px;
+        position: relative;
+      }
+      .chart .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .chart .big {
+        font-size: 40px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+      .chart .big small {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.6;
+      }
+      .chart svg {
+        width: 100%;
+        height: 160px;
+        display: block;
+      }
+      .chart .axis {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        fill: var(--ink);
+        opacity: 0.6;
+      }
+      .chart .area {
+        fill: var(--accent);
+        opacity: 0.18;
+      }
+      .chart .line {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 2.5;
+      }
+      .chart .dot {
+        fill: var(--accent);
+        stroke: var(--ink);
+        stroke-width: 1.5;
+      }
+      .chart .latest {
+        fill: var(--ink);
+      }
+      .chart .grid-l {
+        stroke: var(--ink);
+        stroke-dasharray: 2 4;
+        stroke-width: 1;
+        opacity: 0.25;
+      }
+
+      .ua-result {
+        background: linear-gradient(135deg, #fffaee 0%, #fff 100%);
+        border: 3px dashed var(--ink);
+        padding: 20px;
+        margin-top: 14px;
+      }
+      .ua-result h4 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+      .ua-match {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px;
+        border: 2px solid var(--ink);
+        background: var(--paper);
+      }
+      .ua-match:hover {
+        background: var(--paper-2);
+      }
+
+      .docs {
+        margin-top: 80px;
+        border-top: 3px solid var(--ink);
+        padding-top: 48px;
+      }
+      .docs h2 {
+        font-size: 64px;
+        margin: 0 0 8px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        font-style: italic;
+        color: var(--accent);
+      }
+      .docs .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+        margin-top: 24px;
+      }
+      .doc-grid .box {
+        border: 2px solid var(--ink);
+        padding: 20px;
+        background: #fffaee;
+      }
+      .doc-grid h3 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+      .doc-grid p {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 15px;
+      }
+      .doc-grid code {
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 1px 6px;
+        font-size: 13px;
+      }
+
+      footer {
+        margin-top: 60px;
+        padding: 24px 0;
+        border-top: 2px solid var(--ink);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      #crawler-index {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 30000px;
+      }
+      .loader {
+        text-align: center;
+        padding: 80px;
+        font-style: italic;
+        font-size: 20px;
+        opacity: 0.6;
+      }
+
+      @media (max-width: 640px) {
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .sheet {
+          padding: 22px;
+        }
+        .sheet h2 {
+          font-size: 32px;
+        }
+        .sheet .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floats" aria-hidden="true"></div>
+
+    <main class="wrap">
+      <header class="top">
+        <a class="logo" href="/" aria-label="Crawlerdex home"
+          ><span class="blip"></span> Crawlerdex</a
+        >
+        <nav aria-label="Primary">
+          <a href="#docs">Docs</a>
+          <a
+            class="gh"
+            href="https://github.com/tn3w/Crawlerdex"
+            target="_blank"
+            rel="noopener"
+            aria-label="Crawlerdex on GitHub"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.18c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.06.78 2.15v3.18c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"
+              />
+            </svg>
+          </a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <h1>Every <em>bot</em><br />that ever<br />knocked.</h1>
+        <p class="lede">
+          A living bestiary of <b id="hero-count">1600+</b> web crawlers: search by name, paste a
+          full user-agent, see how often the top 25k sites <em>block</em> them.
+        </p>
+
+        <div class="searchbox">
+          <input
+            id="q"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder='try "Googlebot", "GPTBot", or paste a full User-Agent…'
+          />
+        </div>
+        <div class="hint" id="hint">
+          ↳ live search across patterns, descriptions, instances. Click any card.
+        </div>
+
+        <div class="tags" id="tags"></div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="k">crawlers indexed</div>
+            <div class="v" id="s-total">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">categories</div>
+            <div class="v" id="s-cats">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">block-rate snapshot</div>
+            <div class="v" id="s-snap">-<small id="s-snap-d"></small></div>
+          </div>
+          <div class="stat">
+            <div class="k">most blocked today</div>
+            <div class="v" id="s-top" style="font-size: 22px">-</div>
+          </div>
+        </div>
+      </section>
+
+      <div id="ua-panel"></div>
+      <div id="results" class="results">
+        <div class="loader">summoning the bestiary…</div>
+      </div>
+
+      <section class="docs" id="docs">
+        <h2>How it works.</h2>
+        <p style="max-width: 640px; font-size: 18px; line-height: 1.5">
+          Crawlerdex unifies crawler detection patterns with live block-rate telemetry from its
+          built-in radar, which scans the top 25 000 websites' <code>robots.txt</code> daily.
+        </p>
+        <div class="doc-grid">
+          <div class="box">
+            <h3>1 · Search</h3>
+            <p>
+              Type any token: <code>gpt</code>, <code>ahrefs</code>, <code>bing</code>, to filter
+              crawlers by name, description, or instance string.
+            </p>
+          </div>
+          <div class="box">
+            <h3>2 · Paste a UA</h3>
+            <p>
+              Drop a full <code>User-Agent</code> header into the same box. The longest-matching
+              pattern wins; the panel reveals which crawler it is.
+            </p>
+          </div>
+          <div class="box">
+            <h3>3 · Filter by category</h3>
+            <p>
+              Tap a chip: <code>ai-crawler</code>, <code>seo</code>, <code>scanner</code>, to narrow
+              by tag.
+            </p>
+          </div>
+          <div class="box">
+            <h3>4 · Read the graph</h3>
+            <p>
+              Each crawler's modal shows the % of top-25k sites blocking it over time. Higher line =
+              more rejected.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>© Crawlerdex · Apache 2.0</span>
+        <span
+          >data: <a href="https://github.com/tn3w/Crawlerdex">Crawlerdex</a></span
+        >
+        <span>
+          <a href="/sitemap.xml">sitemap</a> ·
+          <a href="https://github.com/tn3w/Crawlerdex" rel="noopener">GitHub</a>
+        </span>
+      </footer>
+    </main>
+
+    <div class="modal" id="modal" role="dialog" aria-modal="true">
+      <div class="sheet" id="sheet"></div>
+    </div>
+
+    <nav id="crawler-index" aria-label="All indexed crawlers">
+      <h2>All indexed crawlers</h2>
+      <ul>
+        <!--CRAWLER_LINKS-->
+      </ul>
+    </nav>
+
+    <script>
+      const EMOJIS = [
+        '🤖',
+        '🕷️',
+        '🐛',
+        '🦗',
+        '🐞',
+        '🪲',
+        '👾',
+        '🛰️',
+        '🔍',
+        '📡',
+        '🐜',
+        '🦠',
+        '🪱',
+        '🐍',
+      ];
+      (function floats() {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const c = document.getElementById('floats');
+        for (let i = 0; i < 6; i++) {
+          const e = document.createElement('div');
+          e.className = 'float';
+          e.textContent = EMOJIS[i % EMOJIS.length];
+          e.style.left = Math.random() * 100 + 'vw';
+          e.style.top = Math.random() * 100 + 'vh';
+          e.style.animationDelay = -Math.random() * 24 + 's';
+          e.style.animationDuration = 18 + Math.random() * 16 + 's';
+          e.style.fontSize = 20 + Math.random() * 30 + 'px';
+          c.appendChild(e);
+        }
+      })();
+
+      const CRAWLERS_URL =
+        'https://raw.githubusercontent.com/tn3w/Crawlerdex/refs/heads/master/crawlers.json';
+      const LATEST_URL = './data/crawler-block-latest.json';
+      const SERIES_URL = './data/crawler-block-percentages.json';
+
+      const urlParams = new URLSearchParams(location.search);
+      let crawlers = [],
+        blocks = {},
+        activeTags = new Set(urlParams.getAll('tag')),
+        query = urlParams.get('q') || '',
+        visibleCount = 60;
+
+      function syncUrl() {
+        const params = new URLSearchParams();
+        if (query.trim()) params.set('q', query.trim());
+        for (const t of activeTags) params.append('tag', t);
+        const qs = params.toString();
+        const next = qs ? '?' + qs : location.pathname;
+        history.replaceState(null, '', next);
+      }
+
+      function domainOf(url) {
+        if (!url) return null;
+        try {
+          return new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace(
+            /^www\./,
+            ''
+          );
+        } catch {
+          return null;
+        }
+      }
+      function favicon(url) {
+        const d = domainOf(url);
+        return d ? `https://icons.duckduckgo.com/ip3/${d}.ico` : null;
+      }
+      const nameCache = new Map();
+      function nameOf(c) {
+        if (nameCache.has(c)) return nameCache.get(c);
+        let s = c.pattern;
+        s = s.replace(/\\([\\\/.\-+*?^$|(){}\[\]])/g, '$1');
+        s = s.replace(/\[([^\]]+)\]/g, (_, inner) => {
+          const upper = inner.match(/[A-Z]/);
+          if (upper) return upper[0];
+          const letter = inner.match(/[a-z]/);
+          if (letter) return letter[0];
+          return inner[0] || '';
+        });
+        s = s.replace(/\(([^)]*)\)/g, (_, inner) => {
+          inner = inner.replace(/^\?[:!=<]/, '');
+          return inner.split('|')[0] || '';
+        });
+        s = s.replace(/[()|^$]/g, '');
+        s = s.replace(/[*+?]\??/g, '');
+        s = s.replace(/\{\d+(,\d*)?\}/g, '');
+        s = s.replace(/\\[bBwWsSdD]/g, '');
+        s = s.replace(/\s+/g, ' ').trim();
+        s = s.replace(/[\/\-_]+$/, '').trim();
+        const out = s || c.pattern;
+        nameCache.set(c, out);
+        return out;
+      }
+      function slugify(n) {
+        return n.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'crawler';
+      }
+      function initials(n) {
+        return (
+          n
+            .split(/[\s\-_]+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((s) => s[0])
+            .join('')
+            .toUpperCase() || '?'
+        );
+      }
+      function blockKey(c) {
+        const candidates = [c.pattern, nameOf(c), ...(c.instances || []).slice(0, 3)];
+        for (const k of candidates) {
+          if (blocks[k]) return k;
+          const lk = k.toLowerCase();
+          for (const bk of Object.keys(blocks)) {
+            if (bk.toLowerCase() === lk) return bk;
+          }
+        }
+        const needle = nameOf(c).toLowerCase().split(' ')[0];
+        if (needle.length < 3) return null;
+        for (const bk of Object.keys(blocks)) {
+          if (bk.toLowerCase().includes(needle)) return bk;
+        }
+        return null;
+      }
+      const indexMap = new Map();
+      const latestCache = new Map();
+      function latestBlock(c) {
+        if (latestCache.has(c)) return latestCache.get(c);
+        const k = blockKey(c);
+        let result = null;
+        if (k) {
+          const [latestTs, latest] = blocks[k];
+          result = { key: k, latest, latestTs };
+        }
+        latestCache.set(c, result);
+        return result;
+      }
+      function pct(n) {
+        return (n * 100).toFixed(n < 0.001 ? 3 : n < 0.01 ? 2 : 1);
+      }
+
+      function renderTags() {
+        const counts = {},
+          blockSum = {},
+          blockN = {};
+        crawlers.forEach((c) => {
+          const b = latestBlock(c);
+          (c.tags || []).forEach((t) => {
+            counts[t] = (counts[t] || 0) + 1;
+            if (b) {
+              blockSum[t] = (blockSum[t] || 0) + b.latest;
+              blockN[t] = (blockN[t] || 0) + 1;
+            }
+          });
+        });
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        const el = document.getElementById('tags');
+        el.innerHTML = '';
+        sorted.forEach(([t, n]) => {
+          const c = document.createElement('button');
+          c.className = 'chip' + (activeTags.has(t) ? ' on' : '');
+          const avg = blockN[t] ? blockSum[t] / blockN[t] : null;
+          const pctLabel = avg != null ? ` · ${pct(avg)}% blocked` : '';
+          c.innerHTML = `${t}${pctLabel}<span class="n">${n}</span>`;
+          c.onclick = () => {
+            activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t);
+            visibleCount = 60;
+            syncUrl();
+            renderTags();
+            render();
+          };
+          el.appendChild(c);
+        });
+      }
+
+      function tryUaMatch(ua) {
+        let best = null;
+        for (const c of crawlers) {
+          try {
+            const re = new RegExp(c.pattern, 'i');
+            if (re.test(ua)) {
+              if (!best || c.pattern.length > best.pattern.length) best = c;
+            }
+          } catch {}
+        }
+        return best;
+      }
+
+      function render() {
+        const r = document.getElementById('results');
+        const ua = document.getElementById('ua-panel');
+        ua.innerHTML = '';
+        const q = query.trim().toLowerCase();
+        const isUa = q.length > 40 || /mozilla|applewebkit|compatible;|\+http/.test(q);
+
+        if (isUa) {
+          const m = tryUaMatch(query.trim());
+          ua.innerHTML = `<div class="ua-result">
+      <h4>User-Agent lookup</h4>
+      ${
+        m
+          ? `<a class="ua-match" data-i="${crawlers.indexOf(m)}" href="/${encodeURIComponent(slugify(nameOf(m)))}" style="text-decoration:none;color:inherit">
+        <div style="font-size:32px">🎯</div>
+        <div><div style="font-weight:800;font-size:20px">${escapeHtml(nameOf(m))}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.7">pattern: ${escapeHtml(m.pattern)}</div></div>
+      </a>`
+          : `<div style="font-style:italic">no pattern matched: could be a real browser, or an unknown bot.</div>`
+      }
+    </div>`;
+          if (m)
+            ua.querySelector('.ua-match').onclick = (e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+              e.preventDefault();
+              openDetail(m);
+            };
+        }
+
+        const filtered = crawlers.filter((c) => {
+          if (activeTags.size && !(c.tags || []).some((t) => activeTags.has(t))) return false;
+          if (!q || isUa) return !isUa || true;
+          const hay = (
+            c.pattern +
+            ' ' +
+            (c.description || '') +
+            ' ' +
+            (c.instances || []).join(' ')
+          ).toLowerCase();
+          return hay.includes(q);
+        });
+
+        if (!filtered.length) {
+          r.innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>nothing in the bestiary matches.</h3><p>try a different token or clear the filters.</p></div>`;
+          return;
+        }
+
+        const sorted = filtered
+          .map((c) => ({ c, b: latestBlock(c) }))
+          .sort((a, b) => (b.b?.latest || 0) - (a.b?.latest || 0));
+        const slice = sorted.slice(0, visibleCount);
+
+        r.innerHTML =
+          slice
+            .map(({ c, b }) => {
+              const fv = favicon(c.url);
+              const nm = nameOf(c);
+              const lvl = b ? (b.latest > 0.05 ? 'hi' : b.latest > 0.005 ? 'md' : 'lo') : 'lo';
+              return `<a class="card" data-i="${indexMap.get(c)}" href="/${encodeURIComponent(slugify(nm))}">
+      <div class="head">
+        <div class="ico">${fv ? `<img src="${fv}" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.parentNode.textContent='${initials(nm)}'">` : initials(nm)}</div>
+        <div class="nm">${escapeHtml(nm)}</div>
+      </div>
+      <div class="desc">${escapeHtml(c.description || '-')}</div>
+      <div class="foot">
+        <span class="tag-mini">${(c.tags || ['uncategorized'])[0]}</span>
+        ${b ? `<span class="block-pill ${lvl}">${pct(b.latest)}% block</span>` : `<span style="opacity:.5">no data</span>`}
+      </div>
+    </a>`;
+            })
+            .join('') +
+          (sorted.length > slice.length
+            ? `<button id="more" class="empty" style="grid-column:1/-1;opacity:.7;cursor:pointer;background:transparent;border:2px dashed var(--ink);padding:14px;font:inherit">load ${Math.min(60, sorted.length - slice.length)} more · ${sorted.length - slice.length} remaining</button>`
+            : '');
+
+        r.querySelectorAll('.card').forEach((el) => {
+          el.onclick = (e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+            e.preventDefault();
+            openDetail(crawlers[+el.dataset.i]);
+          };
+        });
+        const more = document.getElementById('more');
+        if (more)
+          more.onclick = () => {
+            visibleCount += 60;
+            render();
+          };
+      }
+
+      function escapeHtml(s) {
+        return String(s || '').replace(
+          /[&<>"']/g,
+          (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]
+        );
+      }
+
+      function chartSvg(series) {
+        const points = Object.entries(series)
+          .map(([t, v]) => [+t, v])
+          .sort((a, b) => a[0] - b[0]);
+        if (!points.length) return '';
+        const W = 820,
+          H = 160,
+          P = 28;
+        const xs = points.map((p) => p[0]),
+          ys = points.map((p) => p[1]);
+        const xmin = xs[0],
+          xmax = xs[xs.length - 1] || xs[0] + 1;
+        const ymax = Math.max(...ys, 0.001) * 1.15;
+        const x = (t) => P + (W - P * 2) * (xmax === xmin ? 0.5 : (t - xmin) / (xmax - xmin));
+        const y = (v) => H - P - (H - P * 2) * (v / ymax);
+        const path = points
+          .map((p, i) => (i ? 'L' : 'M') + x(p[0]).toFixed(1) + ',' + y(p[1]).toFixed(1))
+          .join(' ');
+        const area = path + ` L${x(xmax).toFixed(1)},${H - P} L${x(xmin).toFixed(1)},${H - P} Z`;
+        const grid = [0, 0.25, 0.5, 0.75, 1]
+          .map(
+            (f) =>
+              `<line class="grid-l" x1="${P}" x2="${W - P}" y1="${P + (H - P * 2) * f}" y2="${P + (H - P * 2) * f}"/>`
+          )
+          .join('');
+        const dots = points
+          .map(
+            (p, i) =>
+              `<circle class="${i === points.length - 1 ? 'latest' : 'dot'}" cx="${x(p[0]).toFixed(1)}" cy="${y(p[1]).toFixed(1)}" r="${i === points.length - 1 ? 5 : 3}"/>`
+          )
+          .join('');
+        const fmtDate = (t) => new Date(t * 1000).toISOString().slice(0, 10);
+        const labels = `<text class="axis" x="${P}" y="${H - 6}">${fmtDate(xmin)}</text><text class="axis" x="${W - P}" y="${H - 6}" text-anchor="end">${fmtDate(xmax)}</text><text class="axis" x="${P}" y="${P - 6}">${pct(ymax)}%</text>`;
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}<path class="area" d="${area}"/><path class="line" d="${path}"/>${dots}${labels}</svg>`;
+      }
+
+      let seriesRequest;
+      function loadSeries(key) {
+        seriesRequest ??= fetch(SERIES_URL).then((r) => r.json());
+        return seriesRequest.then((data) => {
+          if (!data.timestamps) return data[key];
+          const series = {};
+          data.series[key].forEach((v, i) => {
+            if (v !== null) series[data.timestamps[i]] = v;
+          });
+          return series;
+        });
+      }
+
+      function openDetail(c) {
+        const b = latestBlock(c);
+        const fv = favicon(c.url);
+        const nm = nameOf(c);
+        const sheet = document.getElementById('sheet');
+        sheet.innerHTML = `
+    <button class="close" onclick="closeModal()">×</button>
+    <div style="display:flex;gap:18px;align-items:center;margin-bottom:6px">
+      <div class="ico" style="width:64px;height:64px;border:3px solid var(--ink);background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;overflow:hidden">
+        ${fv ? `<img src="${fv}" alt="" width="64" height="64" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent='${initials(nm)}'">` : initials(nm)}
+      </div>
+      <h2><em>${escapeHtml(nm)}</em></h2>
+    </div>
+    <div class="meta">
+      ${(c.tags || []).map((t) => `<span class="tag-mini">${t}</span>`).join('')}
+      <span class="pat">${escapeHtml(c.pattern)}</span>
+    </div>
+    <p style="font-size:18px;line-height:1.5;margin:14px 0 0">${escapeHtml(c.description || 'No description.')}</p>
+
+    <h3>Block-rate · top 25k sites</h3>
+    ${
+      b
+        ? `<div class="chart">
+      <div class="top">
+        <div class="big">${pct(b.latest)}<small>%</small></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.6;text-align:right">
+          latest snapshot<br>${new Date(b.latestTs * 1000).toISOString().slice(0, 10)}<br>
+          matched key: ${escapeHtml(b.key)}
+        </div>
+      </div>
+      <div class="series"></div>
+    </div>`
+        : `<div style="font-style:italic;opacity:.6;padding:14px;border:2px dashed var(--ink)">No block-rate data found for this crawler.</div>`
+    }
+
+    <h3>About this crawler</h3>
+    <p style="font-size:15px;line-height:1.6;margin:0 0 6px">
+      <strong>${escapeHtml(nm)}</strong> is identified by the regex
+      <code class="pat">${escapeHtml(c.pattern)}</code> in the
+      <code>User-Agent</code> header. Tagged
+      <em>${escapeHtml((c.tags || ['uncategorized']).join(', '))}</em>.
+    </p>
+
+    <h3>Technical details</h3>
+    <dl class="grid">
+      <dt>Name</dt><dd>${escapeHtml(nm)}</dd>
+      <dt>Pattern</dt><dd><code class="pat">${escapeHtml(c.pattern)}</code></dd>
+      <dt>Tags</dt><dd>${escapeHtml((c.tags || ['uncategorized']).join(', '))}</dd>
+      ${c.url ? `<dt>Reference</dt><dd><a href="${escapeHtml(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.url)}</a></dd>` : ''}
+      ${c.addition_date ? `<dt>Added</dt><dd>${escapeHtml(c.addition_date)}</dd>` : ''}
+      ${(c.rdns || []).length ? `<dt>rDNS</dt><dd>${c.rdns.map((r) => `<code class="pat">${escapeHtml(r)}</code>`).join(' ')}</dd>` : ''}
+      <dt>Instances</dt><dd>${(c.instances || []).length}</dd>
+      <dt>Permalink</dt><dd><a href="/${encodeURIComponent(slugify(nm))}">/${escapeHtml(slugify(nm))}</a></dd>
+    </dl>
+
+    <h3>Block this crawler</h3>
+    <p style="font-size:14px;line-height:1.5;margin:0 0 8px">
+      <strong>robots.txt</strong> — disallow <strong>${escapeHtml(nm)}</strong>:
+    </p>
+    <div class="instance" style="white-space:pre-wrap">User-agent: ${escapeHtml(nm)}\nDisallow: /</div>
+    <p style="font-size:14px;line-height:1.5;margin:14px 0 8px">
+      <strong>Apache</strong> <code>.htaccess</code> — return 403:
+    </p>
+    <div class="instance" style="white-space:pre-wrap">RewriteEngine On\nRewriteCond %{HTTP_USER_AGENT} ${escapeHtml(c.pattern)} [NC]\nRewriteRule .* - [F,L]</div>
+    <p style="font-size:14px;line-height:1.5;margin:14px 0 8px">
+      <strong>Nginx</strong> — return 403 inside a <code>server</code> block:
+    </p>
+    <div class="instance" style="white-space:pre-wrap">if ($http_user_agent ~* "${escapeHtml(c.pattern.replace(/\\/g, '\\\\').replace(/"/g, '\\"'))}") {\n    return 403;\n}</div>
+
+    ${
+      (c.instances || []).length
+        ? `<h3>Sample User-Agents</h3>${c.instances
+            .slice(0, 8)
+            .map((i) => `<div class="instance">${escapeHtml(i)}</div>`)
+            .join(
+              ''
+            )}${c.instances.length > 8 ? `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.5;margin-top:6px">+ ${c.instances.length - 8} more</div>` : ''}`
+        : ''
+    }
+  `;
+        document.getElementById('modal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+        const slot = sheet.querySelector('.series');
+        if (slot) loadSeries(b.key).then((series) => (slot.innerHTML = chartSvg(series)));
+      }
+      function closeModal() {
+        document.getElementById('modal').classList.remove('show');
+        document.body.style.overflow = '';
+      }
+      document.getElementById('modal').addEventListener('click', (e) => {
+        if (e.target.id === 'modal') closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      const qInput = document.getElementById('q');
+      qInput.value = query;
+      qInput.addEventListener('input', (e) => {
+        query = e.target.value;
+        visibleCount = 60;
+        syncUrl();
+        render();
+      });
+
+      function renderStats() {
+        document.getElementById('hero-count').textContent = crawlers.length.toLocaleString();
+        document.getElementById('s-total').textContent = crawlers.length.toLocaleString();
+        const cats = new Set();
+        crawlers.forEach((c) => (c.tags || []).forEach((t) => cats.add(t)));
+        document.getElementById('s-cats').textContent = cats.size;
+
+        const latestTs = Math.max(...Object.values(blocks).map(([ts]) => ts));
+        if (isFinite(latestTs)) {
+          document.getElementById('s-snap-d').textContent =
+            ' ' + new Date(latestTs * 1000).toISOString().slice(0, 10);
+          const [starTs, starValue] = blocks['*'] || [];
+          const starV = starTs === latestTs ? starValue : 0;
+          document.getElementById('s-snap').firstChild.textContent = pct(starV);
+        }
+        const ranked = crawlers
+          .map((c) => {
+            const b = latestBlock(c);
+            return { c, v: b?.latest || 0 };
+          })
+          .sort((a, b) => b.v - a.v);
+        const top = ranked[0];
+        if (top && top.v > 0) {
+          document.getElementById('s-top').textContent = nameOf(top.c) + ' · ' + pct(top.v) + '%';
+        } else {
+          document.getElementById('s-top').textContent = '-';
+        }
+      }
+
+      async function load() {
+        try {
+          const [c, b] = await Promise.all([
+            fetch(CRAWLERS_URL).then((r) => r.json()),
+            fetch(LATEST_URL)
+              .then((r) => r.json())
+              .catch(() => ({})),
+          ]);
+          crawlers = c;
+          blocks = b;
+          crawlers.forEach((cr, i) => indexMap.set(cr, i));
+          renderTags();
+          renderStats();
+          render();
+        } catch (e) {
+          document.getElementById('results').innerHTML =
+            `<div class="empty"><h3>failed to load.</h3><p>${escapeHtml(e.message)}</p></div>`;
+        }
+      }
+      load();
+    </script>
+  </body>
+</html>

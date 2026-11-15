@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>404 · lost in the bestiary — Crawlerdex</title>
+    <meta
+      name="description"
+      content="404 — the page you summoned isn't in the Crawlerdex bestiary. Browse 1500+ web crawler user agents instead."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+      onload="this.rel = 'stylesheet'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <style>
+      :root {
+        --ink: #0d0c0a;
+        --paper: #f3ecd8;
+        --paper-2: #ebe1c6;
+        --accent: #ff5b1f;
+        --shadow: 6px 6px 0 var(--ink);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Fraunces', serif;
+        min-height: 100vh;
+      }
+      body {
+        background-image:
+          radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.18) 1px, transparent 0),
+          linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+        background-size:
+          22px 22px,
+          100% 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+      .card {
+        max-width: 640px;
+        border: 3px solid var(--ink);
+        background: #fffaee;
+        box-shadow: var(--shadow);
+        padding: 40px 36px;
+        text-align: center;
+      }
+      h1 {
+        font-size: clamp(56px, 14vw, 140px);
+        line-height: 0.9;
+        margin: 0;
+        letter-spacing: -4px;
+        font-weight: 900;
+        white-space: nowrap;
+        font-variation-settings:
+          'opsz' 144,
+          'SOFT' 100;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      p {
+        font-size: 20px;
+        line-height: 1.5;
+        margin: 18px 0 28px;
+      }
+      .home {
+        display: inline-block;
+        border: 2px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 22px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        letter-spacing: 1px;
+        transition: transform 0.12s;
+      }
+      .home:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 var(--accent);
+      }
+      .bug {
+        font-size: 56px;
+        margin-bottom: 8px;
+      }
+      footer {
+        margin-top: 32px;
+        padding-top: 18px;
+        width: 100%;
+        max-width: 640px;
+        border-top: 2px solid var(--ink);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      footer a {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="bug" aria-hidden="true">🪲</div>
+      <h1>4<em>0</em>4</h1>
+      <p>this bot left no trace. the page you summoned isn't in the bestiary.</p>
+      <a class="home" href="/">← back to the bestiary</a>
+    </main>
+    <footer>
+      <span>© Crawlerdex · Apache 2.0</span>
+      <span>
+        <a href="/">home</a> · <a href="/sitemap.xml">sitemap</a> ·
+        <a href="https://github.com/tn3w/Crawlerdex" rel="noopener">GitHub</a>
+      </span>
+    </footer>
+  </body>
+</html>
