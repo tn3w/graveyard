@@ -41,5 +41,6 @@ Below is a quick overview of each directory contained in this repository. The or
 - **novi/** - Open-source Android music player in Kotlin.
 - **lyrics-prompter/** - Desktop app showing synchronized lyrics for karaoke-style prompting.
 - **pathreg/** - Python library to persistently add or remove directories from PATH.
+- **IPApi/** - Rust IP lookup API with geolocation, ASN, proxy and blocklist checks (replaced by [iplore](https://github.com/tn3w/iplore)).
 
 > 🗂️ _Many of these projects are proofs-of-concept or abandoned; they remain here for historical reference and potential reuse._
