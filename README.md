@@ -28,7 +28,8 @@ Below is a quick overview of each directory contained in this repository. The or
 - **cltunnel/** – Python prototype client implementing a Cloudflare Argo-style tunnel (QUIC).
 - **vigilus/** - Collection of browser side anti bot measures.
 - **crua/** - Fast crawler detection and browser parsing for Python.
-- **ipblocklist-api/** - Minimal Rust API that loads [IPBlocklist](https://github.com/tn3w/IPBlocklist).
+- **ipblocklist-api/** - Minimal Rust API that loads [IPBlocklist](IPBlocklist/).
+- **IPBlocklist/** - Aggregated IP/ASN threat intel database and netset blocklist, replaced by [iplore](https://github.com/tn3w/iplore).
 - **robots-radar/** - Tracks which crawlers the web's top sites block.
 - **Passugar/** - Browser extension for simple password management.
 - **py_ntru/** - Python wrapper around the Rust NTRU library for post-quantum cryptography.

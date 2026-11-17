@@ -1,0 +1,1731 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>IPBlocklist Threat Intelligence Lookup</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            :root {
+                --bg: #0a0a0f;
+                --surface: #12121a;
+                --surface-2: #1a1a26;
+                --surface-3: #22222f;
+                --border: #2a2a3a;
+                --border-hover: #3a3a5a;
+                --text: #e4e4ef;
+                --text-dim: #8888a0;
+                --text-muted: #55556a;
+                --accent: #6366f1;
+                --accent-dim: #4f46e5;
+                --danger: #ef4444;
+                --danger-dim: rgba(239, 68, 68, 0.12);
+                --warn: #f59e0b;
+                --warn-dim: rgba(245, 158, 11, 0.12);
+                --safe: #22c55e;
+                --safe-dim: rgba(34, 197, 94, 0.12);
+                --info: #3b82f6;
+                --info-dim: rgba(59, 130, 246, 0.12);
+                --radius: 10px;
+                --radius-sm: 6px;
+                --mono: 'JetBrains Mono', monospace;
+                --sans: 'Outfit', system-ui, sans-serif;
+            }
+
+            html {
+                font-size: 15px;
+            }
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: var(--sans);
+                min-height: 100vh;
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .noise {
+                position: fixed;
+                inset: 0;
+                z-index: -1;
+                opacity: 0.025;
+                pointer-events: none;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            }
+
+            .glow {
+                position: fixed;
+                top: -200px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 800px;
+                height: 500px;
+                background: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            header {
+                padding: 2.5rem 2rem 0;
+                max-width: 900px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .logo-group {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                text-decoration: none;
+                color: inherit;
+                cursor: pointer;
+            }
+            .logo-group:hover .logo-text {
+                color: var(--accent);
+            }
+            .logo-text {
+                transition: color 0.2s;
+            }
+
+            #home.hidden {
+                display: none;
+            }
+
+            .hero-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+                gap: 1rem;
+                margin: 1rem 0 3rem;
+            }
+            .hero-stat {
+                padding: 1.5rem 0;
+                border-top: 1px solid var(--border);
+            }
+            .hero-stat .num {
+                font-family: var(--mono);
+                font-size: 2.1rem;
+                font-weight: 700;
+                letter-spacing: -0.04em;
+                background: linear-gradient(135deg, #fff, #818cf8);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                line-height: 1;
+                margin-bottom: 0.5rem;
+            }
+            .hero-stat .lbl {
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                font-weight: 600;
+            }
+
+            .features {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                gap: 1rem;
+                margin-bottom: 3rem;
+            }
+            .feature {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 1.5rem;
+                transition: border-color 0.2s, transform 0.2s;
+            }
+            .feature:hover {
+                border-color: var(--border-hover);
+                transform: translateY(-2px);
+            }
+            .feature-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                background: var(--surface-2);
+                border: 1px solid var(--border);
+                display: grid;
+                place-items: center;
+                margin-bottom: 1rem;
+                color: var(--accent);
+            }
+            .feature-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+            .feature h3 {
+                font-size: 0.98rem;
+                font-weight: 600;
+                margin-bottom: 0.35rem;
+                letter-spacing: -0.01em;
+            }
+            .feature p {
+                font-size: 0.83rem;
+                color: var(--text-dim);
+                line-height: 1.5;
+            }
+
+            .section-head {
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                font-weight: 600;
+                margin-bottom: 1.2rem;
+            }
+
+            .scale {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.5rem;
+                margin-bottom: 3rem;
+            }
+            .scale-item {
+                padding: 1.1rem 1rem;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                position: relative;
+                overflow: hidden;
+            }
+            .scale-item::before {
+                content: '';
+                position: absolute;
+                inset: 0 0 auto 0;
+                height: 3px;
+                background: var(--bar);
+            }
+            .scale-item .lvl {
+                font-family: var(--mono);
+                font-size: 0.78rem;
+                color: var(--bar);
+                font-weight: 600;
+                margin-bottom: 0.3rem;
+                margin-top: 0.3rem;
+            }
+            .scale-item .rng {
+                font-family: var(--mono);
+                font-size: 1.3rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                letter-spacing: -0.02em;
+            }
+            .scale-item .ex {
+                font-size: 0.72rem;
+                color: var(--text-muted);
+                font-family: var(--mono);
+                line-height: 1.4;
+            }
+
+            .steps {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 0;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                margin-bottom: 3rem;
+                overflow: hidden;
+                background: var(--surface);
+            }
+            .step {
+                padding: 1.5rem;
+                border-right: 1px solid var(--border);
+            }
+            .step:last-child {
+                border-right: none;
+            }
+            .step .n {
+                font-family: var(--mono);
+                font-size: 0.78rem;
+                color: var(--accent);
+                font-weight: 600;
+                margin-bottom: 0.8rem;
+            }
+            .step .t {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-bottom: 0.3rem;
+            }
+            .step .d {
+                font-size: 0.82rem;
+                color: var(--text-dim);
+            }
+
+            .cta {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: 1.8rem 2rem;
+                background: linear-gradient(135deg,
+                    rgba(99,102,241,0.08), rgba(99,102,241,0.02));
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+            }
+            .cta-text h3 {
+                font-size: 1.05rem;
+                font-weight: 600;
+                margin-bottom: 0.25rem;
+                letter-spacing: -0.01em;
+            }
+            .cta-text p {
+                font-size: 0.85rem;
+                color: var(--text-dim);
+            }
+            .cta-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: var(--accent);
+                color: #fff;
+                text-decoration: none;
+                padding: 0.7rem 1.3rem;
+                border-radius: var(--radius);
+                font-weight: 600;
+                font-size: 0.88rem;
+                transition: background 0.2s;
+            }
+            .cta-btn:hover {
+                background: var(--accent-dim);
+            }
+            .cta-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            @media (max-width: 600px) {
+                .scale {
+                    grid-template-columns: 1fr 1fr;
+                }
+                .step {
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                }
+                .step:last-child {
+                    border-bottom: none;
+                }
+            }
+
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, var(--accent), #818cf8);
+                display: grid;
+                place-items: center;
+                font-weight: 800;
+                font-size: 1rem;
+                color: #fff;
+                flex-shrink: 0;
+            }
+
+            .logo-text {
+                font-weight: 700;
+                font-size: 1.35rem;
+                letter-spacing: -0.03em;
+            }
+
+            .logo-text span {
+                color: var(--text-dim);
+                font-weight: 400;
+            }
+
+            .github-link {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: var(--text-dim);
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: 500;
+                padding: 0.45rem 0.9rem;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                transition: all 0.2s;
+            }
+            .github-link:hover {
+                color: var(--text);
+                border-color: var(--border-hover);
+                background: var(--surface);
+            }
+            .github-link svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            main {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+
+            .search-section {
+                margin-bottom: 2.5rem;
+            }
+
+            .search-label {
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 600;
+                margin-bottom: 0.6rem;
+            }
+
+            .search-box {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .search-input {
+                flex: 1;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 0.85rem 1.1rem;
+                color: var(--text);
+                font-family: var(--mono);
+                font-size: 0.95rem;
+                outline: none;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+            }
+            .search-input::placeholder {
+                color: var(--text-muted);
+            }
+            .search-input:focus {
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            }
+
+            .search-btn {
+                background: var(--accent);
+                color: #fff;
+                border: none;
+                border-radius: var(--radius);
+                padding: 0.85rem 1.6rem;
+                font-family: var(--sans);
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition:
+                    background 0.2s,
+                    transform 0.1s;
+                white-space: nowrap;
+            }
+            .search-btn:hover {
+                background: var(--accent-dim);
+            }
+            .search-btn:active {
+                transform: scale(0.97);
+            }
+            .search-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .status-bar {
+                margin-top: 0.8rem;
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                font-family: var(--mono);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .status-bar .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--text-muted);
+                flex-shrink: 0;
+            }
+            .status-bar.ready .dot {
+                background: var(--safe);
+            }
+            .status-bar.loading .dot {
+                background: var(--warn);
+                animation: pulse 1s ease infinite;
+            }
+            .status-bar.error .dot {
+                background: var(--danger);
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.3;
+                }
+            }
+
+            #results {
+                display: none;
+            }
+            #results.visible {
+                display: block;
+            }
+
+            .result-header {
+                display: flex;
+                align-items: baseline;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                flex-wrap: wrap;
+            }
+
+            .result-ip {
+                font-family: var(--mono);
+                font-size: 1.5rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+
+            .result-verdict {
+                font-size: 0.82rem;
+                font-weight: 600;
+                padding: 0.3rem 0.75rem;
+                border-radius: 20px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .verdict-high {
+                background: var(--danger-dim);
+                color: var(--danger);
+            }
+            .verdict-medium {
+                background: var(--warn-dim);
+                color: var(--warn);
+            }
+            .verdict-low {
+                background: var(--info-dim);
+                color: var(--info);
+            }
+            .verdict-clean {
+                background: var(--safe-dim);
+                color: var(--safe);
+            }
+
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 0.75rem;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 1rem 1.1rem;
+            }
+
+            .stat-label {
+                font-size: 0.72rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 600;
+                margin-bottom: 0.3rem;
+            }
+
+            .stat-value {
+                font-family: var(--mono);
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+
+            .section-title {
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 600;
+                margin-bottom: 0.8rem;
+                margin-top: 1.5rem;
+            }
+
+            .tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .tag {
+                font-size: 0.78rem;
+                font-weight: 500;
+                padding: 0.3rem 0.7rem;
+                border-radius: 20px;
+                font-family: var(--mono);
+            }
+
+            .tag-flag {
+                background: rgba(99, 102, 241, 0.12);
+                color: #818cf8;
+            }
+            .tag-cat {
+                background: rgba(245, 158, 11, 0.12);
+                color: #fbbf24;
+            }
+
+            .feed-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .feed-item {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 0.85rem 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                cursor: default;
+                position: relative;
+                transition: border-color 0.2s;
+            }
+            .feed-item:hover {
+                border-color: var(--border-hover);
+            }
+
+            .feed-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .feed-name {
+                font-family: var(--mono);
+                font-size: 0.85rem;
+                font-weight: 500;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .feed-score {
+                font-family: var(--mono);
+                font-size: 0.8rem;
+                font-weight: 600;
+                flex-shrink: 0;
+            }
+
+            .feed-tags {
+                display: flex;
+                gap: 0.3rem;
+                flex-shrink: 0;
+                flex-wrap: wrap;
+            }
+
+            .feed-tag {
+                font-size: 0.68rem;
+                padding: 0.15rem 0.45rem;
+                border-radius: 12px;
+                font-family: var(--mono);
+            }
+
+            .tooltip-card {
+                display: none;
+                position: absolute;
+                bottom: calc(100% + 8px);
+                left: 0;
+                right: 0;
+                background: var(--surface-2);
+                border: 1px solid var(--border-hover);
+                border-radius: var(--radius);
+                padding: 1rem;
+                z-index: 100;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+                font-size: 0.82rem;
+                line-height: 1.6;
+                animation: fadeUp 0.15s ease;
+            }
+
+            .feed-item:hover .tooltip-card {
+                display: block;
+            }
+
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(4px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .tooltip-card .tt-name {
+                font-weight: 700;
+                font-size: 0.9rem;
+                margin-bottom: 0.3rem;
+            }
+            .tooltip-card .tt-desc {
+                color: var(--text-dim);
+                margin-bottom: 0.5rem;
+            }
+            .tooltip-card .tt-row {
+                display: flex;
+                gap: 0.5rem;
+                color: var(--text-dim);
+                font-family: var(--mono);
+                font-size: 0.75rem;
+            }
+            .tooltip-card .tt-row strong {
+                color: var(--text);
+                font-weight: 500;
+            }
+
+            .score-bar-outer {
+                width: 100%;
+                height: 6px;
+                background: var(--surface-3);
+                border-radius: 3px;
+                overflow: hidden;
+                margin-top: 0.3rem;
+            }
+            .score-bar-inner {
+                height: 100%;
+                border-radius: 3px;
+                transition: width 0.4s ease;
+            }
+
+            .asn-section {
+                margin-bottom: 2rem;
+            }
+
+            .prefix-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+                max-height: 220px;
+                overflow-y: auto;
+                margin-bottom: 1.5rem;
+                padding: 0.75rem;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+            }
+
+            .prefix-tag {
+                font-family: var(--mono);
+                font-size: 0.76rem;
+                padding: 0.2rem 0.5rem;
+                background: var(--surface-2);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                color: var(--text-dim);
+            }
+
+            .no-matches {
+                color: var(--text-dim);
+                font-size: 0.9rem;
+                padding: 2rem;
+                text-align: center;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+            }
+
+            .spinner {
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                border: 2px solid var(--border);
+                border-top-color: var(--accent);
+                border-radius: 50%;
+                animation: spin 0.6s linear infinite;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            footer {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 2rem;
+                text-align: center;
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                border-top: 1px solid var(--border);
+            }
+
+            @media (max-width: 600px) {
+                header {
+                    padding: 1.5rem 1rem 0;
+                }
+                main {
+                    padding: 1.5rem 1rem;
+                }
+                .search-box {
+                    flex-direction: column;
+                }
+                .stats-row {
+                    grid-template-columns: 1fr 1fr;
+                }
+                .feed-item {
+                    flex-wrap: wrap;
+                }
+                .feed-tags {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="noise"></div>
+        <div class="glow"></div>
+
+        <header>
+            <a class="logo-group" id="logoHome" href="#" aria-label="Home">
+                <div class="logo-icon">IP</div>
+                <div class="logo-text">IPBlocklist <span>Lookup</span></div>
+            </a>
+            <a
+                class="github-link"
+                href="https://github.com/tn3w/IPBlocklist"
+                target="_blank"
+                rel="noopener"
+            >
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29
+        6.53 5.47 7.59.4.07.55-.17.55-.38
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49
+        -2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15
+        -.68-.52-.01-.53.63-.01 1.08.58 1.23.82
+        .72 1.21 1.87.87 2.33.66.07-.52.28-.87
+        .51-1.07-1.78-.2-3.64-.89-3.64-3.95
+        0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08
+        -2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1
+        4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16
+        1.92.08 2.12.51.56.82 1.27.82 2.15 0
+        3.07-1.87 3.75-3.65 3.95.29.25.54.73.54
+        1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46
+        .55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                    />
+                </svg>
+                GitHub
+            </a>
+        </header>
+
+        <main>
+            <div class="search-section">
+                <div class="search-label">Enter an IPv4 or IPv6 address (e.g. 1.1.1.1)</div>
+                <div class="search-box">
+                    <input
+                        class="search-input"
+                        id="queryInput"
+                        type="text"
+                        placeholder="1.1.1.1 or 2606:4700::1"
+                        spellcheck="false"
+                        autocomplete="off"
+                    />
+                    <button class="search-btn" id="lookupBtn" disabled>Lookup</button>
+                </div>
+                <div class="status-bar loading" id="statusBar">
+                    <span class="dot"></span>
+                    <span id="statusText">Loading blocklist data…</span>
+                </div>
+            </div>
+
+            <div id="results">
+                <div id="resultContent"></div>
+            </div>
+
+            <div id="home">
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="num" id="heroV4">—</div>
+                        <div class="lbl">IPv4 ranges</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="num" id="heroV6">—</div>
+                        <div class="lbl">IPv6 ranges</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="num">160+</div>
+                        <div class="lbl">Threat feeds</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="num">0ms</div>
+                        <div class="lbl">Server roundtrip</div>
+                    </div>
+                </div>
+
+                <div class="section-head">Features</div>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Local-first</h3>
+                        <p>Runs in your browser. Nothing sent. No tracking.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+                        </div>
+                        <h3>Fast</h3>
+                        <p>Binary-packed index. Sub-ms lookups, millions of ranges.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+                        </div>
+                        <h3>IPv4 + IPv6</h3>
+                        <p>Full dual-stack coverage. Same query, same result.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+                        </div>
+                        <h3>Daily refresh</h3>
+                        <p>Feeds rebuilt every 24h. Always recent.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                        </div>
+                        <h3>Open source</h3>
+                        <p>Apache 2.0. Audit, fork, self-host the entire pipeline.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h16v6H4z"/><circle cx="7" cy="7" r="1" fill="currentColor"/><circle cx="7" cy="17" r="1" fill="currentColor"/></svg>
+                        </div>
+                        <h3>Drop-in data</h3>
+                        <p>One <code style="font-family:var(--mono);font-size:0.78rem">intel.bin</code> file. Use anywhere.</p>
+                    </div>
+                </div>
+
+                <div class="section-head">Risk scale</div>
+                <div class="scale">
+                    <div class="scale-item" style="--bar:#c7d2fe;--barBg:rgba(199,210,254,0.9)">
+                        <div class="rng">60+</div>
+                        <div class="lvl">High</div>
+                        <div class="ex">malware · c2 · compromised</div>
+                    </div>
+                    <div class="scale-item" style="--bar:#818cf8;--barBg:rgba(129,140,248,0.7)">
+                        <div class="rng">35+</div>
+                        <div class="lvl">Medium</div>
+                        <div class="ex">scanner · tor · spam</div>
+                    </div>
+                    <div class="scale-item" style="--bar:#6366f1;--barBg:rgba(99,102,241,0.5)">
+                        <div class="rng">15+</div>
+                        <div class="lvl">Low</div>
+                        <div class="ex">vpn · proxy · datacenter</div>
+                    </div>
+                    <div class="scale-item" style="--bar:#4338ca;--barBg:rgba(67,56,202,0.3)">
+                        <div class="rng">0</div>
+                        <div class="lvl">Clean</div>
+                        <div class="ex">no detections</div>
+                    </div>
+                </div>
+
+                <div class="section-head">How it works</div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="n">01</div>
+                        <div class="t">Paste IP</div>
+                        <div class="d">IPv4 or IPv6, any format.</div>
+                    </div>
+                    <div class="step">
+                        <div class="n">02</div>
+                        <div class="t">Local lookup</div>
+                        <div class="d">Binary index, zero requests.</div>
+                    </div>
+                    <div class="step">
+                        <div class="n">03</div>
+                        <div class="t">Get verdict</div>
+                        <div class="d">Score, flags, matching feeds.</div>
+                    </div>
+                </div>
+
+                <div class="cta">
+                    <div class="cta-text">
+                        <h3>Ship it in your stack</h3>
+                        <p>Grab intel.bin or integrate the feeds.</p>
+                    </div>
+                    <a class="cta-btn" href="https://github.com/tn3w/IPBlocklist" target="_blank" rel="noopener">
+                        View on GitHub
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer>IPBlocklist Open-source threat intelligence aggregator</footer>
+
+        <script>
+            const INTEL_URL = './data/intel.bin';
+            const CACHE_NAME = 'ipblocklist-intel-v1';
+            const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
+
+            const FLAGS = [
+                'vpn', 'proxy', 'tor', 'malware', 'c2', 'scanner',
+                'brute_force', 'spammer', 'compromised', 'datacenter',
+                'cdn', 'anycast', 'crawler', 'bot', 'cloud',
+                'private_relay', 'anonymizer', 'mobile', 'isp', 'government',
+            ];
+
+            const SEVERITY = {
+                malware: 95, c2: 95, compromised: 75, brute_force: 70,
+                spammer: 65, scanner: 55, tor: 45, bot: 40, anonymizer: 35,
+                vpn: 30, proxy: 25, datacenter: 15, private_relay: 15,
+                cloud: 10, crawler: 10, cdn: 5,
+                anycast: 0, mobile: 0, isp: 0, government: 0,
+            };
+
+            const LEVELS = [
+                [80, 'critical'],
+                [60, 'high'],
+                [35, 'medium'],
+                [15, 'low'],
+            ];
+
+            let db = null;
+
+            const statusBar = document.getElementById('statusBar');
+            const statusText = document.getElementById('statusText');
+            const lookupBtn = document.getElementById('lookupBtn');
+            const queryInput = document.getElementById('queryInput');
+            const resultsDiv = document.getElementById('results');
+            const resultContent = document.getElementById('resultContent');
+            const homeDiv = document.getElementById('home');
+            const logoHome = document.getElementById('logoHome');
+
+            function goHome() {
+                queryInput.value = '';
+                resultContent.innerHTML = '';
+                resultsDiv.classList.remove('visible');
+                homeDiv.classList.remove('hidden');
+                queryInput.focus();
+            }
+
+            logoHome.addEventListener('click', (event) => {
+                event.preventDefault();
+                goHome();
+            });
+
+            function setStatus(state, text) {
+                statusBar.className = 'status-bar ' + state;
+                statusText.textContent = text;
+            }
+
+            function formatBytes(n) {
+                return n >= 1048576
+                    ? `${(n / 1048576).toFixed(1)} MB`
+                    : `${(n / 1024).toFixed(0)} KB`;
+            }
+
+            function formatSpeed(bps) {
+                return bps >= 1048576
+                    ? `${(bps / 1048576).toFixed(1)} MB/s`
+                    : `${(bps / 1024).toFixed(0)} KB/s`;
+            }
+
+            async function openCache() {
+                try {
+                    return await caches.open(CACHE_NAME);
+                } catch {
+                    return null;
+                }
+            }
+
+            async function fetchBinaryWithProgress(url, onProgress) {
+                const cache = await openCache();
+                if (cache) {
+                    const hit = await cache.match(url);
+                    if (hit) {
+                        const age = Date.now() -
+                            parseInt(hit.headers.get('x-cached-at') || '0', 10);
+                        if (age < CACHE_MAX_AGE) {
+                            onProgress(null, null, true, 0);
+                            return hit.arrayBuffer();
+                        }
+                        await cache.delete(url);
+                    }
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(
+                        `Missing ${url}. For local preview, download the ` +
+                        `latest intel.bin into docs/data/.`
+                    );
+                }
+
+                const total = parseInt(
+                    response.headers.get('content-length') || '0', 10
+                );
+                const reader = response.body.getReader();
+                const chunks = [];
+                let received = 0;
+                const t0 = Date.now();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    received += value.length;
+                    const speed = received /
+                        Math.max((Date.now() - t0) / 1000, 0.001);
+                    onProgress(received, total, false, speed);
+                }
+
+                const bytes = new Uint8Array(received);
+                let offset = 0;
+                for (const chunk of chunks) {
+                    bytes.set(chunk, offset);
+                    offset += chunk.length;
+                }
+
+                if (cache) {
+                    await cache.put(url, new Response(bytes.buffer, {
+                        headers: {
+                            'content-type': 'application/octet-stream',
+                            'x-cached-at': String(Date.now()),
+                        },
+                    }));
+                }
+
+                return bytes.buffer;
+            }
+
+            function readU64(view, offset) {
+                const lo = view.getUint32(offset, true);
+                const hi = view.getUint32(offset + 4, true);
+                return Number(BigInt(hi) << 32n | BigInt(lo));
+            }
+
+            function readU128(view, offset) {
+                const a = view.getBigUint64(offset, true);
+                const b = view.getBigUint64(offset + 8, true);
+                return (b << 64n) | a;
+            }
+
+            function readStrings(bytes, indexOffset, count, dataOffset, dataLen) {
+                const view = new DataView(bytes.buffer);
+                const data = bytes.subarray(dataOffset, dataOffset + dataLen);
+                const decoder = new TextDecoder();
+                const out = new Array(count);
+                for (let i = 0; i < count; i++) {
+                    const o = indexOffset + i * 8;
+                    const off = view.getUint32(o, true);
+                    const len = view.getUint32(o + 4, true);
+                    out[i] = decoder.decode(data.subarray(off, off + len));
+                }
+                return out;
+            }
+
+            const V4_BUCKETS = 65536;
+
+            function parseIntel(buffer) {
+                const view = new DataView(buffer);
+                const bytes = new Uint8Array(buffer);
+
+                const version = view.getUint32(0, true);
+                if (version !== 6) {
+                    throw new Error(`Unsupported intel.bin version ${version}`);
+                }
+
+                const cn = readU64(view, 8);
+                const ln = readU64(view, 16);
+                const v6n = readU64(view, 24);
+                const valn = readU64(view, 32);
+                const strn = readU64(view, 40);
+                const bucketOff = readU64(view, 48);
+                const startsLoOff = readU64(view, 56);
+                const lensOff = readU64(view, 64);
+                const valsOff = readU64(view, 72);
+                const lStartsOff = readU64(view, 80);
+                const lEndsOff = readU64(view, 88);
+                const lValsOff = readU64(view, 96);
+                const v6s = readU64(view, 104);
+                const v6e = readU64(view, 112);
+                const v6v = readU64(view, 120);
+                const vt = readU64(view, 128);
+                const si = readU64(view, 136);
+                const sd = readU64(view, 144);
+                const sl = readU64(view, 152);
+
+                const bucket_index = new Uint32Array(
+                    buffer, bucketOff, V4_BUCKETS + 1
+                );
+                const starts_lo = cn
+                    ? new Uint16Array(buffer, startsLoOff, cn)
+                    : new Uint16Array(0);
+                const lens = cn
+                    ? new Uint16Array(buffer, lensOff, cn)
+                    : new Uint16Array(0);
+                const vals = cn
+                    ? new Uint16Array(buffer, valsOff, cn)
+                    : new Uint16Array(0);
+
+                const max_ends_lo = new Uint16Array(cn);
+                for (let b = 0; b < V4_BUCKETS; b++) {
+                    const s = bucket_index[b];
+                    const e = bucket_index[b + 1];
+                    let cur = 0;
+                    for (let i = s; i < e; i++) {
+                        const endLo = (starts_lo[i] + lens[i]) & 0xFFFF;
+                        if (endLo > cur) cur = endLo;
+                        max_ends_lo[i] = cur;
+                    }
+                }
+
+                const l_starts = ln
+                    ? new Uint32Array(buffer, lStartsOff, ln)
+                    : new Uint32Array(0);
+                const l_ends = ln
+                    ? new Uint32Array(buffer, lEndsOff, ln)
+                    : new Uint32Array(0);
+                const l_vals = ln
+                    ? new Uint16Array(buffer, lValsOff, ln)
+                    : new Uint16Array(0);
+                const l_max = new Uint32Array(ln);
+                let accL = 0;
+                for (let i = 0; i < ln; i++) {
+                    if (l_ends[i] > accL) accL = l_ends[i];
+                    l_max[i] = accL;
+                }
+
+                const v6_starts = new Array(v6n);
+                const v6_ends = new Array(v6n);
+                for (let i = 0; i < v6n; i++) {
+                    v6_starts[i] = readU128(view, v6s + i * 16);
+                    v6_ends[i] = readU128(view, v6e + i * 16);
+                }
+                const v6_vals = v6n
+                    ? new Uint16Array(buffer, v6v, v6n)
+                    : new Uint16Array(0);
+                const v6_max = new Array(v6n);
+                let acc6 = 0n;
+                for (let i = 0; i < v6n; i++) {
+                    if (v6_ends[i] > acc6) acc6 = v6_ends[i];
+                    v6_max[i] = acc6;
+                }
+
+                const values = new Uint32Array(buffer, vt, valn * 4);
+                const strings = readStrings(bytes, si, strn, sd, sl);
+
+                const totalV4 = cn + ln;
+                const weights = {};
+                const total = Math.max(totalV4, 1);
+                const flagCounts = new Uint32Array(FLAGS.length);
+                const tally = (arr, n) => {
+                    for (let i = 0; i < n; i++) {
+                        const bits = values[arr[i] * 4];
+                        for (let f = 0; f < FLAGS.length; f++) {
+                            if (bits & (1 << f)) flagCounts[f]++;
+                        }
+                    }
+                };
+                tally(vals, cn);
+                tally(l_vals, ln);
+                for (let f = 0; f < FLAGS.length; f++) {
+                    const prevalence = Math.max(
+                        flagCounts[f] / total, 1 / total
+                    );
+                    const rarity = Math.log2(1 / prevalence);
+                    weights[FLAGS[f]] = SEVERITY[FLAGS[f]] * (1 + rarity / 24);
+                }
+
+                return {
+                    bucket_index, starts_lo, lens, vals, max_ends_lo,
+                    l_starts, l_ends, l_vals, l_max,
+                    v6_starts, v6_ends, v6_vals, v6_max,
+                    values, strings, weights,
+                };
+            }
+
+            function ipv4ToInt(ip) {
+                const p = ip.split('.').map(Number);
+                return ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]) >>> 0;
+            }
+
+            function expandIPv6(ip) {
+                if (ip.includes('::')) {
+                    const [left, right] = ip.split('::');
+                    const leftParts = left ? left.split(':') : [];
+                    const rightParts = right ? right.split(':') : [];
+                    const missing = 8 - leftParts.length - rightParts.length;
+                    const mid = Array(missing).fill('0000');
+                    return [...leftParts, ...mid, ...rightParts]
+                        .map((p) => p.padStart(4, '0'))
+                        .join(':');
+                }
+                return ip.split(':').map((p) => p.padStart(4, '0')).join(':');
+            }
+
+            function ipv6ToBigInt(ip) {
+                const parts = expandIPv6(ip).split(':');
+                let result = 0n;
+                for (const part of parts) {
+                    result = (result << 16n) | BigInt(parseInt(part, 16));
+                }
+                return result;
+            }
+
+            function intToIPv4(n) {
+                return `${(n >>> 24) & 0xff}.${(n >>> 16) & 0xff}.` +
+                    `${(n >>> 8) & 0xff}.${n & 0xff}`;
+            }
+
+            function bigIntToIPv6(n) {
+                const parts = [];
+                for (let i = 7; i >= 0; i--) {
+                    const shift = BigInt(i * 16);
+                    parts.push(Number((n >> shift) & 0xffffn).toString(16));
+                }
+                return parts.join(':');
+            }
+
+            function isIPv4(s) {
+                const parts = s.split('.');
+                if (parts.length !== 4) return false;
+                return parts.every((p) => {
+                    const n = Number(p);
+                    return Number.isInteger(n) && n >= 0 && n <= 255 &&
+                        String(n) === p;
+                });
+            }
+
+            function isIPv6(s) {
+                return s.includes(':') && /^[0-9a-fA-F:]+$/.test(s);
+            }
+
+            function bisectRightBounded(arr, lo, hi, target) {
+                while (lo < hi) {
+                    const mid = (lo + hi) >>> 1;
+                    if (arr[mid] <= target) lo = mid + 1;
+                    else hi = mid;
+                }
+                return lo;
+            }
+
+            function bisectRightU32(arr, target) {
+                return bisectRightBounded(arr, 0, arr.length, target);
+            }
+
+            function bisectRightBig(arr, target) {
+                let lo = 0, hi = arr.length;
+                while (lo < hi) {
+                    const mid = (lo + hi) >>> 1;
+                    if (arr[mid] <= target) lo = mid + 1;
+                    else hi = mid;
+                }
+                return lo;
+            }
+
+            function decodeValue(valId) {
+                const o = valId * 4;
+                return {
+                    flagsMask: db.values[o],
+                    provider: db.strings[db.values[o + 1]],
+                    source: db.strings[db.values[o + 2]],
+                };
+            }
+
+            function flagsFromMask(mask) {
+                const out = [];
+                for (let i = 0; i < FLAGS.length; i++) {
+                    if (mask & (1 << i)) out.push(FLAGS[i]);
+                }
+                return out;
+            }
+
+            function lookupV4(ip) {
+                const hits = [];
+                const bucket = (ip >>> 16) & 0xFFFF;
+                const ipLo = ip & 0xFFFF;
+                const bs = db.bucket_index[bucket];
+                const be = db.bucket_index[bucket + 1];
+                if (bs < be) {
+                    const prefix = bucket << 16;
+                    let i = bisectRightBounded(db.starts_lo, bs, be, ipLo);
+                    while (i > bs) {
+                        i--;
+                        if (db.max_ends_lo[i] < ipLo) break;
+                        const endLo = (db.starts_lo[i] + db.lens[i]) & 0xFFFF;
+                        if (endLo >= ipLo) {
+                            const v = decodeValue(db.vals[i]);
+                            hits.push({
+                                start: intToIPv4(
+                                    (prefix | db.starts_lo[i]) >>> 0
+                                ),
+                                end: intToIPv4((prefix | endLo) >>> 0),
+                                ...v,
+                                flags: flagsFromMask(v.flagsMask),
+                            });
+                        }
+                    }
+                }
+                if (db.l_starts.length) {
+                    let i = bisectRightU32(db.l_starts, ip);
+                    while (i > 0) {
+                        i--;
+                        if (db.l_max[i] < ip) break;
+                        if (db.l_ends[i] >= ip) {
+                            const v = decodeValue(db.l_vals[i]);
+                            hits.push({
+                                start: intToIPv4(db.l_starts[i]),
+                                end: intToIPv4(db.l_ends[i]),
+                                ...v,
+                                flags: flagsFromMask(v.flagsMask),
+                            });
+                        }
+                    }
+                }
+                return hits;
+            }
+
+            function lookupV6(ip) {
+                const hits = [];
+                let i = bisectRightBig(db.v6_starts, ip);
+                while (i > 0) {
+                    i--;
+                    if (db.v6_max[i] < ip) break;
+                    if (db.v6_ends[i] >= ip) {
+                        const v = decodeValue(db.v6_vals[i]);
+                        hits.push({
+                            start: bigIntToIPv6(db.v6_starts[i]),
+                            end: bigIntToIPv6(db.v6_ends[i]),
+                            ...v,
+                            flags: flagsFromMask(v.flagsMask),
+                        });
+                    }
+                }
+                return hits;
+            }
+
+            function computeScore(hits) {
+                if (hits.length === 0) {
+                    return { score: 0, level: 'unknown', reasons: [], sources: 0 };
+                }
+                const flagValue = {};
+                for (const hit of hits) {
+                    for (const flag of hit.flags) {
+                        const value = db.weights[flag];
+                        if (value > (flagValue[flag] || 0)) flagValue[flag] = value;
+                    }
+                }
+                const entries = Object.entries(flagValue);
+                if (entries.length === 0) {
+                    return { score: 0, level: 'unknown', reasons: [], sources: 0 };
+                }
+                entries.sort((a, b) => b[1] - a[1]);
+                const top = entries[0][1];
+                const extras = entries.slice(1).reduce((s, [, v]) => s + v, 0) * 0.15;
+                const sources = new Set(hits.map((h) => `${h.provider}|${h.source}`));
+                const boost = 1 + 0.08 * Math.log2(sources.size + 1);
+                const score = Math.min(100, (top + extras) * boost);
+                return {
+                    score: Math.round(score * 10) / 10,
+                    level: levelFor(score),
+                    reasons: entries.slice(0, 5).map(([f]) => f),
+                    sources: sources.size,
+                };
+            }
+
+            function levelFor(score) {
+                for (const [t, name] of LEVELS) {
+                    if (score >= t) return name;
+                }
+                return 'minimal';
+            }
+
+            function scoreColor(score) {
+                if (score >= 80) return 'var(--danger)';
+                if (score >= 60) return 'var(--danger)';
+                if (score >= 35) return 'var(--warn)';
+                if (score >= 15) return 'var(--info)';
+                return 'var(--safe)';
+            }
+
+            function verdictClass(score) {
+                if (score >= 60) return 'verdict-high';
+                if (score >= 35) return 'verdict-medium';
+                if (score >= 15) return 'verdict-low';
+                return 'verdict-clean';
+            }
+
+            function verdictLabel(level) {
+                if (level === 'unknown') return 'Clean';
+                return level.charAt(0).toUpperCase() + level.slice(1);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+
+            function renderResults(ipStr, hits) {
+                const score = computeScore(hits);
+                const allFlags = new Set();
+                const providers = new Set();
+                const sources = new Set();
+                for (const hit of hits) {
+                    for (const flag of hit.flags) allFlags.add(flag);
+                    if (hit.provider) providers.add(hit.provider);
+                    sources.add(hit.source);
+                }
+                const providerList = [...providers];
+                const torIndex = providerList.findIndex(
+                    (p) => p.toLowerCase() === 'tor'
+                );
+                if (torIndex > 0) {
+                    providerList.splice(torIndex, 1);
+                    providerList.unshift('Tor');
+                }
+                const topProvider = providerList[0] || '';
+
+                let html = `<div class="result-header">
+    <span class="result-ip">${escapeHtml(ipStr)}</span>
+    <span class="result-verdict ${verdictClass(score.score)}">
+      ${escapeHtml(verdictLabel(score.level))}
+    </span>
+  </div>`;
+
+                html += `<div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Score</div>
+      <div class="stat-value" style="color:${scoreColor(score.score)}">
+        ${score.score.toFixed(1)}<span
+          style="color:var(--text-muted);font-size:0.6em"> / 100</span>
+      </div>
+      <div class="score-bar-outer">
+        <div class="score-bar-inner"
+          style="width:${score.score}%;background:${scoreColor(score.score)}">
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Detections</div>
+      <div class="stat-value">${hits.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sources</div>
+      <div class="stat-value">${sources.size}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Flags</div>
+      <div class="stat-value">${allFlags.size}</div>
+    </div>
+  </div>`;
+
+                if (topProvider) {
+                    html += `<div class="section-title">Provider</div>
+    <div class="stat-card" style="margin-bottom:1.5rem">
+      <div class="stat-value">${escapeHtml(topProvider)}</div>
+      ${providerList.length > 1
+          ? `<div style="color:var(--text-dim);font-size:0.8rem;
+              margin-top:0.3rem;font-family:var(--mono)">
+              + ${providerList.slice(1).map(escapeHtml).join(', ')}
+            </div>`
+          : ''}
+    </div>`;
+                }
+
+                if (allFlags.size > 0) {
+                    html += `<div class="section-title">Flags</div>
+    <div class="tags">
+      ${[...allFlags]
+          .map((f) => `<span class="tag tag-flag">${escapeHtml(f)}</span>`)
+          .join('')}
+    </div>`;
+                }
+
+                if (score.reasons.length > 0) {
+                    html += `<div class="section-title">Top Reasons</div>
+    <div class="tags">
+      ${score.reasons
+          .map((f) => `<span class="tag tag-cat">${escapeHtml(f)}</span>`)
+          .join('')}
+    </div>`;
+                }
+
+                if (hits.length > 0) {
+                    const sorted = [...hits].sort((a, b) => {
+                        const sa = Math.max(...a.flags.map((f) => db.weights[f] || 0), 0);
+                        const sb = Math.max(...b.flags.map((f) => db.weights[f] || 0), 0);
+                        return sb - sa;
+                    });
+                    html += `<div class="section-title">Matches</div>
+    <div class="feed-list">
+      ${sorted.map((hit) => {
+          const hitMax = Math.max(
+              ...hit.flags.map((f) => db.weights[f] || 0), 0
+          );
+          return `<div class="feed-item">
+          <div class="feed-dot"
+            style="background:${scoreColor(hitMax)}"></div>
+          <div class="feed-name">
+            ${escapeHtml(hit.source)}
+            ${hit.provider
+                ? `<span style="color:var(--text-dim);
+                    font-size:0.78em;margin-left:0.4rem">
+                    ${escapeHtml(hit.provider)}
+                  </span>`
+                : ''}
+          </div>
+          <div class="feed-score" style="color:${scoreColor(hitMax)}">
+            ${hitMax.toFixed(0)}
+          </div>
+          <div class="feed-tags">
+            ${hit.flags.slice(0, 4)
+                .map((f) => `<span class="feed-tag tag-flag">${escapeHtml(f)}</span>`)
+                .join('')}
+            ${hit.flags.length > 4
+                ? `<span class="feed-tag tag-flag">
+                    +${hit.flags.length - 4}
+                  </span>`
+                : ''}
+          </div>
+          <div class="tooltip-card">
+            <div class="tt-name">${escapeHtml(hit.source)}</div>
+            ${hit.provider
+                ? `<div class="tt-desc">${escapeHtml(hit.provider)}</div>`
+                : ''}
+            <div class="tt-row">
+              <span>range: <strong>
+                ${escapeHtml(hit.start)} – ${escapeHtml(hit.end)}
+              </strong></span>
+            </div>
+            <div class="tt-row" style="margin-top:0.3rem">
+              <span>flags: <strong>
+                ${hit.flags.join(', ') || 'none'}
+              </strong></span>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+                } else {
+                    html += `<div class="no-matches">
+      No detections this IP is not flagged by any source
+    </div>`;
+                }
+
+                return html;
+            }
+
+            async function doLookup() {
+                const query = queryInput.value.trim();
+                if (!query) return;
+
+                lookupBtn.disabled = true;
+                lookupBtn.textContent = 'Searching…';
+                resultContent.innerHTML = '';
+                resultsDiv.classList.add('visible');
+                homeDiv.classList.add('hidden');
+
+                try {
+                    let hits;
+                    if (isIPv4(query)) {
+                        hits = lookupV4(ipv4ToInt(query));
+                    } else if (isIPv6(query)) {
+                        hits = lookupV6(ipv6ToBigInt(query));
+                    } else {
+                        resultContent.innerHTML = `<div class="no-matches">
+          Invalid input enter an IPv4 or IPv6 address
+        </div>`;
+                        lookupBtn.disabled = false;
+                        lookupBtn.textContent = 'Lookup';
+                        return;
+                    }
+                    resultContent.innerHTML = renderResults(query, hits);
+                } catch (error) {
+                    resultContent.innerHTML = `<div class="no-matches"
+        style="color:var(--danger)">
+        Error: ${escapeHtml(error.message)}
+      </div>`;
+                }
+
+                lookupBtn.disabled = false;
+                lookupBtn.textContent = 'Lookup';
+            }
+
+            lookupBtn.addEventListener('click', doLookup);
+            queryInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && !lookupBtn.disabled) doLookup();
+            });
+
+            async function init() {
+                try {
+                    setStatus('loading', 'Loading intel.bin…');
+                    const buffer = await fetchBinaryWithProgress(
+                        INTEL_URL,
+                        (received, total, fromCache, speed) => {
+                            if (fromCache) {
+                                setStatus('loading', 'Loading intel.bin from cache…');
+                                return;
+                            }
+                            const knownTotal = total > 0 && received <= total;
+                            const pct = knownTotal
+                                ? ` ${Math.round((received / total) * 100)}%`
+                                : '';
+                            const size = formatBytes(received) +
+                                (knownTotal ? ` / ${formatBytes(total)}` : '');
+                            const spd = speed > 0
+                                ? ` · ${formatSpeed(speed)}`
+                                : '';
+                            setStatus(
+                                'loading',
+                                `Downloading intel.bin…${pct} (${size}${spd})`
+                            );
+                        }
+                    );
+
+                    setStatus('loading', 'Parsing intel.bin…');
+                    db = parseIntel(buffer);
+
+                    const v4Total = db.starts_lo.length + db.l_starts.length;
+                    document.getElementById('heroV4').textContent =
+                        v4Total.toLocaleString();
+                    document.getElementById('heroV6').textContent =
+                        db.v6_starts.length.toLocaleString();
+                    setStatus('ready', 'Ready');
+                    lookupBtn.disabled = false;
+                    queryInput.focus();
+                } catch (error) {
+                    setStatus('error', error.message || 'Failed to load intel.bin');
+                }
+            }
+
+            init();
+        </script>
+    </body>
+</html>

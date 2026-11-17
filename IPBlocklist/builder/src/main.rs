@@ -1,0 +1,280 @@
+use ipintel::{blocklist, build, db};
+use db::Result;
+use std::net::IpAddr;
+use std::path::PathBuf;
+use std::time::Instant;
+
+const DEFAULT_THRESHOLD: u8 = 40;
+const DEFAULT_EXT: &str = "netset";
+
+const FLAG_NAMES: &[&str] = &[
+    "vpn", "proxy", "tor", "malware", "c2", "scanner", "brute_force",
+    "spammer", "compromised", "datacenter", "cdn", "anycast", "crawler",
+    "bot", "cloud", "private_relay", "anonymizer", "mobile", "isp",
+    "government",
+];
+
+fn flags_to_strings(flags: u32) -> Vec<&'static str> {
+    FLAG_NAMES.iter().enumerate()
+        .filter_map(|(i, n)| (flags & (1 << i) != 0).then_some(*n))
+        .collect()
+}
+
+fn db_path() -> PathBuf {
+    if let Ok(p) = std::env::var("OUT_FILE") {
+        return PathBuf::from(p);
+    }
+    PathBuf::from("intel.bin")
+}
+
+fn blocklist_path() -> PathBuf {
+    if let Ok(p) = std::env::var("BLOCKLIST_FILE") {
+        return PathBuf::from(p);
+    }
+    PathBuf::from(format!("blocklist.{DEFAULT_EXT}"))
+}
+
+fn parse_format(s: &str) -> Result<blocklist::Format> {
+    match s {
+        "range" | "ranges" => Ok(blocklist::Format::Range),
+        "cidr" | "netset" => Ok(blocklist::Format::Cidr),
+        _ => Err(format!("unknown format: {s} (range|cidr)").into()),
+    }
+}
+
+fn threshold_env() -> u8 {
+    std::env::var("BLOCKLIST_THRESHOLD")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(DEFAULT_THRESHOLD)
+}
+
+fn feeds_path() -> PathBuf {
+    if let Ok(p) = std::env::var("FEEDS_FILE") {
+        return PathBuf::from(p);
+    }
+    for c in ["feeds-intel.json", "../feeds-intel.json"] {
+        let p = PathBuf::from(c);
+        if p.exists() { return p; }
+    }
+    PathBuf::from("feeds-intel.json")
+}
+
+fn cmd_update() -> Result<()> {
+    let out = db_path();
+    let feeds = feeds_path();
+    println!("feeds: {}", feeds.display());
+    println!("out:   {}", out.display());
+    let t = Instant::now();
+    build::build_db(&feeds, &out, true)?;
+    let size = std::fs::metadata(&out)?.len();
+    println!("built in {:.2}s, {:.2} MB",
+        t.elapsed().as_secs_f64(), size as f64 / 1e6);
+
+    let threshold = threshold_env();
+    let bl = blocklist_path();
+    let t2 = Instant::now();
+    let db = db::Db::open(&out)?;
+    let s = blocklist::build(&db, &bl, threshold, blocklist::Format::Cidr)?;
+    println!(
+        "blocklist: {} (threshold={threshold}) → {} v4 + {} v6 CIDRs, \
+         {} IPs, {:.2} KB in {:.2}s",
+        bl.display(), s.v4_lines, s.v6_lines, s.v4_ips,
+        s.bytes as f64 / 1024.0, t2.elapsed().as_secs_f64(),
+    );
+    Ok(())
+}
+
+fn cmd_blocklist(threshold: u8, fmt: blocklist::Format) -> Result<()> {
+    let db = db::Db::open(&db_path())?;
+    let out = blocklist_path();
+    let t = Instant::now();
+    let s = blocklist::build(&db, &out, threshold, fmt)?;
+    println!(
+        "{} (threshold={threshold}) → {} v4 + {} v6 lines, \
+         {} IPs, {:.2} KB in {:.2}s",
+        out.display(), s.v4_lines, s.v6_lines, s.v4_ips,
+        s.bytes as f64 / 1024.0, t.elapsed().as_secs_f64(),
+    );
+    Ok(())
+}
+
+fn cmd_analyze() -> Result<()> {
+    let db = db::Db::open(&db_path())?;
+    let rows = blocklist::analyze(&db);
+    println!("score | ranges_>= | v4_ips_>=");
+    for (sc, cr, ci) in rows {
+        println!("{sc:5} | {cr:9} | {ci:11}");
+    }
+    Ok(())
+}
+
+fn cmd_sweep() -> Result<()> {
+    let db = db::Db::open(&db_path())?;
+    let thresholds = [5u8, 10, 15, 25, 30, 35, 40, 45, 55, 65, 70, 75, 95];
+    let tmp = PathBuf::from("blocklist.sweep.tmp");
+    println!("threshold | range_bytes | cidr_bytes | range_lines | cidr_lines | v4_ips");
+    for t in thresholds {
+        let r = blocklist::build(&db, &tmp, t, blocklist::Format::Range)?;
+        let c = blocklist::build(&db, &tmp, t, blocklist::Format::Cidr)?;
+        println!(
+            "{t:9} | {:11} | {:10} | {:11} | {:10} | {}",
+            r.bytes, c.bytes,
+            r.v4_lines + r.v6_lines,
+            c.v4_lines + c.v6_lines,
+            r.v4_ips,
+        );
+    }
+    let _ = std::fs::remove_file(&tmp);
+    Ok(())
+}
+
+fn cmd_check(ip: &str) -> Result<()> {
+    let addr: IpAddr = ip.parse().map_err(|_| format!("invalid IP: {ip}"))?;
+    let t = Instant::now();
+    let db = db::Db::open(&db_path())?;
+    let load_us = t.elapsed().as_micros();
+    let t2 = Instant::now();
+    let hits = db.lookup(addr);
+    let lookup_ns = t2.elapsed().as_nanos();
+
+    let mut combined: u32 = 0;
+    let mut score: u8 = 0;
+    let mut providers: Vec<&str> = Vec::new();
+    let mut sources: Vec<&str> = Vec::new();
+    for h in &hits {
+        combined |= h.flags;
+        if h.score > score { score = h.score; }
+        if !h.provider.is_empty() && !providers.contains(&h.provider) {
+            providers.push(h.provider);
+        }
+        if !sources.contains(&h.source) { sources.push(h.source); }
+    }
+
+    let out = serde_json::json!({
+        "ip": ip,
+        "found": !hits.is_empty(),
+        "score": score,
+        "primary_provider": providers.first().copied().unwrap_or(""),
+        "providers": providers,
+        "flags": flags_to_strings(combined),
+        "flag_bits": combined,
+        "matches": hits.iter().map(|h| serde_json::json!({
+            "range": format!("{}-{}", h.start, h.end),
+            "provider": h.provider,
+            "source": h.source,
+            "score": h.score,
+            "flags": flags_to_strings(h.flags),
+        })).collect::<Vec<_>>(),
+        "_perf": {"load_us": load_us, "lookup_ns": lookup_ns},
+    });
+    println!("{}", serde_json::to_string_pretty(&out)?);
+    Ok(())
+}
+
+fn cmd_bench(n: usize) -> Result<()> {
+    let t = Instant::now();
+    let db = db::Db::open(&db_path())?;
+    let load_us = t.elapsed().as_micros();
+    println!("load: {load_us} us | v4={} v6={}", db.v4_count(), db.v6_count());
+
+    let bidx = db.v4_bucket_index();
+    let starts_lo = db.v4_starts_lo();
+    let lens = db.v4_lens();
+    let cn = starts_lo.len();
+    let mut sample_v4: Vec<u32> = Vec::with_capacity(n);
+    let mut seed: u32 = 0x9E3779B1;
+    for _ in 0..n {
+        seed = seed.wrapping_mul(1664525).wrapping_add(1013904223);
+        if cn == 0 { sample_v4.push(seed); continue; }
+        let row = (seed as usize) % cn;
+        let bucket = bidx.partition_point(|&v| v as usize <= row).saturating_sub(1);
+        let s = ((bucket as u32) << 16) | starts_lo[row] as u32;
+        let span = (lens[row] as u32).saturating_add(1).max(1);
+        let off = seed % span;
+        sample_v4.push(s.wrapping_add(off));
+    }
+
+    let mut total_hits = 0usize;
+    let t = Instant::now();
+    for ip in &sample_v4 {
+        total_hits += db.lookup_v4(*ip).len();
+    }
+    let el = t.elapsed();
+    let per = el.as_nanos() as f64 / n as f64;
+    println!("v4 hit-path: {n} in {:.3} ms | {:.1} ns/op | {:.2}M ops/s | hits={}",
+        el.as_secs_f64() * 1000.0, per, 1e9 / per / 1e6, total_hits);
+
+    let mut miss: Vec<u32> = Vec::with_capacity(n);
+    let mut s: u32 = 0xDEADBEEF;
+    for _ in 0..n {
+        s = s.wrapping_mul(1103515245).wrapping_add(12345);
+        miss.push(s);
+    }
+    let t = Instant::now();
+    let mut h = 0usize;
+    for ip in &miss { h += db.lookup_v4(*ip).len(); }
+    let el = t.elapsed();
+    let per = el.as_nanos() as f64 / n as f64;
+    println!("v4 random:   {n} in {:.3} ms | {:.1} ns/op | {:.2}M ops/s | hits={}",
+        el.as_secs_f64() * 1000.0, per, 1e9 / per / 1e6, h);
+
+    let t = Instant::now();
+    let mut acc = 0u32;
+    for ip in &sample_v4 { acc |= db.lookup_v4_flags(*ip); }
+    let el = t.elapsed();
+    let per = el.as_nanos() as f64 / n as f64;
+    println!("v4 flags hit:{n} in {:.3} ms | {:.1} ns/op | {:.2}M ops/s | acc=0x{:x}",
+        el.as_secs_f64() * 1000.0, per, 1e9 / per / 1e6, acc);
+
+    let t = Instant::now();
+    let mut acc = 0u32;
+    for ip in &miss { acc |= db.lookup_v4_flags(*ip); }
+    let el = t.elapsed();
+    let per = el.as_nanos() as f64 / n as f64;
+    println!("v4 flags rnd:{n} in {:.3} ms | {:.1} ns/op | {:.2}M ops/s | acc=0x{:x}",
+        el.as_secs_f64() * 1000.0, per, 1e9 / per / 1e6, acc);
+
+    let t = Instant::now();
+    let mut acc = 0u32;
+    for ip in &sample_v4 { acc = acc.max(db.lookup_v4_score(*ip) as u32); }
+    let el = t.elapsed();
+    let per = el.as_nanos() as f64 / n as f64;
+    println!("v4 score hit:{n} in {:.3} ms | {:.1} ns/op | {:.2}M ops/s | max={}",
+        el.as_secs_f64() * 1000.0, per, 1e9 / per / 1e6, acc);
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() < 2 {
+        eprintln!(
+            "usage: builder <update|check IP|bench [N]|\
+             blocklist [threshold]|analyze|sweep>"
+        );
+        std::process::exit(1);
+    }
+    match args[1].as_str() {
+        "update" => cmd_update(),
+        "check" => {
+            if args.len() < 3 { Err("check requires IP".into()) }
+            else { cmd_check(&args[2]) }
+        }
+        "bench" => {
+            let n = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(100_000);
+            cmd_bench(n)
+        }
+        "blocklist" => {
+            let t = args.get(2).and_then(|s| s.parse().ok())
+                .unwrap_or_else(threshold_env);
+            let fmt = args.get(3).map(|s| parse_format(s))
+                .transpose()?
+                .unwrap_or(blocklist::Format::Cidr);
+            cmd_blocklist(t, fmt)
+        }
+        "analyze" => cmd_analyze(),
+        "sweep" => cmd_sweep(),
+        c => Err(format!("unknown command: {c}").into()),
+    }
+}

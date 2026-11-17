@@ -19,3 +19,4 @@ statuspage/ linguist-vendored=true
 statussentinel/ linguist-vendored=true
 SillyPython/ linguist-vendored=true
 Tunnels/ linguist-vendored=true
+IPBlocklist/ linguist-vendored=true

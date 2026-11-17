@@ -1,0 +1,10 @@
+{
+	"$schema": "worker/node_modules/wrangler/config-schema.json",
+	"name": "ipintel",
+	"main": "worker/src/worker.ts",
+	"compatibility_date": "2026-06-06",
+	"kv_namespaces": [{ "binding": "INTEL", "id": "KV_NAMESPACE_ID" }],
+	"observability": { "enabled": true },
+	"workers_dev": false,
+	"preview_urls": false
+}
