@@ -1,0 +1,269 @@
+from __future__ import annotations
+
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
+from typing import Any
+
+from . import crawler_has_tag, crawler_name, is_crawler
+from .ip import known_crawler_ip, known_crawler_rdns, verify_crawler_ip
+
+__all__ = [
+    "CrawlerMiddlewareResult",
+    "WSGICrawlerMiddleware",
+    "ASGICrawlerMiddleware",
+]
+
+_CONTENT_TYPE = "text/plain; charset=utf-8"
+_WSGI_HEADERS = [("Content-Type", _CONTENT_TYPE)]
+_HEADERS = [(b"content-type", _CONTENT_TYPE.encode())]
+
+
+@dataclass(frozen=True)
+class CrawlerMiddlewareResult:
+    user_agent: str
+    ip: str | None
+    is_crawler: bool
+    name: str | None
+    verified: bool
+    in_ip_range: bool = False
+    rdns_match: bool = False
+
+
+def _inspect(
+    user_agent: str,
+    ip: str | None,
+    verify_ip: bool,
+    check_ip_range: bool,
+    check_rdns: bool,
+) -> CrawlerMiddlewareResult:
+    detected = is_crawler(user_agent)
+    verified = False
+    in_range = False
+    rdns = False
+
+    if ip:
+        if check_ip_range:
+            in_range = known_crawler_ip(ip)
+        if check_rdns:
+            rdns = known_crawler_rdns(ip)
+        if verify_ip and detected:
+            verified = verify_crawler_ip(user_agent, ip)
+
+    detected = detected or in_range or rdns
+    name = crawler_name(user_agent) if detected else None
+    return CrawlerMiddlewareResult(
+        user_agent=user_agent,
+        ip=ip,
+        is_crawler=detected,
+        name=name,
+        verified=verified,
+        in_ip_range=in_range,
+        rdns_match=rdns,
+    )
+
+
+def _should_block(result: CrawlerMiddlewareResult, tags: tuple[str, ...]) -> bool:
+    if not result.is_crawler:
+        return False
+    if not tags:
+        return True
+    return crawler_has_tag(result.user_agent, tags)
+
+
+def _to_tags(tags: str | Iterable[str] | None) -> tuple[str, ...]:
+    if tags is None:
+        return ()
+    if isinstance(tags, str):
+        return (tags,)
+    return tuple(tags)
+
+
+def _first_forwarded_ip(value: str | None) -> str | None:
+    if not value:
+        return None
+    ip = value.split(",", 1)[0].strip()
+    return ip or None
+
+
+def _clean_forwarded_for(value: str) -> str | None:
+    ip = value.strip().strip('"')
+    if not ip:
+        return None
+    if ip.startswith("["):
+        end = ip.find("]")
+        if end == -1:
+            return None
+        return ip[1:end] or None
+    if ip.count(":") == 1 and "." in ip:
+        host, _, port = ip.partition(":")
+        return host or None
+    return ip
+
+
+def _forwarded_ip(value: str | None) -> str | None:
+    if not value:
+        return None
+
+    for part in value.split(","):
+        for field in part.split(";"):
+            key, _, raw_value = field.partition("=")
+            if key.strip().lower() != "for":
+                continue
+            return _clean_forwarded_for(raw_value)
+
+    return None
+
+
+def _wsgi_ip(environ: dict[str, Any], trust_forwarded: bool) -> str | None:
+    if trust_forwarded:
+        ip = _forwarded_ip(environ.get("HTTP_FORWARDED"))
+        if ip:
+            return ip
+
+        ip = _first_forwarded_ip(environ.get("HTTP_X_FORWARDED_FOR"))
+        if ip:
+            return ip
+
+        ip = _first_forwarded_ip(environ.get("HTTP_X_REAL_IP"))
+        if ip:
+            return ip
+
+    return _first_forwarded_ip(environ.get("REMOTE_ADDR"))
+
+
+def _scope_header(scope: dict[str, Any], name: bytes) -> str:
+    headers = scope.get("headers") or ()
+    target = name.lower()
+    for key, value in headers:
+        if key.lower() == target:
+            return value.decode("latin1")
+    return ""
+
+
+def _scope_ip(scope: dict[str, Any], trust_forwarded: bool) -> str | None:
+    if trust_forwarded:
+        ip = _forwarded_ip(_scope_header(scope, b"forwarded"))
+        if ip:
+            return ip
+
+        ip = _first_forwarded_ip(_scope_header(scope, b"x-forwarded-for"))
+        if ip:
+            return ip
+
+        ip = _first_forwarded_ip(_scope_header(scope, b"x-real-ip"))
+        if ip:
+            return ip
+
+    client = scope.get("client")
+    if not client:
+        return None
+    return client[0]
+
+
+class _BaseCrawlerMiddleware:
+    def __init__(
+        self,
+        app: Callable[..., Any],
+        *,
+        block: bool = False,
+        block_tags: str | Iterable[str] | None = None,
+        verify_ip: bool = False,
+        check_ip_range: bool = False,
+        check_rdns: bool = False,
+        trust_forwarded: bool = False,
+        body: bytes = b"Forbidden",
+    ) -> None:
+        self.app = app
+        self.block = block
+        self.block_tags = _to_tags(block_tags)
+        self.verify_ip = verify_ip
+        self.check_ip_range = check_ip_range
+        self.check_rdns = check_rdns
+        self.trust_forwarded = trust_forwarded
+        self.body = body
+
+    def _inspect(self, user_agent: str, ip: str | None) -> CrawlerMiddlewareResult:
+        return _inspect(
+            user_agent, ip, self.verify_ip, self.check_ip_range, self.check_rdns
+        )
+
+    def _should_block(self, result: CrawlerMiddlewareResult) -> bool:
+        return self.block and _should_block(result, self.block_tags)
+
+
+class WSGICrawlerMiddleware(_BaseCrawlerMiddleware):
+    def __init__(
+        self,
+        app: Callable[..., Any],
+        *,
+        environ_key: str = "is_crawler",
+        status: str = "403 Forbidden",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(app, **kwargs)
+        self.environ_key = environ_key
+        self.status = status
+
+    def __call__(
+        self,
+        environ: dict[str, Any],
+        start_response: Callable[[str, list[tuple[str, str]]], Any],
+    ) -> Any:
+        user_agent = environ.get("HTTP_USER_AGENT", "")
+        ip = _wsgi_ip(environ, self.trust_forwarded)
+        result = self._inspect(user_agent, ip)
+        environ[self.environ_key] = result
+
+        if self._should_block(result):
+            start_response(self.status, _WSGI_HEADERS)
+            return [self.body]
+
+        return self.app(environ, start_response)
+
+
+class ASGICrawlerMiddleware(_BaseCrawlerMiddleware):
+    def __init__(
+        self,
+        app: Callable[..., Any],
+        *,
+        scope_key: str = "is_crawler",
+        state_key: str = "crawler",
+        status_code: int = 403,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(app, **kwargs)
+        self.scope_key = scope_key
+        self.state_key = state_key
+        self.status_code = status_code
+
+    async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
+        if scope.get("type") != "http":
+            await self.app(scope, receive, send)
+            return
+
+        user_agent = _scope_header(scope, b"user-agent")
+        ip = _scope_ip(scope, self.trust_forwarded)
+        result = self._inspect(user_agent, ip)
+        scope[self.scope_key] = result
+
+        state = scope.setdefault("state", {})
+        if isinstance(state, dict):
+            state[self.state_key] = result
+
+        if self._should_block(result):
+            await send(
+                {
+                    "type": "http.response.start",
+                    "status": self.status_code,
+                    "headers": _HEADERS,
+                }
+            )
+            await send(
+                {
+                    "type": "http.response.body",
+                    "body": self.body,
+                }
+            )
+            return
+
+        await self.app(scope, receive, send)
